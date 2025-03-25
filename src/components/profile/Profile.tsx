@@ -10,12 +10,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { LogOut, Save, Bell, Moon, Settings, Lock } from "lucide-react";
+import { useTheme } from "../theme/ThemeProvider";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   
@@ -131,8 +132,8 @@ const Profile = () => {
                   </div>
                   <Switch
                     id="darkMode"
-                    checked={darkModeEnabled}
-                    onCheckedChange={setDarkModeEnabled}
+                    checked={theme === "dark"}
+                    onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
                   />
                 </div>
               </div>

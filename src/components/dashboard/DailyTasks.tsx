@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -16,19 +16,18 @@ interface Task {
 
 interface DailyTasksProps {
   tasks: Task[];
+  updateTasks: (tasks: Task[]) => void;
 }
 
-const DailyTasks: React.FC<DailyTasksProps> = ({ tasks }) => {
-  const [taskList, setTaskList] = useState(tasks);
-  
+const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
   const toggleTask = (id: string) => {
-    setTaskList(
-      taskList.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, completed: !task.completed } : task
     );
     
-    const task = taskList.find((t) => t.id === id);
+    updateTasks(updatedTasks);
+    
+    const task = tasks.find((t) => t.id === id);
     if (task) {
       if (!task.completed) {
         toast.success("Task completed! Keep it up!", {
@@ -60,7 +59,7 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks }) => {
       <CardContent>
         <AnimatePresence>
           <div className="space-y-4">
-            {taskList.map((task) => (
+            {tasks.map((task) => (
               <motion.div
                 key={task.id}
                 initial={{ opacity: 0, y: 10 }}

@@ -23,6 +23,12 @@ interface UserData {
   height: number;
   loggedIn: boolean;
   createdAt: string;
+  stats?: {
+    calories: number[];
+    steps: number[];
+    workoutsCompleted: number;
+    streakDays: number;
+  };
 }
 
 // Sample data for the chart
@@ -48,13 +54,41 @@ const Dashboard = () => {
       setUserData(JSON.parse(storedUser));
     }
     
-    // Generate tasks for today
-    setTasks(generateRandomTasks());
+    // Load or generate tasks for today
+    const today = new Date().toISOString().split('T')[0];
+    const storedTasks = localStorage.getItem(`ar-fit-tasks-${today}`);
     
-    // Animate progress
-    const timer = setTimeout(() => setProgress(68), 500);
-    return () => clearTimeout(timer);
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
+    } else {
+      const newTasks = generateRandomTasks();
+      localStorage.setItem(`ar-fit-tasks-${today}`, JSON.stringify(newTasks));
+      setTasks(newTasks);
+    }
+    
+    // Animate progress - calculate based on completed tasks
+    setTimeout(() => {
+      const storedTasks = localStorage.getItem(`ar-fit-tasks-${today}`);
+      if (storedTasks) {
+        const parsedTasks = JSON.parse(storedTasks);
+        const completedPercentage = parsedTasks.filter((t: any) => t.completed).length / parsedTasks.length * 100;
+        setProgress(completedPercentage || 0);
+      } else {
+        setProgress(0);
+      }
+    }, 500);
   }, []);
+  
+  // Update the tasks when they change
+  const updateTasks = (updatedTasks: any[]) => {
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem(`ar-fit-tasks-${today}`, JSON.stringify(updatedTasks));
+    
+    // Update progress
+    const completedPercentage = updatedTasks.filter(t => t.completed).length / updatedTasks.length * 100;
+    setProgress(completedPercentage || 0);
+    setTasks(updatedTasks);
+  };
   
   const calculateBMI = () => {
     if (!userData) return "N/A";
@@ -112,10 +146,10 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center mb-1">
                   <p className="text-sm text-muted-foreground">Today's Goal</p>
                   <Badge variant="outline" className="bg-arfit-purple/10 text-arfit-purple">
-                    68%
+                    {progress.toFixed(0)}%
                   </Badge>
                 </div>
-                <Progress value={progress} className="h-2 bg-muted" indicatorClassName="bg-arfit-purple" />
+                <Progress value={progress} className="h-2 bg-muted" />
               </div>
             </CardContent>
           </Card>
@@ -137,7 +171,10 @@ const Dashboard = () => {
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
-                    data={activityData}
+                    data={userData.stats?.calories ? userData.stats.calories.map((cal, index) => ({
+                      day: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][index],
+                      calories: cal
+                    })) : activityData}
                     margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
@@ -172,7 +209,7 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <DailyTasks tasks={tasks} />
+        <DailyTasks tasks={tasks} updateTasks={updateTasks} />
       </motion.div>
     </div>
   );

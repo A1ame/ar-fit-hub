@@ -1,77 +1,94 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-// Function to generate random tasks for the day
-export const generateRandomTasks = () => {
-  // In a real app, this would be dynamic based on user preferences and fitness level
-  const possibleTasks = [
-    {
-      title: "Push-ups",
-      description: "3 sets of 10-15 reps",
-      category: "strength",
-    },
-    {
-      title: "Squats",
-      description: "3 sets of 15-20 reps",
-      category: "strength",
-    },
-    {
-      title: "Plank",
-      description: "3 sets of 30-60 seconds",
-      category: "strength",
-    },
-    {
-      title: "Jumping Jacks",
-      description: "3 sets of 30 seconds",
-      category: "cardio",
-    },
-    {
-      title: "Jogging",
-      description: "20 minutes at moderate pace",
-      category: "cardio",
-    },
-    {
-      title: "High Knees",
-      description: "3 sets of 30 seconds",
-      category: "cardio",
-    },
-    {
-      title: "Hamstring Stretch",
-      description: "Hold for 30 seconds, 3 times each leg",
-      category: "flexibility",
-    },
-    {
-      title: "Shoulder Stretch",
-      description: "Hold for 20 seconds, 3 times each side",
-      category: "flexibility",
-    },
-    {
-      title: "Child's Pose",
-      description: "Hold for 1 minute",
-      category: "flexibility",
-    },
-  ];
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  category: "strength" | "cardio" | "flexibility";
+  completed: boolean;
+}
+
+const strengthExercises = [
+  { title: "Push-ups", description: "3 sets of 10 reps" },
+  { title: "Squats", description: "3 sets of 15 reps" },
+  { title: "Dumbbell Curls", description: "3 sets of 12 reps" },
+  { title: "Plank", description: "Hold for 45 seconds, 3 sets" },
+  { title: "Lunges", description: "3 sets of 12 reps each leg" }
+];
+
+const cardioExercises = [
+  { title: "Running", description: "20 minutes at moderate pace" },
+  { title: "Jumping Jacks", description: "3 sets of 30 seconds" },
+  { title: "Jump Rope", description: "10 minutes" },
+  { title: "Burpees", description: "3 sets of 10 reps" },
+  { title: "High Knees", description: "3 sets of 20 seconds" }
+];
+
+const flexibilityExercises = [
+  { title: "Hamstring Stretch", description: "Hold for 30 seconds each leg" },
+  { title: "Shoulder Stretch", description: "Hold for 30 seconds each side" },
+  { title: "Hip Flexor Stretch", description: "Hold for 30 seconds each side" },
+  { title: "Yoga Poses", description: "Hold each pose for 45 seconds" },
+  { title: "Dynamic Stretching", description: "10 minutes of various movements" }
+];
+
+export const generateRandomTasks = (): Task[] => {
+  const tasks: Task[] = [];
   
-  // Select 4-5 random tasks
-  const taskCount = Math.floor(Math.random() * 2) + 4; // 4-5 tasks
-  const shuffled = [...possibleTasks].sort(() => 0.5 - Math.random());
-  const selectedTasks = shuffled.slice(0, taskCount);
+  // Add 2 random strength tasks
+  for (let i = 0; i < 2; i++) {
+    const randomExercise = strengthExercises[Math.floor(Math.random() * strengthExercises.length)];
+    const task: Task = {
+      id: uuidv4(),
+      title: randomExercise.title,
+      description: randomExercise.description,
+      category: "strength",
+      completed: false
+    };
+    tasks.push(task);
+  }
   
-  // Ensure we have at least one task from each category
-  const categories = ["strength", "cardio", "flexibility"];
-  categories.forEach(category => {
-    if (!selectedTasks.some(task => task.category === category)) {
-      const taskFromCategory = possibleTasks.find(task => task.category === category);
-      if (taskFromCategory) {
-        selectedTasks.push(taskFromCategory);
-      }
-    }
-  });
+  // Add 2 random cardio tasks
+  for (let i = 0; i < 2; i++) {
+    const randomExercise = cardioExercises[Math.floor(Math.random() * cardioExercises.length)];
+    const task: Task = {
+      id: uuidv4(),
+      title: randomExercise.title,
+      description: randomExercise.description,
+      category: "cardio",
+      completed: false
+    };
+    tasks.push(task);
+  }
   
-  // Add IDs and default completion status
-  return selectedTasks.map(task => ({
+  // Add 1 random flexibility task
+  const randomExercise = flexibilityExercises[Math.floor(Math.random() * flexibilityExercises.length)];
+  const task: Task = {
     id: uuidv4(),
-    ...task,
-    completed: false,
-  }));
+    title: randomExercise.title,
+    description: randomExercise.description,
+    category: "flexibility",
+    completed: false
+  };
+  tasks.push(task);
+  
+  // Shuffle the array to randomize order
+  return tasks.sort(() => Math.random() - 0.5);
+};
+
+export const getTasksForDate = (date: string): Task[] => {
+  const storedTasks = localStorage.getItem(`ar-fit-tasks-${date}`);
+  if (storedTasks) {
+    return JSON.parse(storedTasks);
+  }
+  
+  // Generate new tasks for this date
+  const newTasks = generateRandomTasks();
+  localStorage.setItem(`ar-fit-tasks-${date}`, JSON.stringify(newTasks));
+  return newTasks;
+};
+
+export const updateTasksForDate = (date: string, tasks: Task[]): void => {
+  localStorage.setItem(`ar-fit-tasks-${date}`, JSON.stringify(tasks));
 };
