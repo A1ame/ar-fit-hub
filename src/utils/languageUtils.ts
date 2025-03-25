@@ -61,7 +61,7 @@ export const translations: Translations = {
   },
   calories: {
     en: "calories",
-    ru: "калории"
+    ru: "калорий"
   },
   // Daily Tasks
   todaysTasks: {
@@ -222,6 +222,91 @@ export const translations: Translations = {
   youCompleted: {
     en: "You've completed",
     ru: "Вы выполнили"
+  },
+  // Additional translations
+  login: {
+    en: "Login",
+    ru: "Вход"
+  },
+  register: {
+    en: "Register",
+    ru: "Регистрация"
+  },
+  username: {
+    en: "Username",
+    ru: "Имя пользователя"
+  },
+  password: {
+    en: "Password",
+    ru: "Пароль"
+  },
+  confirmPassword: {
+    en: "Confirm Password",
+    ru: "Подтвердите пароль"
+  },
+  gender: {
+    en: "Choose your gender",
+    ru: "Выберите ваш пол"
+  },
+  male: {
+    en: "Male",
+    ru: "Мужской"
+  },
+  female: {
+    en: "Female",
+    ru: "Женский"
+  },
+  next: {
+    en: "Next",
+    ru: "Далее"
+  },
+  back: {
+    en: "Back",
+    ru: "Назад"
+  },
+  complete: {
+    en: "Complete",
+    ru: "Завершить"
+  },
+  welcome: {
+    en: "Welcome to AR-FIT",
+    ru: "Добро пожаловать в АР-ФИТ"
+  },
+  nutrition: {
+    en: "Nutrition",
+    ru: "Питание"
+  },
+  nutritionComingSoon: {
+    en: "Nutrition tracking coming soon!",
+    ru: "Отслеживание питания скоро появится!"
+  },
+  profile: {
+    en: "Profile",
+    ru: "Профиль"
+  },
+  home: {
+    en: "Home",
+    ru: "Главная"
+  },
+  dashboard: {
+    en: "Dashboard",
+    ru: "Панель"
+  },
+  workout: {
+    en: "Workout",
+    ru: "Тренировка"
+  },
+  settings: {
+    en: "Settings",
+    ru: "Настройки"
+  },
+  notFound: {
+    en: "Page Not Found",
+    ru: "Страница не найдена"
+  },
+  goBack: {
+    en: "Go Back",
+    ru: "Вернуться назад"
   }
 };
 
