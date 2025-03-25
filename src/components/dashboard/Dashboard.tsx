@@ -5,14 +5,22 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import DailyTasks from "./DailyTasks";
-import { generateRandomTasks } from "@/utils/fitnessData";
+import { generateRandomTasks, getTasksForDate } from "@/utils/fitnessData";
 import { motion } from "framer-motion";
+import { useTheme } from "../theme/ThemeProvider";
+import { t } from "@/utils/languageUtils";
+
+const CALORIES_PER_TASK = {
+  strength: 150,
+  cardio: 250,
+  flexibility: 80
+};
 
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good Morning";
-  if (hour < 18) return "Good Afternoon";
-  return "Good Evening";
+  if (hour < 12) return "goodMorning";
+  if (hour < 18) return "goodAfternoon";
+  return "goodEvening";
 };
 
 interface UserData {
@@ -32,26 +40,85 @@ interface UserData {
 }
 
 // Sample data for the chart
-const activityData = [
-  { day: "Mon", calories: 320 },
-  { day: "Tue", calories: 450 },
-  { day: "Wed", calories: 280 },
-  { day: "Thu", calories: 590 },
-  { day: "Fri", calories: 400 },
-  { day: "Sat", calories: 380 },
-  { day: "Sun", calories: 240 },
+const defaultActivityData = [
+  { day: "Mon", calories: 0 },
+  { day: "Tue", calories: 0 },
+  { day: "Wed", calories: 0 },
+  { day: "Thu", calories: 0 },
+  { day: "Fri", calories: 0 },
+  { day: "Sat", calories: 0 },
+  { day: "Sun", calories: 0 },
 ];
 
 const Dashboard = () => {
+  const { language } = useTheme();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [tasks, setTasks] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
+  const [activityData, setActivityData] = useState(defaultActivityData);
+  
+  // Calculate calories burned based on completed tasks
+  const calculateCaloriesBurned = (tasks: any[]) => {
+    return tasks.reduce((total, task) => {
+      if (task.completed) {
+        return total + (CALORIES_PER_TASK[task.category] || 0);
+      }
+      return total;
+    }, 0);
+  };
+  
+  // Update activity data for the current day
+  const updateActivityData = (caloriesBurned: number) => {
+    const today = new Date().getDay();
+    // Convert to 0-6 where 0 is Monday (not Sunday)
+    const dayIndex = today === 0 ? 6 : today - 1;
+    
+    // Get current user data to update stats
+    const currentUser = userData;
+    if (currentUser && currentUser.stats) {
+      const newCalories = [...currentUser.stats.calories];
+      newCalories[dayIndex] = caloriesBurned;
+      
+      // Update user stats
+      const updatedUser = {
+        ...currentUser,
+        stats: {
+          ...currentUser.stats,
+          calories: newCalories
+        }
+      };
+      
+      // Save updated user data
+      localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
+      setUserData(updatedUser);
+      
+      // Create activity data for chart
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      const newActivityData = newCalories.map((cal, index) => ({
+        day: days[index],
+        calories: cal
+      }));
+      
+      setActivityData(newActivityData);
+    }
+  };
   
   useEffect(() => {
     // Load user data from localStorage
     const storedUser = localStorage.getItem("ar-fit-user");
     if (storedUser) {
-      setUserData(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUserData(parsedUser);
+      
+      // Initialize activity data from user stats
+      if (parsedUser.stats && parsedUser.stats.calories) {
+        const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        const newActivityData = parsedUser.stats.calories.map((cal: number, index: number) => ({
+          day: days[index],
+          calories: cal
+        }));
+        setActivityData(newActivityData);
+      }
     }
     
     // Load or generate tasks for today
@@ -59,24 +126,22 @@ const Dashboard = () => {
     const storedTasks = localStorage.getItem(`ar-fit-tasks-${today}`);
     
     if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
+      const parsedTasks = JSON.parse(storedTasks);
+      setTasks(parsedTasks);
+      
+      // Calculate progress
+      const completedPercentage = parsedTasks.filter((t: any) => t.completed).length / parsedTasks.length * 100;
+      setProgress(completedPercentage || 0);
+      
+      // Calculate calories burned
+      const calories = calculateCaloriesBurned(parsedTasks);
+      updateActivityData(calories);
     } else {
       const newTasks = generateRandomTasks();
       localStorage.setItem(`ar-fit-tasks-${today}`, JSON.stringify(newTasks));
       setTasks(newTasks);
+      setProgress(0);
     }
-    
-    // Animate progress - calculate based on completed tasks
-    setTimeout(() => {
-      const storedTasks = localStorage.getItem(`ar-fit-tasks-${today}`);
-      if (storedTasks) {
-        const parsedTasks = JSON.parse(storedTasks);
-        const completedPercentage = parsedTasks.filter((t: any) => t.completed).length / parsedTasks.length * 100;
-        setProgress(completedPercentage || 0);
-      } else {
-        setProgress(0);
-      }
-    }, 500);
   }, []);
   
   // Update the tasks when they change
@@ -87,6 +152,11 @@ const Dashboard = () => {
     // Update progress
     const completedPercentage = updatedTasks.filter(t => t.completed).length / updatedTasks.length * 100;
     setProgress(completedPercentage || 0);
+    
+    // Calculate calories burned
+    const calories = calculateCaloriesBurned(updatedTasks);
+    updateActivityData(calories);
+    
     setTasks(updatedTasks);
   };
   
@@ -98,7 +168,7 @@ const Dashboard = () => {
   };
 
   if (!userData) {
-    return <div>Loading...</div>;
+    return <div>{t("loading", language)}</div>;
   }
 
   return (
@@ -114,16 +184,16 @@ const Dashboard = () => {
           <Card className="glass-card h-full">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                <span className="text-arfit-purple">{getGreeting()},</span>
+                <span className="text-arfit-purple">{t(getGreeting(), language)},</span>
                 <span>{userData.name}</span>
               </CardTitle>
-              <CardDescription>Your fitness profile</CardDescription>
+              <CardDescription>{t("yourFitnessProfile", language)}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <div className="text-left">
-                  <p className="text-sm text-muted-foreground">Age</p>
-                  <p className="text-xl font-medium">{userData.age} years</p>
+                  <p className="text-sm text-muted-foreground">{t("age", language)}</p>
+                  <p className="text-xl font-medium">{userData.age} {t("years", language)}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">BMI</p>
@@ -133,18 +203,18 @@ const Dashboard = () => {
               
               <div className="flex justify-between items-center">
                 <div className="text-left">
-                  <p className="text-sm text-muted-foreground">Weight</p>
+                  <p className="text-sm text-muted-foreground">{t("weight", language)}</p>
                   <p className="text-xl font-medium">{userData.weight} kg</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Height</p>
+                  <p className="text-sm text-muted-foreground">{t("height", language)}</p>
                   <p className="text-xl font-medium">{userData.height} cm</p>
                 </div>
               </div>
               
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <p className="text-sm text-muted-foreground">Today's Goal</p>
+                  <p className="text-sm text-muted-foreground">{t("todaysGoal", language)}</p>
                   <Badge variant="outline" className="bg-arfit-purple/10 text-arfit-purple">
                     {progress.toFixed(0)}%
                   </Badge>
@@ -164,17 +234,14 @@ const Dashboard = () => {
         >
           <Card className="glass-card h-full">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl font-semibold">Weekly Activity</CardTitle>
-              <CardDescription>Your calorie burn for the past week</CardDescription>
+              <CardTitle className="text-xl font-semibold">{t("weeklyActivity", language)}</CardTitle>
+              <CardDescription>{t("caloriesBurn", language)}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
-                    data={userData.stats?.calories ? userData.stats.calories.map((cal, index) => ({
-                      day: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][index],
-                      calories: cal
-                    })) : activityData}
+                    data={activityData}
                     margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
@@ -187,6 +254,7 @@ const Dashboard = () => {
                         border: "none",
                         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
                       }}
+                      formatter={(value) => [`${value} ${t("calories", language)}`, '']}
                     />
                     <Line 
                       type="monotone" 

@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Dumbbell, Flame } from "lucide-react";
+import { useTheme } from "../theme/ThemeProvider";
+import { t } from "@/utils/languageUtils";
 
 interface ExerciseCategory {
   id: string;
@@ -24,17 +26,17 @@ interface Exercise {
   image: string;
 }
 
-const exerciseCategories: ExerciseCategory[] = [
+const getExerciseCategories = (language: string): ExerciseCategory[] => [
   {
     id: "strength",
-    title: "Strength Training",
+    title: t("strengthTraining", language),
     icon: <Dumbbell className="h-5 w-5" />,
-    description: "Build muscle and improve strength with these resistance exercises",
+    description: t("strengthDesc", language),
     exercises: [
       {
         id: "push-ups",
         title: "Push-ups",
-        description: "Classic chest and triceps exercise",
+        description: t("strengthDesc", language),
         duration: "3 sets x 10-15 reps",
         difficulty: "beginner",
         image: "https://images.unsplash.com/photo-1616803689943-5601631c7fec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
@@ -59,9 +61,9 @@ const exerciseCategories: ExerciseCategory[] = [
   },
   {
     id: "cardio",
-    title: "Cardio Training",
+    title: t("cardioTraining", language),
     icon: <Heart className="h-5 w-5" />,
-    description: "Improve cardiovascular health and endurance",
+    description: t("cardioDesc", language),
     exercises: [
       {
         id: "running",
@@ -91,9 +93,9 @@ const exerciseCategories: ExerciseCategory[] = [
   },
   {
     id: "flexibility",
-    title: "Warm-up & Stretching",
+    title: t("warmupStretching", language),
     icon: <Flame className="h-5 w-5" />,
-    description: "Improve flexibility and prevent injuries",
+    description: t("flexibilityDesc", language),
     exercises: [
       {
         id: "hamstring-stretch",
@@ -124,16 +126,18 @@ const exerciseCategories: ExerciseCategory[] = [
 ];
 
 const Exercises = () => {
+  const { language } = useTheme();
   const [selectedTab, setSelectedTab] = useState("strength");
+  const exerciseCategories = getExerciseCategories(language);
   
   const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {
       case "beginner":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Beginner</Badge>;
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">{t("beginner", language)}</Badge>;
       case "intermediate":
-        return <Badge className="bg-arfit-blue/20 text-arfit-blue-dark hover:bg-arfit-blue/30">Intermediate</Badge>;
+        return <Badge className="bg-arfit-blue/20 text-arfit-blue-dark hover:bg-arfit-blue/30">{t("intermediate", language)}</Badge>;
       case "advanced":
-        return <Badge className="bg-arfit-purple/20 text-arfit-purple hover:bg-arfit-purple/30">Advanced</Badge>;
+        return <Badge className="bg-arfit-purple/20 text-arfit-purple hover:bg-arfit-purple/30">{t("advanced", language)}</Badge>;
       default:
         return null;
     }
@@ -142,8 +146,8 @@ const Exercises = () => {
   return (
     <Card className="glass-card animate-fade-in">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-arfit-purple">Exercises</CardTitle>
-        <CardDescription>Choose your workout category</CardDescription>
+        <CardTitle className="text-2xl font-bold text-arfit-purple">{t("exercises", language)}</CardTitle>
+        <CardDescription>{t("chooseCategory", language)}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <Tabs defaultValue="strength" value={selectedTab} onValueChange={setSelectedTab} className="w-full">
@@ -191,7 +195,7 @@ const Exercises = () => {
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">{exercise.duration}</span>
                           <Button variant="outline" size="sm" className="text-arfit-purple border-arfit-purple hover:bg-arfit-purple hover:text-white">
-                            Details
+                            {t("details", language)}
                           </Button>
                         </div>
                       </div>

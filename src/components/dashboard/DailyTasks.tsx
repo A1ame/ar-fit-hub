@@ -5,6 +5,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { useTheme } from "../theme/ThemeProvider";
+import { t } from "@/utils/languageUtils";
 
 interface Task {
   id: string;
@@ -20,6 +22,8 @@ interface DailyTasksProps {
 }
 
 const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
+  const { language } = useTheme();
+  
   const toggleTask = (id: string) => {
     const updatedTasks = tasks.map((task) =>
       task.id === id ? { ...task, completed: !task.completed } : task
@@ -30,8 +34,8 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
     const task = tasks.find((t) => t.id === id);
     if (task) {
       if (!task.completed) {
-        toast.success("Task completed! Keep it up!", {
-          description: `You've completed ${task.title}`,
+        toast.success(t("taskCompleted", language), {
+          description: `${t("youCompleted", language)} ${task.title}`,
         });
       }
     }
@@ -53,8 +57,8 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
   return (
     <Card className="glass-card">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">Today's Tasks</CardTitle>
-        <CardDescription>Complete these exercises to reach your goals</CardDescription>
+        <CardTitle className="text-xl font-semibold">{t("todaysTasks", language)}</CardTitle>
+        <CardDescription>{t("completeExercises", language)}</CardDescription>
       </CardHeader>
       <CardContent>
         <AnimatePresence>
@@ -85,7 +89,7 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                       {task.title}
                     </label>
                     <Badge className={`${getCategoryColor(task.category)}`}>
-                      {task.category}
+                      {t(task.category, language)}
                     </Badge>
                   </div>
                   <p className={`text-sm text-muted-foreground ${

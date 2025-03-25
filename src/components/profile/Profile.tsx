@@ -6,15 +6,17 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { LogOut, Save, Bell, Moon, Settings, Lock } from "lucide-react";
+import { LogOut, Save, Bell, Moon, Settings, Lock, Globe } from "lucide-react";
 import { useTheme } from "../theme/ThemeProvider";
+import { t } from "@/utils/languageUtils";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, language, setLanguage } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [name, setName] = useState("");
@@ -32,7 +34,7 @@ const Profile = () => {
   
   const handleLogout = () => {
     localStorage.removeItem("ar-fit-user");
-    toast.success("Logged out successfully");
+    toast.success(t("loggedOut", language));
     navigate("/");
   };
   
@@ -41,12 +43,12 @@ const Profile = () => {
       const updatedUser = { ...user, name, email };
       localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
       setUser(updatedUser);
-      toast.success("Profile updated successfully");
+      toast.success(t("profileUpdated", language));
     }
   };
   
   if (!user) {
-    return <div>Loading...</div>;
+    return <div>{t("loading", language)}</div>;
   }
 
   return (
@@ -58,15 +60,15 @@ const Profile = () => {
       >
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-arfit-purple">Profile Settings</CardTitle>
-            <CardDescription>Manage your account preferences</CardDescription>
+            <CardTitle className="text-2xl font-bold text-arfit-purple">{t("profileSettings", language)}</CardTitle>
+            <CardDescription>{t("manageAccount", language)}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Personal Information</h3>
+              <h3 className="text-lg font-medium">{t("personalInfo", language)}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name">{t("name", language)}</Label>
                   <Input
                     id="name"
                     value={name}
@@ -75,7 +77,7 @@ const Profile = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t("email", language)}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -90,7 +92,7 @@ const Profile = () => {
                 className="glass-button"
               >
                 <Save className="mr-2 h-4 w-4" />
-                Save Changes
+                {t("saveChanges", language)}
               </Button>
             </div>
             
@@ -99,7 +101,7 @@ const Profile = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-medium flex items-center">
                 <Settings className="mr-2 h-5 w-5" />
-                Preferences
+                {t("preferences", language)}
               </h3>
               
               <div className="space-y-4">
@@ -107,10 +109,10 @@ const Profile = () => {
                   <div className="space-y-0.5">
                     <Label htmlFor="notifications" className="flex items-center">
                       <Bell className="mr-2 h-4 w-4" />
-                      Notifications
+                      {t("notifications", language)}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Receive workout and progress notifications
+                      {t("notificationsDesc", language)}
                     </p>
                   </div>
                   <Switch
@@ -124,10 +126,10 @@ const Profile = () => {
                   <div className="space-y-0.5">
                     <Label htmlFor="darkMode" className="flex items-center">
                       <Moon className="mr-2 h-4 w-4" />
-                      Dark Mode
+                      {t("darkMode", language)}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Enable dark mode for the application
+                      {t("darkModeDesc", language)}
                     </p>
                   </div>
                   <Switch
@@ -135,6 +137,30 @@ const Profile = () => {
                     checked={theme === "dark"}
                     onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
                   />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="language" className="flex items-center">
+                      <Globe className="mr-2 h-4 w-4" />
+                      {t("language", language)}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t("languageDesc", language)}
+                    </p>
+                  </div>
+                  <Select
+                    value={language}
+                    onValueChange={(value: "en" | "ru") => setLanguage(value)}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue placeholder={t("language", language)} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">{t("english", language)}</SelectItem>
+                      <SelectItem value="ru">{t("russian", language)}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -144,7 +170,7 @@ const Profile = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-medium flex items-center">
                 <Lock className="mr-2 h-5 w-5" />
-                Account
+                {t("account", language)}
               </h3>
               <Button 
                 variant="destructive" 
@@ -152,7 +178,7 @@ const Profile = () => {
                 className="w-full bg-red-500 hover:bg-red-600"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                Log Out
+                {t("logOut", language)}
               </Button>
             </div>
           </CardContent>
