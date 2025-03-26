@@ -1,8 +1,10 @@
 
 import { getCurrentUser, logoutUser } from "./userUtils";
+import { toast } from "sonner";
+import { t } from "./languageUtils";
 
 /**
- * Check if a user is logged in based on localStorage
+ * Проверка, вошел ли пользователь в систему на основе localStorage
  */
 export const isLoggedIn = (): boolean => {
   const user = getCurrentUser();
@@ -10,20 +12,24 @@ export const isLoggedIn = (): boolean => {
 };
 
 /**
- * Protected route redirector
- * @param navigate - React Router's navigate function
+ * Перенаправление защищенного маршрута
+ * @param navigate - функция навигации React Router
+ * @param language - текущий язык
  */
-export const requireAuth = (navigate: (path: string) => void): void => {
+export const requireAuth = (navigate: (path: string) => void, language = "ru"): void => {
   if (!isLoggedIn()) {
+    toast.error(t("authRequired", language));
     navigate("/");
   }
 };
 
 /**
- * Log the user out
- * @param navigate - React Router's navigate function
+ * Выход пользователя из системы
+ * @param navigate - функция навигации React Router
+ * @param language - текущий язык
  */
-export const logout = (navigate: (path: string) => void): void => {
+export const logout = (navigate: (path: string) => void, language = "ru"): void => {
   logoutUser();
+  toast.success(t("loggedOut", language));
   navigate("/");
 };

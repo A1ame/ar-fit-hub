@@ -1,4 +1,3 @@
-
 type LanguageKey = "en" | "ru";
 
 interface Translations {
@@ -172,7 +171,7 @@ export const translations: Translations = {
   },
   cardioTraining: {
     en: "Cardio Training",
-    ru: "Кардио тренировки"
+    ru: "Кардио т��енировки"
   },
   warmupStretching: {
     en: "Warm-up & Stretching",
@@ -437,6 +436,59 @@ export const translations: Translations = {
   hipFlexorStretchDuration: {
     en: "Hold for 30 seconds each side x 3 sets",
     ru: "Удерживать 30 секунд каждую сторону x 3 подхода"
+  },
+  // Auth related translations
+  personalizedFitnessJourney: {
+    en: "Your personalized fitness journey",
+    ru: "Ваш персонализированный фитнес-путь"
+  },
+  dontHaveAccount: {
+    en: "Don't have an account?",
+    ru: "Нет аккаунта?"
+  },
+  alreadyHaveAccount: {
+    en: "Already have an account?",
+    ru: "Уже есть аккаунт?"
+  },
+  continue: {
+    en: "Continue",
+    ru: "Продолжить"
+  },
+  genderHelp: {
+    en: "This helps us personalize your fitness plan",
+    ru: "Это поможет нам персонализировать ваш план тренировок"
+  },
+  completeProfile: {
+    en: "Complete Your Profile",
+    ru: "Заполните свой профиль"
+  },
+  completeProfileDesc: {
+    en: "Tell us a bit about yourself so we can create your personalized plan",
+    ru: "Расскажите немного о себе, чтобы мы могли создать ваш персонализированный план"
+  },
+  yourName: {
+    en: "Your Name",
+    ru: "Ваше имя"
+  },
+  enterName: {
+    en: "Enter your name",
+    ru: "Введите ваше имя"
+  },
+  kg: {
+    en: "kg",
+    ru: "кг"
+  },
+  cm: {
+    en: "cm",
+    ru: "см"
+  },
+  authRequired: {
+    en: "Authentication required",
+    ru: "Требуется авторизация"
+  },
+  invalidCredentials: {
+    en: "Invalid email or password",
+    ru: "Неверный email или пароль"
   }
 };
 

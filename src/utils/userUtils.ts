@@ -25,6 +25,9 @@ export const defaultStats = {
   streakDays: 0
 };
 
+/**
+ * Получение списка всех пользователей из localStorage
+ */
 export const getUsers = (): UserData[] => {
   try {
     const usersJson = localStorage.getItem('ar-fit-users');
@@ -32,15 +35,21 @@ export const getUsers = (): UserData[] => {
       return JSON.parse(usersJson);
     }
   } catch (error) {
-    console.error('Failed to parse users data:', error);
+    console.error('Ошибка при получении данных пользователей:', error);
   }
   return [];
 };
 
+/**
+ * Сохранение списка пользователей в localStorage
+ */
 export const saveUsers = (users: UserData[]): void => {
   localStorage.setItem('ar-fit-users', JSON.stringify(users));
 };
 
+/**
+ * Получение текущего пользователя из localStorage
+ */
 export const getCurrentUser = (): UserData | null => {
   try {
     const userJson = localStorage.getItem('ar-fit-user');
@@ -48,32 +57,48 @@ export const getCurrentUser = (): UserData | null => {
       return JSON.parse(userJson);
     }
   } catch (error) {
-    console.error('Failed to parse current user data:', error);
+    console.error('Ошибка при получении данных текущего пользователя:', error);
   }
   return null;
 };
 
+/**
+ * Сохранение текущего пользователя в localStorage
+ */
 export const saveCurrentUser = (user: UserData): void => {
   localStorage.setItem('ar-fit-user', JSON.stringify(user));
   
-  // Also update this user in the users array
+  // Также обновляем этого пользователя в массиве пользователей
   const users = getUsers();
   const updatedUsers = users.map(u => u.id === user.id ? user : u);
   saveUsers(updatedUsers);
 };
 
+/**
+ * Добавление нового пользователя
+ */
 export const addUser = (user: UserData): void => {
   const users = getUsers();
+  
+  // Проверяем, не существует ли пользователь с таким email
+  const existingUser = users.find(u => u.email === user.email);
+  if (existingUser) {
+    throw new Error('Пользователь с таким email уже существует');
+  }
+  
   users.push(user);
   saveUsers(users);
 };
 
+/**
+ * Аутентификация пользователя по email и паролю
+ */
 export const authenticateUser = (email: string, password: string): UserData | null => {
   const users = getUsers();
   const user = users.find(u => u.email === email && u.password === password);
   
   if (user) {
-    // Mark as logged in
+    // Помечаем пользователя как вошедшего в систему
     const loggedInUser = { ...user, loggedIn: true };
     saveCurrentUser(loggedInUser);
     return loggedInUser;
@@ -82,17 +107,20 @@ export const authenticateUser = (email: string, password: string): UserData | nu
   return null;
 };
 
+/**
+ * Выход пользователя из системы
+ */
 export const logoutUser = (): void => {
   const currentUser = getCurrentUser();
   if (currentUser) {
     const loggedOutUser = { ...currentUser, loggedIn: false };
     
-    // Update in users array
+    // Обновляем в массиве пользователей
     const users = getUsers();
     const updatedUsers = users.map(u => u.id === currentUser.id ? loggedOutUser : u);
     saveUsers(updatedUsers);
     
-    // Clear current user
+    // Очищаем данные текущего пользователя
     localStorage.removeItem('ar-fit-user');
   }
 };

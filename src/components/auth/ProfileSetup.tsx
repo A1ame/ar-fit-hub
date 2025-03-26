@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import { t } from "@/utils/languageUtils";
 
 interface ProfileSetupProps {
   onComplete: (profileData: any) => void;
@@ -16,6 +18,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete, gender }) => {
   const [weight, setWeight] = useState(70);
   const [height, setHeight] = useState(170);
   const [name, setName] = useState("");
+  const { language } = useTheme();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,35 +27,35 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete, gender }) => {
       age,
       weight,
       height,
-      fitnessLevel: "beginner", // Default value
+      fitnessLevel: "beginner", // Значение по умолчанию
       createdAt: new Date().toISOString(),
     });
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in">
+    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border border-arfit-purple/30">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center text-arfit-purple">Complete Your Profile</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center text-arfit-purple">{t("completeProfile", language)}</CardTitle>
         <CardDescription className="text-center">
-          Tell us a bit about yourself so we can create your personalized plan
+          {t("completeProfileDesc", language)}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name">Your Name</Label>
+            <Label htmlFor="name">{t("yourName", language)}</Label>
             <Input
               id="name"
-              placeholder="Enter your name"
+              placeholder={t("enterName", language)}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="glass-input"
+              className="glass-input border-arfit-purple/30 focus:border-arfit-purple"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="age">Age: {age} years</Label>
+            <Label htmlFor="age">{t("age", language)}: {age} {t("years", language)}</Label>
             <Slider
               id="age"
               min={16}
@@ -65,7 +68,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete, gender }) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="weight">Weight: {weight} kg</Label>
+            <Label htmlFor="weight">{t("weight", language)}: {weight} {t("kg", language)}</Label>
             <Slider
               id="weight"
               min={40}
@@ -78,7 +81,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete, gender }) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="height">Height: {height} cm</Label>
+            <Label htmlFor="height">{t("height", language)}: {height} {t("cm", language)}</Label>
             <Slider
               id="height"
               min={140}
@@ -91,7 +94,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete, gender }) => {
           </div>
           
           <Button type="submit" className="w-full glass-button">
-            Complete Setup
+            {t("complete", language)}
           </Button>
         </form>
       </CardContent>

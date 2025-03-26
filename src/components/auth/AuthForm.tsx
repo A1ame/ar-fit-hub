@@ -8,6 +8,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GenderSelection from "./GenderSelection";
 import ProfileSetup from "./ProfileSetup";
+import { authenticateUser } from "@/utils/userUtils";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import { t } from "@/utils/languageUtils";
+import { toast } from "sonner";
 
 type AuthStep = "auth" | "gender" | "profile";
 
@@ -18,16 +22,20 @@ const AuthForm = () => {
   const [step, setStep] = useState<AuthStep>("auth");
   const [gender, setGender] = useState<"male" | "female" | null>(null);
   const navigate = useNavigate();
+  const { language } = useTheme();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isLogin) {
-      // Login logic would go here in a real application
-      // For now, we'll just navigate to the dashboard
-      localStorage.setItem("ar-fit-user", JSON.stringify({ email, loggedIn: true }));
-      navigate("/dashboard");
+      // Попытка входа в систему
+      const user = authenticateUser(email, password);
+      if (user) {
+        navigate("/dashboard");
+      } else {
+        toast.error(t("invalidCredentials", language));
+      }
     } else {
-      // If registering, move to gender selection
+      // Если регистрация, перейти к выбору пола
       setStep("gender");
     }
   };
@@ -38,14 +46,29 @@ const AuthForm = () => {
   };
 
   const handleProfileComplete = (profileData: any) => {
-    // Store user data in localStorage (in a real app, this would go to a backend)
-    localStorage.setItem("ar-fit-user", JSON.stringify({
+    // Сохранить данные пользователя
+    const userData = {
+      id: crypto.randomUUID(),
       email,
+      password,
       gender,
       ...profileData,
-      loggedIn: true
-    }));
-    navigate("/dashboard");
+      loggedIn: true,
+      createdAt: new Date().toISOString(),
+      stats: {
+        calories: [0, 0, 0, 0, 0, 0, 0],
+        steps: [0, 0, 0, 0, 0, 0, 0],
+        workoutsCompleted: 0,
+        streakDays: 0
+      }
+    };
+    
+    // Добавить нового пользователя
+    import("@/utils/userUtils").then(({ addUser, saveCurrentUser }) => {
+      addUser(userData);
+      saveCurrentUser(userData);
+      navigate("/dashboard");
+    });
   };
 
   if (step === "gender") {
@@ -57,13 +80,13 @@ const AuthForm = () => {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in">
+    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border border-arfit-purple/30">
       <CardHeader className="space-y-1">
         <CardTitle className="text-3xl font-bold text-center text-arfit-purple">
           AR-FIT
         </CardTitle>
         <CardDescription className="text-center">
-          Your personalized fitness journey starts here
+          {t("personalizedFitnessJourney", language)}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -74,55 +97,55 @@ const AuthForm = () => {
               onClick={() => setIsLogin(true)}
               className="data-[state=active]:bg-arfit-purple data-[state=active]:text-white"
             >
-              Login
+              {t("login", language)}
             </TabsTrigger>
             <TabsTrigger 
               value="register" 
               onClick={() => setIsLogin(false)}
               className="data-[state=active]:bg-arfit-purple data-[state=active]:text-white"
             >
-              Register
+              {t("register", language)}
             </TabsTrigger>
           </TabsList>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("email", language)}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="your.email@example.com"
+                placeholder="example@mail.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="glass-input"
+                className="glass-input border-arfit-purple/30 focus:border-arfit-purple"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("password", language)}</Label>
               <Input
                 id="password"
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="glass-input"
+                className="glass-input border-arfit-purple/30 focus:border-arfit-purple"
               />
             </div>
             <Button type="submit" className="w-full glass-button">
-              {isLogin ? "Login" : "Continue"}
+              {isLogin ? t("login", language) : t("continue", language)}
             </Button>
           </form>
         </Tabs>
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          {isLogin ? t("dontHaveAccount", language) : t("alreadyHaveAccount", language)}
           <button 
             onClick={() => setIsLogin(!isLogin)}
-            className="text-arfit-purple hover:underline"
+            className="text-arfit-purple hover:underline ml-1"
           >
-            {isLogin ? "Register" : "Login"}
+            {isLogin ? t("register", language) : t("login", language)}
           </button>
         </p>
       </CardFooter>

@@ -4,13 +4,16 @@ import { useNavigate } from "react-router-dom";
 import AuthForm from "@/components/auth/AuthForm";
 import { isLoggedIn } from "@/utils/authUtils";
 import { motion } from "framer-motion";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import { t } from "@/utils/languageUtils";
 
 const Index = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const { language } = useTheme();
   
   useEffect(() => {
-    // Check if user is already logged in
+    // Проверка, вошел ли пользователь в систему
     if (isLoggedIn()) {
       navigate("/dashboard");
     } else {
@@ -21,7 +24,7 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse-subtle">Loading...</div>
+        <div className="animate-pulse-subtle">{t("loading", language)}</div>
       </div>
     );
   }
@@ -35,7 +38,7 @@ const Index = () => {
         className="w-full max-w-md mb-10"
       >
         <h1 className="text-5xl font-bold text-center text-arfit-purple mb-2">AR-FIT</h1>
-        <p className="text-center text-muted-foreground">Your personalized fitness journey</p>
+        <p className="text-center text-muted-foreground">{t("personalizedFitnessJourney", language)}</p>
       </motion.div>
       
       <AuthForm />

@@ -2,18 +2,22 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import { t } from "@/utils/languageUtils";
 
 interface GenderSelectionProps {
   onSelect: (gender: "male" | "female") => void;
 }
 
 const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) => {
+  const { language } = useTheme();
+  
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in">
+    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border border-arfit-purple/30">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center text-arfit-purple">Select Your Gender</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center text-arfit-purple">{t("gender", language)}</CardTitle>
         <CardDescription className="text-center">
-          This helps us personalize your fitness plan
+          {t("genderHelp", language)}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col md:flex-row gap-6 pt-4">
@@ -28,7 +32,7 @@ const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) => {
               <div className="w-4/5 h-4/5 bg-[url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80')] bg-cover bg-center rounded-full shadow-xl" />
             </div>
           </div>
-          <p className="mt-2 font-medium text-center">Male</p>
+          <p className="mt-2 font-medium text-center">{t("male", language)}</p>
         </motion.div>
         
         <motion.div
@@ -42,7 +46,7 @@ const GenderSelection: React.FC<GenderSelectionProps> = ({ onSelect }) => {
               <div className="w-4/5 h-4/5 bg-[url('https://images.unsplash.com/photo-1609942072337-c3370e820d65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80')] bg-cover bg-center rounded-full shadow-xl" />
             </div>
           </div>
-          <p className="mt-2 font-medium text-center">Female</p>
+          <p className="mt-2 font-medium text-center">{t("female", language)}</p>
         </motion.div>
       </CardContent>
     </Card>
