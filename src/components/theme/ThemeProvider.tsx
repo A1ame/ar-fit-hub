@@ -23,7 +23,7 @@ interface ThemeProviderState {
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
-  language: "en",
+  language: "ru",
   setLanguage: () => null,
 };
 
@@ -32,7 +32,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  defaultLanguage = "en",
+  defaultLanguage = "ru",
   storageKey = "ar-fit-theme",
   languageStorageKey = "ar-fit-language",
   ...props

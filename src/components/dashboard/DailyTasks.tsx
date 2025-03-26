@@ -3,10 +3,8 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 
@@ -25,7 +23,6 @@ interface DailyTasksProps {
 
 const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
   const { language } = useTheme();
-  const navigate = useNavigate();
   
   const toggleTask = (id: string) => {
     const updatedTasks = tasks.map((task) =>
@@ -57,25 +54,12 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
     }
   };
 
-  const goToExercises = () => {
-    navigate('/exercises');
-  };
-
   return (
     <Card className="glass-card border-arfit-purple/30">
       <CardHeader>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle className="text-xl font-semibold">{t("todaysTasks", language)}</CardTitle>
-            <CardDescription>{t("completeExercises", language)}</CardDescription>
-          </div>
-          <Button 
-            onClick={goToExercises} 
-            variant="outline" 
-            className="border-arfit-purple text-arfit-purple hover:bg-arfit-purple/10"
-          >
-            {t("goToExercises", language)}
-          </Button>
+        <div>
+          <CardTitle className="text-xl font-semibold">{t("todaysTasks", language)}</CardTitle>
+          <CardDescription>{t("completeExercises", language)}</CardDescription>
         </div>
       </CardHeader>
       <CardContent>

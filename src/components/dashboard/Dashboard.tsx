@@ -73,6 +73,11 @@ const Dashboard = () => {
     // Convert to 0-6 where 0 is Monday (not Sunday)
     const dayIndex = today === 0 ? 6 : today - 1;
     
+    // Update chart data immediately
+    const newActivityData = [...activityData];
+    newActivityData[dayIndex].calories = caloriesBurned;
+    setActivityData(newActivityData);
+    
     // Get current user data to update stats
     const currentUser = userData;
     if (currentUser && currentUser.stats) {
@@ -91,15 +96,6 @@ const Dashboard = () => {
       // Save updated user data
       localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
       setUserData(updatedUser);
-      
-      // Create activity data for chart
-      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-      const newActivityData = newCalories.map((cal, index) => ({
-        day: days[index],
-        calories: cal
-      }));
-      
-      setActivityData(newActivityData);
     }
   };
   
@@ -155,6 +151,8 @@ const Dashboard = () => {
     
     // Calculate calories burned
     const calories = calculateCaloriesBurned(updatedTasks);
+    
+    // Update activity data immediately
     updateActivityData(calories);
     
     setTasks(updatedTasks);
@@ -181,7 +179,7 @@ const Dashboard = () => {
           transition={{ delay: 0.2 }}
           className="w-full md:w-1/3"
         >
-          <Card className="glass-card h-full">
+          <Card className="glass-card h-full border border-arfit-purple/30">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl font-semibold flex items-center gap-2">
                 <span className="text-arfit-purple">{t(getGreeting(), language)},</span>
@@ -232,7 +230,7 @@ const Dashboard = () => {
           transition={{ delay: 0.4 }}
           className="w-full md:w-2/3"
         >
-          <Card className="glass-card h-full">
+          <Card className="glass-card h-full border border-arfit-purple/30">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl font-semibold">{t("weeklyActivity", language)}</CardTitle>
               <CardDescription>{t("caloriesBurn", language)}</CardDescription>

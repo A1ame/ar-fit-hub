@@ -148,7 +148,7 @@ const Exercises = () => {
   };
 
   return (
-    <Card className="glass-card animate-fade-in">
+    <Card className="glass-card animate-fade-in border border-arfit-purple/30">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-arfit-purple">{t("exercises", language)}</CardTitle>
         <CardDescription>{t("chooseCategory", language)}</CardDescription>
@@ -184,7 +184,7 @@ const Exercises = () => {
                     <motion.div
                       key={exercise.id}
                       whileHover={{ y: -5 }}
-                      className="overflow-hidden rounded-xl glass-card"
+                      className="overflow-hidden rounded-xl glass-card border border-arfit-purple/30"
                     >
                       <div 
                         className="h-48 w-full bg-cover bg-center" 
@@ -199,7 +199,7 @@ const Exercises = () => {
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">{exercise.duration}</span>
                           <Button variant="outline" size="sm" className="text-arfit-purple border-arfit-purple hover:bg-arfit-purple hover:text-white">
-                            {t("details", language)}
+                            {t("moreDetails", language)}
                           </Button>
                         </div>
                       </div>

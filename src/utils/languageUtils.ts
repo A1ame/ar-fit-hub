@@ -12,7 +12,7 @@ export const translations: Translations = {
   // General
   appName: {
     en: "AR-FIT",
-    ru: "АР-ФИТ"
+    ru: "AR-FIT"  // Keep AR-FIT in English for Russian as well
   },
   // Dashboard
   goodMorning: {
@@ -202,6 +202,10 @@ export const translations: Translations = {
     en: "Details",
     ru: "Подробности"
   },
+  moreDetails: {
+    en: "More Details",
+    ru: "Подробнее"
+  },
   loading: {
     en: "Loading...",
     ru: "Загрузка..."
@@ -270,7 +274,7 @@ export const translations: Translations = {
   },
   welcome: {
     en: "Welcome to AR-FIT",
-    ru: "Добро пожаловать в АР-ФИТ"
+    ru: "Добро пожаловать в AR-FIT"
   },
   nutrition: {
     en: "Nutrition",
@@ -328,7 +332,7 @@ export const t = (key: string, language: LanguageKey): string => {
 // Function to get language from storage
 export const getLanguage = (): LanguageKey => {
   const storedLanguage = localStorage.getItem("ar-fit-language");
-  return (storedLanguage as LanguageKey) || "en";
+  return (storedLanguage as LanguageKey) || "ru"; // Changed default to Russian
 };
 
 // Function to set language in storage
