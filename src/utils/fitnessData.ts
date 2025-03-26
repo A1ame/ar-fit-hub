@@ -1,5 +1,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
+import { t } from './languageUtils';
 
 export interface Task {
   id: string;
@@ -10,30 +11,75 @@ export interface Task {
 }
 
 const strengthExercises = [
-  { title: "Push-ups", description: "3 sets of 10 reps" },
-  { title: "Squats", description: "3 sets of 15 reps" },
-  { title: "Dumbbell Curls", description: "3 sets of 12 reps" },
-  { title: "Plank", description: "Hold for 45 seconds, 3 sets" },
-  { title: "Lunges", description: "3 sets of 12 reps each leg" }
+  { 
+    titleKey: "pushUps", 
+    descriptionKey: "pushUpsDuration"
+  },
+  { 
+    titleKey: "squats", 
+    descriptionKey: "squatsDuration"
+  },
+  { 
+    titleKey: "lunges", 
+    descriptionKey: "lungesDuration"
+  },
+  { 
+    titleKey: "plank", 
+    descriptionKey: "plankDuration"
+  },
+  { 
+    titleKey: "dumbbellCurls", 
+    descriptionKey: "dumbbellCurlsDuration"
+  }
 ];
 
 const cardioExercises = [
-  { title: "Running", description: "20 minutes at moderate pace" },
-  { title: "Jumping Jacks", description: "3 sets of 30 seconds" },
-  { title: "Jump Rope", description: "10 minutes" },
-  { title: "Burpees", description: "3 sets of 10 reps" },
-  { title: "High Knees", description: "3 sets of 20 seconds" }
+  { 
+    titleKey: "running", 
+    descriptionKey: "runningDuration"
+  },
+  { 
+    titleKey: "jumpingJacks", 
+    descriptionKey: "jumpingJacksDuration"
+  },
+  { 
+    titleKey: "jumpRope", 
+    descriptionKey: "jumpRopeDuration"
+  },
+  { 
+    titleKey: "burpees", 
+    descriptionKey: "burpeesDuration"
+  },
+  { 
+    titleKey: "highKnees", 
+    descriptionKey: "highKneesDuration"
+  }
 ];
 
 const flexibilityExercises = [
-  { title: "Hamstring Stretch", description: "Hold for 30 seconds each leg" },
-  { title: "Shoulder Stretch", description: "Hold for 30 seconds each side" },
-  { title: "Hip Flexor Stretch", description: "Hold for 30 seconds each side" },
-  { title: "Yoga Poses", description: "Hold each pose for 45 seconds" },
-  { title: "Dynamic Stretching", description: "10 minutes of various movements" }
+  { 
+    titleKey: "hamstringStretch", 
+    descriptionKey: "hamstringStretchDuration"
+  },
+  { 
+    titleKey: "shoulderStretch", 
+    descriptionKey: "shoulderStretchDuration"
+  },
+  { 
+    titleKey: "hipFlexorStretch", 
+    descriptionKey: "hipFlexorStretchDuration"
+  },
+  { 
+    titleKey: "yogaPoses", 
+    descriptionKey: "yogaPosesDuration"
+  },
+  { 
+    titleKey: "dynamicStretching", 
+    descriptionKey: "dynamicStretchingDuration"
+  }
 ];
 
-export const generateRandomTasks = (): Task[] => {
+export const generateRandomTasks = (language: "en" | "ru" = "ru"): Task[] => {
   const tasks: Task[] = [];
   
   // Add 2 random strength tasks
@@ -41,8 +87,8 @@ export const generateRandomTasks = (): Task[] => {
     const randomExercise = strengthExercises[Math.floor(Math.random() * strengthExercises.length)];
     const task: Task = {
       id: uuidv4(),
-      title: randomExercise.title,
-      description: randomExercise.description,
+      title: t(randomExercise.titleKey, language),
+      description: t(randomExercise.descriptionKey, language),
       category: "strength",
       completed: false
     };
@@ -54,8 +100,8 @@ export const generateRandomTasks = (): Task[] => {
     const randomExercise = cardioExercises[Math.floor(Math.random() * cardioExercises.length)];
     const task: Task = {
       id: uuidv4(),
-      title: randomExercise.title,
-      description: randomExercise.description,
+      title: t(randomExercise.titleKey, language),
+      description: t(randomExercise.descriptionKey, language),
       category: "cardio",
       completed: false
     };
@@ -66,8 +112,8 @@ export const generateRandomTasks = (): Task[] => {
   const randomExercise = flexibilityExercises[Math.floor(Math.random() * flexibilityExercises.length)];
   const task: Task = {
     id: uuidv4(),
-    title: randomExercise.title,
-    description: randomExercise.description,
+    title: t(randomExercise.titleKey, language),
+    description: t(randomExercise.descriptionKey, language),
     category: "flexibility",
     completed: false
   };
@@ -77,18 +123,20 @@ export const generateRandomTasks = (): Task[] => {
   return tasks.sort(() => Math.random() - 0.5);
 };
 
-export const getTasksForDate = (date: string): Task[] => {
-  const storedTasks = localStorage.getItem(`ar-fit-tasks-${date}`);
+export const getTasksForDate = (date: string, userId: string, language: "en" | "ru" = "ru"): Task[] => {
+  const taskKey = `ar-fit-tasks-${userId}-${date}`;
+  const storedTasks = localStorage.getItem(taskKey);
   if (storedTasks) {
     return JSON.parse(storedTasks);
   }
   
   // Generate new tasks for this date
-  const newTasks = generateRandomTasks();
-  localStorage.setItem(`ar-fit-tasks-${date}`, JSON.stringify(newTasks));
+  const newTasks = generateRandomTasks(language);
+  localStorage.setItem(taskKey, JSON.stringify(newTasks));
   return newTasks;
 };
 
-export const updateTasksForDate = (date: string, tasks: Task[]): void => {
-  localStorage.setItem(`ar-fit-tasks-${date}`, JSON.stringify(tasks));
+export const updateTasksForDate = (date: string, userId: string, tasks: Task[]): void => {
+  const taskKey = `ar-fit-tasks-${userId}-${date}`;
+  localStorage.setItem(taskKey, JSON.stringify(tasks));
 };

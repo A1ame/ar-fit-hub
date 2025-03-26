@@ -437,6 +437,54 @@ export const translations: Translations = {
     en: "Hold for 30 seconds each side x 3 sets",
     ru: "Удерживать 30 секунд каждую сторону x 3 подхода"
   },
+  plank: {
+    en: "Plank",
+    ru: "Планка"
+  },
+  plankDuration: {
+    en: "Hold for 45 seconds, 3 sets",
+    ru: "Удерживать 45 секунд, 3 подхода"
+  },
+  dumbbellCurls: {
+    en: "Dumbbell Curls",
+    ru: "Сгибания рук с гантелями"
+  },
+  dumbbellCurlsDuration: {
+    en: "3 sets of 12 reps",
+    ru: "3 подхода по 12 повторений"
+  },
+  jumpRope: {
+    en: "Jump Rope",
+    ru: "Прыжки со скакалкой"
+  },
+  jumpRopeDuration: {
+    en: "10 minutes",
+    ru: "10 минут"
+  },
+  highKnees: {
+    en: "High Knees",
+    ru: "Бег с высоким подниманием колен"
+  },
+  highKneesDuration: {
+    en: "3 sets of 20 seconds",
+    ru: "3 подхода по 20 секунд"
+  },
+  yogaPoses: {
+    en: "Yoga Poses",
+    ru: "Йога-позы"
+  },
+  yogaPosesDuration: {
+    en: "Hold each pose for 45 seconds",
+    ru: "Удерживать каждую позу 45 секунд"
+  },
+  dynamicStretching: {
+    en: "Dynamic Stretching",
+    ru: "Динамическая растяжка"
+  },
+  dynamicStretchingDuration: {
+    en: "10 minutes of various movements",
+    ru: "10 минут различных движений"
+  },
   // Auth related translations
   personalizedFitnessJourney: {
     en: "Your personalized fitness journey",

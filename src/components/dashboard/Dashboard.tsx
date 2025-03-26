@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -9,6 +8,7 @@ import { generateRandomTasks, getTasksForDate } from "@/utils/fitnessData";
 import { motion } from "framer-motion";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
+import { getCurrentUser, saveCurrentUser, UserData } from "@/utils/userUtils";
 
 const CALORIES_PER_TASK = {
   strength: 150,
@@ -23,22 +23,6 @@ const getGreeting = () => {
   return "goodEvening";
 };
 
-interface UserData {
-  name: string;
-  gender: "male" | "female";
-  age: number;
-  weight: number;
-  height: number;
-  loggedIn: boolean;
-  createdAt: string;
-  stats?: {
-    calories: number[];
-    steps: number[];
-    workoutsCompleted: number;
-    streakDays: number;
-  };
-}
-
 // Sample data for the chart
 const defaultActivityData = [
   { day: "Mon", calories: 0 },
@@ -49,17 +33,6 @@ const defaultActivityData = [
   { day: "Sat", calories: 0 },
   { day: "Sun", calories: 0 },
 ];
-
-const translateDays = (days: string[], language: string) => {
-  if (language === "ru") {
-    const russianDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
-    return days.map((day, index) => ({
-      ...day,
-      day: russianDays[index]
-    }));
-  }
-  return days;
-};
 
 const Dashboard = () => {
   const { language } = useTheme();
@@ -115,59 +88,62 @@ const Dashboard = () => {
       };
       
       // Save updated user data
-      localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
+      saveCurrentUser(updatedUser);
       setUserData(updatedUser);
     }
   };
   
   useEffect(() => {
     // Load user data from localStorage
-    const storedUser = localStorage.getItem("ar-fit-user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUserData(parsedUser);
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      setUserData(currentUser);
       
       // Initialize activity data from user stats
-      if (parsedUser.stats && parsedUser.stats.calories) {
+      if (currentUser.stats && currentUser.stats.calories) {
         const days = language === "ru" 
           ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] 
           : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-        const newActivityData = parsedUser.stats.calories.map((cal: number, index: number) => ({
+        const newActivityData = currentUser.stats.calories.map((cal: number, index: number) => ({
           day: days[index],
           calories: cal
         }));
         setActivityData(newActivityData);
       }
-    }
-    
-    // Load or generate tasks for today
-    const today = new Date().toISOString().split('T')[0];
-    const storedTasks = localStorage.getItem(`ar-fit-tasks-${today}`);
-    
-    if (storedTasks) {
-      const parsedTasks = JSON.parse(storedTasks);
-      setTasks(parsedTasks);
       
-      // Calculate progress
-      const completedPercentage = parsedTasks.filter((t: any) => t.completed).length / parsedTasks.length * 100;
-      setProgress(completedPercentage || 0);
+      // Load or generate tasks for today for the current user
+      const today = new Date().toISOString().split('T')[0];
+      const taskKey = `ar-fit-tasks-${currentUser.id}-${today}`;
+      const storedTasks = localStorage.getItem(taskKey);
       
-      // Calculate calories burned
-      const calories = calculateCaloriesBurned(parsedTasks);
-      updateActivityData(calories);
-    } else {
-      const newTasks = generateRandomTasks();
-      localStorage.setItem(`ar-fit-tasks-${today}`, JSON.stringify(newTasks));
-      setTasks(newTasks);
-      setProgress(0);
+      if (storedTasks) {
+        const parsedTasks = JSON.parse(storedTasks);
+        setTasks(parsedTasks);
+        
+        // Calculate progress
+        const completedPercentage = parsedTasks.filter((t: any) => t.completed).length / parsedTasks.length * 100;
+        setProgress(completedPercentage || 0);
+        
+        // Calculate calories burned
+        const calories = calculateCaloriesBurned(parsedTasks);
+        updateActivityData(calories);
+      } else {
+        const newTasks = generateRandomTasks(language);
+        localStorage.setItem(taskKey, JSON.stringify(newTasks));
+        setTasks(newTasks);
+        setProgress(0);
+      }
     }
   }, [language]);
   
   // Update the tasks when they change
   const updateTasks = (updatedTasks: any[]) => {
+    if (!userData) return;
+    
     const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem(`ar-fit-tasks-${today}`, JSON.stringify(updatedTasks));
+    const taskKey = `ar-fit-tasks-${userData.id}-${today}`;
+    localStorage.setItem(taskKey, JSON.stringify(updatedTasks));
     
     // Update progress
     const completedPercentage = updatedTasks.filter(t => t.completed).length / updatedTasks.length * 100;

@@ -16,7 +16,7 @@ export const isLoggedIn = (): boolean => {
  * @param navigate - функция навигации React Router
  * @param language - текущий язык
  */
-export const requireAuth = (navigate: (path: string) => void, language = "ru"): void => {
+export const requireAuth = (navigate: (path: string) => void, language: "en" | "ru" = "ru"): void => {
   if (!isLoggedIn()) {
     toast.error(t("authRequired", language));
     navigate("/");
@@ -28,7 +28,7 @@ export const requireAuth = (navigate: (path: string) => void, language = "ru"): 
  * @param navigate - функция навигации React Router
  * @param language - текущий язык
  */
-export const logout = (navigate: (path: string) => void, language = "ru"): void => {
+export const logout = (navigate: (path: string) => void, language: "en" | "ru" = "ru"): void => {
   logoutUser();
   toast.success(t("loggedOut", language));
   navigate("/");
