@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Dumbbell, Flame } from "lucide-react";
 import { useTheme } from "../theme/ThemeProvider";
-import { t, getLanguage } from "@/utils/languageUtils";
+import { t } from "@/utils/languageUtils";
 
 interface ExerciseCategory {
   id: string;
@@ -26,9 +26,7 @@ interface Exercise {
   image: string;
 }
 
-const getExerciseCategories = (): ExerciseCategory[] => {
-  const language = getLanguage();
-  
+const getExerciseCategories = (language: "en" | "ru"): ExerciseCategory[] => {
   return [
     {
       id: "strength",
@@ -38,25 +36,25 @@ const getExerciseCategories = (): ExerciseCategory[] => {
       exercises: [
         {
           id: "push-ups",
-          title: "Push-ups",
-          description: t("strengthDesc", language),
-          duration: "3 sets x 10-15 reps",
+          title: t("pushUps", language),
+          description: t("pushUpsDesc", language),
+          duration: t("pushUpsDuration", language),
           difficulty: "beginner",
           image: "https://images.unsplash.com/photo-1616803689943-5601631c7fec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
         {
           id: "squats",
-          title: "Bodyweight Squats",
-          description: "Lower body strength and mobility",
-          duration: "3 sets x 15-20 reps",
+          title: t("squats", language),
+          description: t("squatsDesc", language),
+          duration: t("squatsDuration", language),
           difficulty: "beginner",
           image: "https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
         {
           id: "lunges",
-          title: "Lunges",
-          description: "Single leg strength and balance",
-          duration: "3 sets x 12 reps each leg",
+          title: t("lunges", language),
+          description: t("lungesDesc", language),
+          duration: t("lungesDuration", language),
           difficulty: "intermediate",
           image: "https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
@@ -70,25 +68,25 @@ const getExerciseCategories = (): ExerciseCategory[] => {
       exercises: [
         {
           id: "running",
-          title: "Interval Running",
-          description: "Alternating between sprinting and jogging",
-          duration: "20-30 minutes",
+          title: t("running", language),
+          description: t("runningDesc", language),
+          duration: t("runningDuration", language),
           difficulty: "intermediate",
           image: "https://images.unsplash.com/photo-1594882645126-14020914d58d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
         {
           id: "jumping-jacks",
-          title: "Jumping Jacks",
-          description: "Full body cardio exercise",
-          duration: "3 sets x 1 minute",
+          title: t("jumpingJacks", language),
+          description: t("jumpingJacksDesc", language),
+          duration: t("jumpingJacksDuration", language),
           difficulty: "beginner",
           image: "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
         {
           id: "burpees",
-          title: "Burpees",
-          description: "High-intensity full body exercise",
-          duration: "3 sets x 10 reps",
+          title: t("burpees", language),
+          description: t("burpeesDesc", language),
+          duration: t("burpeesDuration", language),
           difficulty: "advanced",
           image: "https://images.unsplash.com/photo-1599058917765-a780eda07a3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
@@ -102,25 +100,25 @@ const getExerciseCategories = (): ExerciseCategory[] => {
       exercises: [
         {
           id: "hamstring-stretch",
-          title: "Hamstring Stretch",
-          description: "Seated forward bend",
-          duration: "Hold for 30 seconds x 3 sets",
+          title: t("hamstringStretch", language),
+          description: t("hamstringStretchDesc", language),
+          duration: t("hamstringStretchDuration", language),
           difficulty: "beginner",
           image: "https://images.unsplash.com/photo-1599447292561-75d5d5b0a044?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
         {
           id: "shoulder-stretch",
-          title: "Shoulder Stretch",
-          description: "Across body stretch for shoulders",
-          duration: "Hold for 20 seconds each side x 3 sets",
+          title: t("shoulderStretch", language),
+          description: t("shoulderStretchDesc", language),
+          duration: t("shoulderStretchDuration", language),
           difficulty: "beginner",
           image: "https://images.unsplash.com/photo-1600881333168-2ef49b341f30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
         {
           id: "hip-flexor",
-          title: "Hip Flexor Stretch",
-          description: "Lunge position stretch for hip flexors",
-          duration: "Hold for 30 seconds each side x 3 sets",
+          title: t("hipFlexorStretch", language),
+          description: t("hipFlexorStretchDesc", language),
+          duration: t("hipFlexorStretchDuration", language),
           difficulty: "intermediate",
           image: "https://images.unsplash.com/photo-1562771379-eafdca7a02f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
         },
@@ -132,7 +130,7 @@ const getExerciseCategories = (): ExerciseCategory[] => {
 const Exercises = () => {
   const { language } = useTheme();
   const [selectedTab, setSelectedTab] = useState("strength");
-  const exerciseCategories = getExerciseCategories();
+  const exerciseCategories = getExerciseCategories(language);
   
   const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {

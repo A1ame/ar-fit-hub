@@ -3,6 +3,8 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useTheme } from "../theme/ThemeProvider";
@@ -99,6 +101,16 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                   }`}>
                     {task.description}
                   </p>
+                  <div className="flex justify-end mt-2">
+                    <Button
+                      variant="outline" 
+                      size="sm" 
+                      className="text-arfit-purple border-arfit-purple hover:bg-arfit-purple hover:text-white"
+                      asChild
+                    >
+                      <Link to="/exercises">{t("moreDetails", language)}</Link>
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             ))}

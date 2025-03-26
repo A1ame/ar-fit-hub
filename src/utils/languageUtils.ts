@@ -14,6 +14,10 @@ export const translations: Translations = {
     en: "AR-FIT",
     ru: "AR-FIT"  // Keep AR-FIT in English for Russian as well
   },
+  comingSoon: {
+    en: "Coming Soon",
+    ru: "Скоро"
+  },
   // Dashboard
   goodMorning: {
     en: "Good Morning",
@@ -280,9 +284,17 @@ export const translations: Translations = {
     en: "Nutrition",
     ru: "Питание"
   },
+  nutritionDesc: {
+    en: "Personalized meal plans and tracking",
+    ru: "Персонализированные планы питания и отслеживание"
+  },
   nutritionComingSoon: {
     en: "Nutrition tracking coming soon!",
     ru: "Отслеживание питания скоро появится!"
+  },
+  nutritionComingSoonDesc: {
+    en: "We're currently developing personalized nutrition plans and meal tracking. Check back soon for updates!",
+    ru: "Мы в настоящее время разрабатываем персонализированные планы питания и отслеживание приемов пищи. Скоро появятся обновления!"
   },
   profile: {
     en: "Profile",
@@ -316,6 +328,115 @@ export const translations: Translations = {
   goToExercises: {
     en: "Go to Exercises",
     ru: "Перейти к упражнениям"
+  },
+  // Specific exercises translations
+  pushUps: {
+    en: "Push-ups",
+    ru: "Отжимания"
+  },
+  pushUpsDesc: {
+    en: "Upper body strength and core stability",
+    ru: "Укрепление верхней части тела и стабильность корпуса"
+  },
+  pushUpsDuration: {
+    en: "3 sets x 10-15 reps",
+    ru: "3 подхода по 10-15 повторений"
+  },
+  squats: {
+    en: "Bodyweight Squats",
+    ru: "Приседания"
+  },
+  squatsDesc: {
+    en: "Lower body strength and mobility",
+    ru: "Сила и подвижность нижней части тела"
+  },
+  squatsDuration: {
+    en: "3 sets x 15-20 reps",
+    ru: "3 подхода по 15-20 повторений"
+  },
+  lunges: {
+    en: "Lunges",
+    ru: "Выпады"
+  },
+  lungesDesc: {
+    en: "Single leg strength and balance",
+    ru: "Сила одной ноги и баланс"
+  },
+  lungesDuration: {
+    en: "3 sets x 12 reps each leg",
+    ru: "3 подхода по 12 повторений на каждую ногу"
+  },
+  running: {
+    en: "Interval Running",
+    ru: "Интервальный бег"
+  },
+  runningDesc: {
+    en: "Alternating between sprinting and jogging",
+    ru: "Чередование спринта и бега трусцой"
+  },
+  runningDuration: {
+    en: "20-30 minutes",
+    ru: "20-30 минут"
+  },
+  jumpingJacks: {
+    en: "Jumping Jacks",
+    ru: "Прыжки 'Звездочка'"
+  },
+  jumpingJacksDesc: {
+    en: "Full body cardio exercise",
+    ru: "Кардио упражнение для всего тела"
+  },
+  jumpingJacksDuration: {
+    en: "3 sets x 1 minute",
+    ru: "3 подхода по 1 минуте"
+  },
+  burpees: {
+    en: "Burpees",
+    ru: "Бёрпи"
+  },
+  burpeesDesc: {
+    en: "High-intensity full body exercise",
+    ru: "Высокоинтенсивное упражнение для всего тела"
+  },
+  burpeesDuration: {
+    en: "3 sets x 10 reps",
+    ru: "3 подхода по 10 повторений"
+  },
+  hamstringStretch: {
+    en: "Hamstring Stretch",
+    ru: "Растяжка подколенных сухожилий"
+  },
+  hamstringStretchDesc: {
+    en: "Seated forward bend",
+    ru: "Наклон вперед сидя"
+  },
+  hamstringStretchDuration: {
+    en: "Hold for 30 seconds x 3 sets",
+    ru: "Удерживать 30 секунд x 3 подхода"
+  },
+  shoulderStretch: {
+    en: "Shoulder Stretch",
+    ru: "Растяжка плеч"
+  },
+  shoulderStretchDesc: {
+    en: "Across body stretch for shoulders",
+    ru: "Растяжка плеч поперек тела"
+  },
+  shoulderStretchDuration: {
+    en: "Hold for 20 seconds each side x 3 sets",
+    ru: "Удерживать 20 секунд каждую сторону x 3 подхода"
+  },
+  hipFlexorStretch: {
+    en: "Hip Flexor Stretch",
+    ru: "Растяжка сгибателей бедра"
+  },
+  hipFlexorStretchDesc: {
+    en: "Lunge position stretch for hip flexors",
+    ru: "Растяжка сгибателей бедра в положении выпада"
+  },
+  hipFlexorStretchDuration: {
+    en: "Hold for 30 seconds each side x 3 sets",
+    ru: "Удерживать 30 секунд каждую сторону x 3 подхода"
   }
 };
 
@@ -332,7 +453,7 @@ export const t = (key: string, language: LanguageKey): string => {
 // Function to get language from storage
 export const getLanguage = (): LanguageKey => {
   const storedLanguage = localStorage.getItem("ar-fit-language");
-  return (storedLanguage as LanguageKey) || "ru"; // Changed default to Russian
+  return (storedLanguage as LanguageKey) || "ru"; // Default to Russian
 };
 
 // Function to set language in storage

@@ -50,12 +50,30 @@ const defaultActivityData = [
   { day: "Sun", calories: 0 },
 ];
 
+const translateDays = (days: string[], language: string) => {
+  if (language === "ru") {
+    const russianDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+    return days.map((day, index) => ({
+      ...day,
+      day: russianDays[index]
+    }));
+  }
+  return days;
+};
+
 const Dashboard = () => {
   const { language } = useTheme();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [tasks, setTasks] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
-  const [activityData, setActivityData] = useState(defaultActivityData);
+  const [activityData, setActivityData] = useState(() => {
+    const days = language === "ru" 
+      ? [{ day: "Пн", calories: 0 }, { day: "Вт", calories: 0 }, { day: "Ср", calories: 0 }, 
+         { day: "Чт", calories: 0 }, { day: "Пт", calories: 0 }, { day: "Сб", calories: 0 }, 
+         { day: "Вс", calories: 0 }]
+      : defaultActivityData;
+    return days;
+  });
   
   // Calculate calories burned based on completed tasks
   const calculateCaloriesBurned = (tasks: any[]) => {
@@ -75,7 +93,10 @@ const Dashboard = () => {
     
     // Update chart data immediately
     const newActivityData = [...activityData];
-    newActivityData[dayIndex].calories = caloriesBurned;
+    newActivityData[dayIndex] = {
+      ...newActivityData[dayIndex],
+      calories: caloriesBurned
+    };
     setActivityData(newActivityData);
     
     // Get current user data to update stats
@@ -108,7 +129,10 @@ const Dashboard = () => {
       
       // Initialize activity data from user stats
       if (parsedUser.stats && parsedUser.stats.calories) {
-        const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        const days = language === "ru" 
+          ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] 
+          : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
         const newActivityData = parsedUser.stats.calories.map((cal: number, index: number) => ({
           day: days[index],
           calories: cal
@@ -138,7 +162,7 @@ const Dashboard = () => {
       setTasks(newTasks);
       setProgress(0);
     }
-  }, []);
+  }, [language]);
   
   // Update the tasks when they change
   const updateTasks = (updatedTasks: any[]) => {
@@ -149,10 +173,8 @@ const Dashboard = () => {
     const completedPercentage = updatedTasks.filter(t => t.completed).length / updatedTasks.length * 100;
     setProgress(completedPercentage || 0);
     
-    // Calculate calories burned
+    // Calculate calories burned and update activity data immediately
     const calories = calculateCaloriesBurned(updatedTasks);
-    
-    // Update activity data immediately
     updateActivityData(calories);
     
     setTasks(updatedTasks);
