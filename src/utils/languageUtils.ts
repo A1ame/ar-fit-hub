@@ -307,6 +307,11 @@ export const translations: Translations = {
   goBack: {
     en: "Go Back",
     ru: "Вернуться назад"
+  },
+  // Navigation
+  goToExercises: {
+    en: "Go to Exercises",
+    ru: "Перейти к упражнениям"
   }
 };
 

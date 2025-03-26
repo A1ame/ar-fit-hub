@@ -3,8 +3,10 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 
@@ -23,6 +25,7 @@ interface DailyTasksProps {
 
 const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
   const { language } = useTheme();
+  const navigate = useNavigate();
   
   const toggleTask = (id: string) => {
     const updatedTasks = tasks.map((task) =>
@@ -54,11 +57,26 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
     }
   };
 
+  const goToExercises = () => {
+    navigate('/exercises');
+  };
+
   return (
-    <Card className="glass-card">
+    <Card className="glass-card border-arfit-purple/30">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">{t("todaysTasks", language)}</CardTitle>
-        <CardDescription>{t("completeExercises", language)}</CardDescription>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle className="text-xl font-semibold">{t("todaysTasks", language)}</CardTitle>
+            <CardDescription>{t("completeExercises", language)}</CardDescription>
+          </div>
+          <Button 
+            onClick={goToExercises} 
+            variant="outline" 
+            className="border-arfit-purple text-arfit-purple hover:bg-arfit-purple/10"
+          >
+            {t("goToExercises", language)}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <AnimatePresence>
@@ -70,7 +88,7 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-start space-x-4 p-4 rounded-lg bg-white/40 dark:bg-black/10 hover:bg-white/60 dark:hover:bg-black/20 transition-colors"
+                className="flex items-start space-x-4 p-4 rounded-lg bg-white/40 dark:bg-black/10 hover:bg-white/60 dark:hover:bg-black/20 transition-colors border border-arfit-purple/20"
               >
                 <Checkbox
                   id={task.id}
