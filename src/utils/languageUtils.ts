@@ -1,562 +1,266 @@
-type LanguageKey = "en" | "ru";
 
-interface Translations {
-  [key: string]: {
-    [key: string]: string;
-  };
-}
-
-// Translation key-value pairs
-export const translations: Translations = {
-  // General
-  appName: {
-    en: "AR-FIT",
-    ru: "AR-FIT"  // Keep AR-FIT in English for Russian as well
-  },
-  comingSoon: {
-    en: "Coming Soon",
-    ru: "Скоро"
-  },
-  // Dashboard
-  goodMorning: {
-    en: "Good Morning",
-    ru: "Доброе утро"
-  },
-  goodAfternoon: {
-    en: "Good Afternoon",
-    ru: "Добрый день"
-  },
-  goodEvening: {
-    en: "Good Evening",
-    ru: "Добрый вечер"
-  },
-  yourFitnessProfile: {
-    en: "Your fitness profile",
-    ru: "Ваш фитнес-профиль"
-  },
-  age: {
-    en: "Age",
-    ru: "Возраст"
-  },
-  years: {
-    en: "years",
-    ru: "лет"
-  },
-  weight: {
-    en: "Weight",
-    ru: "Вес"
-  },
-  height: {
-    en: "Height",
-    ru: "Рост"
-  },
-  todaysGoal: {
-    en: "Today's Goal",
-    ru: "Цель на сегодня"
-  },
-  weeklyActivity: {
-    en: "Weekly Activity",
-    ru: "Активность за неделю"
-  },
-  caloriesBurn: {
-    en: "Your calorie burn for the past week",
-    ru: "Сожженные калории за неделю"
-  },
-  calories: {
-    en: "calories",
-    ru: "калорий"
-  },
-  // Daily Tasks
-  todaysTasks: {
-    en: "Today's Tasks",
-    ru: "Задания на сегодня"
-  },
-  completeExercises: {
-    en: "Complete these exercises to reach your goals",
-    ru: "Выполните эти упражнения, чтобы достичь целей"
-  },
-  strength: {
-    en: "strength",
-    ru: "сила"
-  },
-  cardio: {
-    en: "cardio",
-    ru: "кардио"
-  },
-  flexibility: {
-    en: "flexibility",
-    ru: "гибкость"
-  },
-  // Profile
-  profileSettings: {
-    en: "Profile Settings",
-    ru: "Настройки профиля"
-  },
-  manageAccount: {
-    en: "Manage your account preferences",
-    ru: "Управление настройками аккаунта"
-  },
-  personalInfo: {
-    en: "Personal Information",
-    ru: "Личная информация"
-  },
-  name: {
-    en: "Name",
-    ru: "Имя"
-  },
-  email: {
-    en: "Email",
-    ru: "Эл. почта"
-  },
-  saveChanges: {
-    en: "Save Changes",
-    ru: "Сохранить изменения"
-  },
-  preferences: {
-    en: "Preferences",
-    ru: "Предпочтения"
-  },
-  notifications: {
-    en: "Notifications",
-    ru: "Уведомления"
-  },
-  notificationsDesc: {
-    en: "Receive workout and progress notifications",
-    ru: "Получать уведомления о тренировках и прогрессе"
-  },
-  darkMode: {
-    en: "Dark Mode",
-    ru: "Темная тема"
-  },
-  darkModeDesc: {
-    en: "Enable dark mode for the application",
-    ru: "Включить темную тему для приложения"
-  },
-  language: {
-    en: "Language",
-    ru: "Язык"
-  },
-  languageDesc: {
-    en: "Choose your preferred language",
-    ru: "Выберите предпочитаемый язык"
-  },
-  english: {
-    en: "English",
-    ru: "Английский"
-  },
-  russian: {
-    en: "Russian",
-    ru: "Русский"
-  },
-  account: {
-    en: "Account",
-    ru: "Аккаунт"
-  },
-  logOut: {
-    en: "Log Out",
-    ru: "Выйти"
-  },
-  // Exercises
-  exercises: {
-    en: "Exercises",
-    ru: "Упражнения"
-  },
-  chooseCategory: {
-    en: "Choose your workout category",
-    ru: "Выберите категорию тренировки"
-  },
-  strengthTraining: {
-    en: "Strength Training",
-    ru: "Силовые тренировки"
-  },
-  cardioTraining: {
-    en: "Cardio Training",
-    ru: "Кардио т��енировки"
-  },
-  warmupStretching: {
-    en: "Warm-up & Stretching",
-    ru: "Разминка и растяжка"
-  },
-  strengthDesc: {
-    en: "Build muscle and improve strength with these resistance exercises",
-    ru: "Наращивайте мышцы и улучшайте силу с помощью этих упражнений с сопротивлением"
-  },
-  cardioDesc: {
-    en: "Improve cardiovascular health and endurance",
-    ru: "Улучшайте сердечно-сосудистую систему и выносливость"
-  },
-  flexibilityDesc: {
-    en: "Improve flexibility and prevent injuries",
-    ru: "Улучшайте гибкость и предотвращайте травмы"
-  },
-  beginner: {
-    en: "Beginner",
-    ru: "Начинающий"
-  },
-  intermediate: {
-    en: "Intermediate",
-    ru: "Средний"
-  },
-  advanced: {
-    en: "Advanced",
-    ru: "Продвинутый"
-  },
-  details: {
-    en: "Details",
-    ru: "Подробности"
-  },
-  moreDetails: {
-    en: "More Details",
-    ru: "Подробнее"
-  },
-  loading: {
-    en: "Loading...",
-    ru: "Загрузка..."
-  },
-  // Success messages
-  loggedOut: {
-    en: "Logged out successfully",
-    ru: "Выход выполнен успешно"
-  },
-  profileUpdated: {
-    en: "Profile updated successfully",
-    ru: "Профиль успешно обновлен"
-  },
-  taskCompleted: {
-    en: "Task completed! Keep it up!",
-    ru: "Задание выполнено! Так держать!"
-  },
-  youCompleted: {
-    en: "You've completed",
-    ru: "Вы выполнили"
-  },
-  // Additional translations
-  login: {
-    en: "Login",
-    ru: "Вход"
-  },
-  register: {
-    en: "Register",
-    ru: "Регистрация"
-  },
-  username: {
-    en: "Username",
-    ru: "Имя пользователя"
-  },
-  password: {
-    en: "Password",
-    ru: "Пароль"
-  },
-  confirmPassword: {
-    en: "Confirm Password",
-    ru: "Подтвердите пароль"
-  },
-  gender: {
-    en: "Choose your gender",
-    ru: "Выберите ваш пол"
-  },
-  male: {
-    en: "Male",
-    ru: "Мужской"
-  },
-  female: {
-    en: "Female",
-    ru: "Женский"
-  },
-  next: {
-    en: "Next",
-    ru: "Далее"
-  },
-  back: {
-    en: "Back",
-    ru: "Назад"
-  },
-  complete: {
-    en: "Complete",
-    ru: "Завершить"
-  },
-  welcome: {
-    en: "Welcome to AR-FIT",
-    ru: "Добро пожаловать в AR-FIT"
-  },
-  nutrition: {
-    en: "Nutrition",
-    ru: "Питание"
-  },
-  nutritionDesc: {
-    en: "Personalized meal plans and tracking",
-    ru: "Персонализированные планы питания и отслеживание"
-  },
-  nutritionComingSoon: {
-    en: "Nutrition tracking coming soon!",
-    ru: "Отслеживание питания скоро появится!"
-  },
-  nutritionComingSoonDesc: {
-    en: "We're currently developing personalized nutrition plans and meal tracking. Check back soon for updates!",
-    ru: "Мы в настоящее время разрабатываем персонализированные планы питания и отслеживание приемов пищи. Скоро появятся обновления!"
-  },
-  profile: {
-    en: "Profile",
-    ru: "Профиль"
-  },
-  home: {
-    en: "Home",
-    ru: "Главная"
-  },
-  dashboard: {
-    en: "Dashboard",
-    ru: "Панель"
-  },
-  workout: {
-    en: "Workout",
-    ru: "Тренировка"
-  },
-  settings: {
-    en: "Settings",
-    ru: "Настройки"
-  },
-  notFound: {
-    en: "Page Not Found",
-    ru: "Страница не найдена"
-  },
-  goBack: {
-    en: "Go Back",
-    ru: "Вернуться назад"
-  },
-  // Navigation
-  goToExercises: {
-    en: "Go to Exercises",
-    ru: "Перейти к упражнениям"
-  },
-  // Specific exercises translations
-  pushUps: {
-    en: "Push-ups",
-    ru: "Отжимания"
-  },
-  pushUpsDesc: {
-    en: "Upper body strength and core stability",
-    ru: "Укрепление верхней части тела и стабильность корпуса"
-  },
-  pushUpsDuration: {
-    en: "3 sets x 10-15 reps",
-    ru: "3 подхода по 10-15 повторений"
-  },
-  squats: {
-    en: "Bodyweight Squats",
-    ru: "Приседания"
-  },
-  squatsDesc: {
-    en: "Lower body strength and mobility",
-    ru: "Сила и подвижность нижней части тела"
-  },
-  squatsDuration: {
-    en: "3 sets x 15-20 reps",
-    ru: "3 подхода по 15-20 повторений"
-  },
-  lunges: {
-    en: "Lunges",
-    ru: "Выпады"
-  },
-  lungesDesc: {
-    en: "Single leg strength and balance",
-    ru: "Сила одной ноги и баланс"
-  },
-  lungesDuration: {
-    en: "3 sets x 12 reps each leg",
-    ru: "3 подхода по 12 повторений на каждую ногу"
-  },
-  running: {
-    en: "Interval Running",
-    ru: "Интервальный бег"
-  },
-  runningDesc: {
-    en: "Alternating between sprinting and jogging",
-    ru: "Чередование спринта и бега трусцой"
-  },
-  runningDuration: {
-    en: "20-30 minutes",
-    ru: "20-30 минут"
-  },
-  jumpingJacks: {
-    en: "Jumping Jacks",
-    ru: "Прыжки 'Звездочка'"
-  },
-  jumpingJacksDesc: {
-    en: "Full body cardio exercise",
-    ru: "Кардио упражнение для всего тела"
-  },
-  jumpingJacksDuration: {
-    en: "3 sets x 1 minute",
-    ru: "3 подхода по 1 минуте"
-  },
-  burpees: {
-    en: "Burpees",
-    ru: "Бёрпи"
-  },
-  burpeesDesc: {
-    en: "High-intensity full body exercise",
-    ru: "Высокоинтенсивное упражнение для всего тела"
-  },
-  burpeesDuration: {
-    en: "3 sets x 10 reps",
-    ru: "3 подхода по 10 повторений"
-  },
-  hamstringStretch: {
-    en: "Hamstring Stretch",
-    ru: "Растяжка подколенных сухожилий"
-  },
-  hamstringStretchDesc: {
-    en: "Seated forward bend",
-    ru: "Наклон вперед сидя"
-  },
-  hamstringStretchDuration: {
-    en: "Hold for 30 seconds x 3 sets",
-    ru: "Удерживать 30 секунд x 3 подхода"
-  },
-  shoulderStretch: {
-    en: "Shoulder Stretch",
-    ru: "Растяжка плеч"
-  },
-  shoulderStretchDesc: {
-    en: "Across body stretch for shoulders",
-    ru: "Растяжка плеч поперек тела"
-  },
-  shoulderStretchDuration: {
-    en: "Hold for 20 seconds each side x 3 sets",
-    ru: "Удерживать 20 секунд каждую сторону x 3 подхода"
-  },
-  hipFlexorStretch: {
-    en: "Hip Flexor Stretch",
-    ru: "Растяжка сгибателей бедра"
-  },
-  hipFlexorStretchDesc: {
-    en: "Lunge position stretch for hip flexors",
-    ru: "Растяжка сгибателей бедра в положении выпада"
-  },
-  hipFlexorStretchDuration: {
-    en: "Hold for 30 seconds each side x 3 sets",
-    ru: "Удерживать 30 секунд каждую сторону x 3 подхода"
-  },
-  plank: {
-    en: "Plank",
-    ru: "Планка"
-  },
-  plankDuration: {
-    en: "Hold for 45 seconds, 3 sets",
-    ru: "Удерживать 45 секунд, 3 подхода"
-  },
-  dumbbellCurls: {
-    en: "Dumbbell Curls",
-    ru: "Сгибания рук с гантелями"
-  },
-  dumbbellCurlsDuration: {
-    en: "3 sets of 12 reps",
-    ru: "3 подхода по 12 повторений"
-  },
-  jumpRope: {
-    en: "Jump Rope",
-    ru: "Прыжки со скакалкой"
-  },
-  jumpRopeDuration: {
-    en: "10 minutes",
-    ru: "10 минут"
-  },
-  highKnees: {
-    en: "High Knees",
-    ru: "Бег с высоким подниманием колен"
-  },
-  highKneesDuration: {
-    en: "3 sets of 20 seconds",
-    ru: "3 подхода по 20 секунд"
-  },
-  yogaPoses: {
-    en: "Yoga Poses",
-    ru: "Йога-позы"
-  },
-  yogaPosesDuration: {
-    en: "Hold each pose for 45 seconds",
-    ru: "Удерживать каждую позу 45 секунд"
-  },
-  dynamicStretching: {
-    en: "Dynamic Stretching",
-    ru: "Динамическая растяжка"
-  },
-  dynamicStretchingDuration: {
-    en: "10 minutes of various movements",
-    ru: "10 минут различных движений"
-  },
-  // Auth related translations
-  personalizedFitnessJourney: {
-    en: "Your personalized fitness journey",
-    ru: "Ваш персонализированный фитнес-путь"
-  },
-  dontHaveAccount: {
-    en: "Don't have an account?",
-    ru: "Нет аккаунта?"
-  },
-  alreadyHaveAccount: {
-    en: "Already have an account?",
-    ru: "Уже есть аккаунт?"
-  },
-  continue: {
-    en: "Continue",
-    ru: "Продолжить"
-  },
-  genderHelp: {
-    en: "This helps us personalize your fitness plan",
-    ru: "Это поможет нам персонализировать ваш план тренировок"
-  },
-  completeProfile: {
-    en: "Complete Your Profile",
-    ru: "Заполните свой профиль"
-  },
-  completeProfileDesc: {
-    en: "Tell us a bit about yourself so we can create your personalized plan",
-    ru: "Расскажите немного о себе, чтобы мы могли создать ваш персонализированный план"
-  },
-  yourName: {
-    en: "Your Name",
-    ru: "Ваше имя"
-  },
-  enterName: {
-    en: "Enter your name",
-    ru: "Введите ваше имя"
-  },
-  kg: {
-    en: "kg",
-    ru: "кг"
-  },
-  cm: {
-    en: "cm",
-    ru: "см"
-  },
-  authRequired: {
-    en: "Authentication required",
-    ru: "Требуется авторизация"
-  },
-  invalidCredentials: {
-    en: "Invalid email or password",
-    ru: "Неверный email или пароль"
+// Объект с переводами для разных языков
+const translations: Record<string, Record<string, string>> = {
+  "en": {
+    "loading": "Loading...",
+    "personalizedFitnessJourney": "Your personalized fitness journey",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "continue": "Continue",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "invalidCredentials": "Invalid email or password",
+    "gender": "Gender",
+    "genderHelp": "Choose your gender for personalized workout plan",
+    "male": "Male",
+    "female": "Female",
+    "completeProfile": "Complete your profile",
+    "completeProfileDesc": "Help us customize your fitness experience",
+    "yourName": "Your name",
+    "enterName": "Enter your name",
+    "age": "Age",
+    "years": "years",
+    "weight": "Weight",
+    "kg": "kg",
+    "height": "Height",
+    "cm": "cm",
+    "complete": "Complete",
+    "loggedOut": "Logged out successfully",
+    "strength": "Strength",
+    "cardio": "Cardio",
+    "flexibility": "Flexibility",
+    "profileSettings": "Profile Settings",
+    "manageAccount": "Manage your account and settings",
+    "personalInfo": "Personal Information",
+    "name": "Name",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "notificationsDesc": "Receive workout reminders and achievements",
+    "darkMode": "Dark Mode",
+    "darkModeDesc": "Use dark theme for the application",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language",
+    "english": "English",
+    "russian": "Русский",
+    "account": "Account",
+    "logOut": "Log Out",
+    "profileUpdated": "Profile updated successfully",
+    "saveChanges": "Save Changes",
+    "goodMorning": "Good Morning",
+    "goodAfternoon": "Good Afternoon",
+    "goodEvening": "Good Evening",
+    "yourFitnessProfile": "Your fitness profile",
+    "todaysGoal": "Today's Goal",
+    "weeklyActivity": "Weekly Activity",
+    "caloriesBurn": "Calories burned per day",
+    "calories": "calories",
+    "todaysTasks": "Today's Tasks",
+    "completeExercises": "Complete exercises to improve your fitness",
+    "taskCompleted": "Task Completed",
+    "youCompleted": "You completed",
+    "moreDetails": "More Details",
+    "authRequired": "Authentication required",
+    "pushUps": "Push-ups",
+    "pushUpsDuration": "3 sets of 10 push-ups",
+    "squats": "Squats",
+    "squatsDuration": "3 sets of 15 squats",
+    "lunges": "Lunges",
+    "lungesDuration": "3 sets of 10 lunges per leg",
+    "plank": "Plank",
+    "plankDuration": "Hold for 30 seconds, 3 times",
+    "dumbbellCurls": "Dumbbell Curls",
+    "dumbbellCurlsDuration": "3 sets of 12 curls per arm",
+    "running": "Running",
+    "runningDuration": "Run for 20 minutes at moderate pace",
+    "jumpingJacks": "Jumping Jacks",
+    "jumpingJacksDuration": "3 sets of 30 jumping jacks",
+    "jumpRope": "Jump Rope",
+    "jumpRopeDuration": "Jump rope for 10 minutes",
+    "burpees": "Burpees",
+    "burpeesDuration": "3 sets of 10 burpees",
+    "highKnees": "High Knees",
+    "highKneesDuration": "High knees for 1 minute, 3 times",
+    "hamstringStretch": "Hamstring Stretch",
+    "hamstringStretchDuration": "Hold for 30 seconds on each leg",
+    "shoulderStretch": "Shoulder Stretch",
+    "shoulderStretchDuration": "Hold for 30 seconds on each side",
+    "hipFlexorStretch": "Hip Flexor Stretch",
+    "hipFlexorStretchDuration": "Hold for 30 seconds on each leg",
+    "yogaPoses": "Yoga Poses",
+    "yogaPosesDuration": "Hold each pose for 1 minute",
+    "dynamicStretching": "Dynamic Stretching",
+    "dynamicStretchingDuration": "5 minutes of dynamic stretching",
+    "back": "Back",
+    "bodyProblemsSurvey": "Body Issues Survey",
+    "bodyProblemsSurveyDesc": "Select the areas of your body that you have issues with",
+    "back": "Back",
+    "neck": "Neck",
+    "shoulders": "Shoulders",
+    "arms": "Arms",
+    "legs": "Legs",
+    "knees": "Knees",
+    "feet": "Feet",
+    "chest": "Chest",
+    "abdomen": "Abdomen",
+    "noProblems": "No problems",
+    "dietRestrictionsSurvey": "Dietary Restrictions",
+    "dietRestrictionsSurveyDesc": "Select any dietary restrictions you have",
+    "lactoseIntolerant": "Lactose Intolerant",
+    "glutenFree": "Gluten-Free",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "nutsAllergy": "Nuts Allergy",
+    "seafoodAllergy": "Seafood Allergy",
+    "citrusAllergy": "Citrus Allergy",
+    "eggsAllergy": "Eggs Allergy",
+    "soyAllergy": "Soy Allergy",
+    "noDietRestrictions": "No Dietary Restrictions",
+    "underweight": "Underweight",
+    "normal": "Normal",
+    "overweight": "Overweight",
+    "obese": "Obese"
+  },
+  "ru": {
+    "loading": "Загрузка...",
+    "personalizedFitnessJourney": "Ваш персонализированный фитнес-путь",
+    "login": "Вход",
+    "register": "Регистрация",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "continue": "Продолжить",
+    "dontHaveAccount": "Нет аккаунта?",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "invalidCredentials": "Неверная почта или пароль",
+    "gender": "Пол",
+    "genderHelp": "Выберите ваш пол для персонализированного плана тренировок",
+    "male": "Мужской",
+    "female": "Женский",
+    "completeProfile": "Заполните профиль",
+    "completeProfileDesc": "Помогите нам настроить ваш фитнес-опыт",
+    "yourName": "Ваше имя",
+    "enterName": "Введите ваше имя",
+    "age": "Возраст",
+    "years": "лет",
+    "weight": "Вес",
+    "kg": "кг",
+    "height": "Рост",
+    "cm": "см",
+    "complete": "Завершить",
+    "loggedOut": "Вы успешно вышли из системы",
+    "strength": "Сила",
+    "cardio": "Кардио",
+    "flexibility": "Гибкость",
+    "profileSettings": "Настройки профиля",
+    "manageAccount": "Управляйте своим аккаунтом и настройками",
+    "personalInfo": "Личная информация",
+    "name": "Имя",
+    "preferences": "Предпочтения",
+    "notifications": "Уведомления",
+    "notificationsDesc": "Получайте напоминания о тренировках и достижениях",
+    "darkMode": "Темный режим",
+    "darkModeDesc": "Использовать темную тему для приложения",
+    "language": "Язык",
+    "languageDesc": "Выберите предпочитаемый язык",
+    "english": "English",
+    "russian": "Русский",
+    "account": "Аккаунт",
+    "logOut": "Выйти",
+    "profileUpdated": "Профиль успешно обновлен",
+    "saveChanges": "Сохранить изменения",
+    "goodMorning": "Доброе утро",
+    "goodAfternoon": "Добрый день",
+    "goodEvening": "Добрый вечер",
+    "yourFitnessProfile": "Ваш фитнес-профиль",
+    "todaysGoal": "Цель на сегодня",
+    "weeklyActivity": "Недельная активность",
+    "caloriesBurn": "Сожжено калорий за день",
+    "calories": "калорий",
+    "todaysTasks": "Задания на сегодня",
+    "completeExercises": "Выполните упражнения, чтобы улучшить свою физическую форму",
+    "taskCompleted": "Задание выполнено",
+    "youCompleted": "Вы выполнили",
+    "moreDetails": "Подробнее",
+    "authRequired": "Требуется авторизация",
+    "pushUps": "Отжимания",
+    "pushUpsDuration": "3 подхода по 10 отжиманий",
+    "squats": "Приседания",
+    "squatsDuration": "3 подхода по 15 приседаний",
+    "lunges": "Выпады",
+    "lungesDuration": "3 подхода по 10 выпадов на каждую ногу",
+    "plank": "Планка",
+    "plankDuration": "Удерживать 30 секунд, 3 раза",
+    "dumbbellCurls": "Сгибания рук с гантелями",
+    "dumbbellCurlsDuration": "3 подхода по 12 сгибаний на каждую руку",
+    "running": "Бег",
+    "runningDuration": "Бег в течение 20 минут в умеренном темпе",
+    "jumpingJacks": "Прыжки «звездочка»",
+    "jumpingJacksDuration": "3 подхода по 30 прыжков",
+    "jumpRope": "Прыжки на скакалке",
+    "jumpRopeDuration": "Прыжки на скакалке в течение 10 минут",
+    "burpees": "Берпи",
+    "burpeesDuration": "3 подхода по 10 берпи",
+    "highKnees": "Высокие колени",
+    "highKneesDuration": "Высокие колени в течение 1 минуты, 3 раза",
+    "hamstringStretch": "Растяжка подколенных сухожилий",
+    "hamstringStretchDuration": "Удерживать 30 секунд на каждую ногу",
+    "shoulderStretch": "Растяжка плеч",
+    "shoulderStretchDuration": "Удерживать 30 секунд на каждую сторону",
+    "hipFlexorStretch": "Растяжка сгибателей бедра",
+    "hipFlexorStretchDuration": "Удерживать 30 секунд на каждую ногу",
+    "yogaPoses": "Позы йоги",
+    "yogaPosesDuration": "Удерживать каждую позу в течение 1 минуты",
+    "dynamicStretching": "Динамическая растяжка",
+    "dynamicStretchingDuration": "5 минут динамической растяжки",
+    "back": "Назад",
+    "bodyProblemsSurvey": "Опрос о проблемных зонах",
+    "bodyProblemsSurveyDesc": "Выберите области вашего тела, с которыми у вас есть проблемы",
+    "back": "Спина",
+    "neck": "Шея",
+    "shoulders": "Плечи",
+    "arms": "Руки",
+    "legs": "Ноги",
+    "knees": "Колени",
+    "feet": "Стопы",
+    "chest": "Грудь",
+    "abdomen": "Живот",
+    "noProblems": "Нет проблем",
+    "dietRestrictionsSurvey": "Пищевые ограничения",
+    "dietRestrictionsSurveyDesc": "Выберите пищевые ограничения, которые у вас есть",
+    "lactoseIntolerant": "Непереносимость лактозы",
+    "glutenFree": "Без глютена",
+    "vegetarian": "Вегетарианство",
+    "vegan": "Веганство",
+    "nutsAllergy": "Аллергия на орехи",
+    "seafoodAllergy": "Аллергия на морепродукты",
+    "citrusAllergy": "Аллергия на цитрусовые",
+    "eggsAllergy": "Аллергия на яйца",
+    "soyAllergy": "Аллергия на сою",
+    "noDietRestrictions": "Нет пищевых ограничений",
+    "underweight": "Недовес",
+    "normal": "Норма",
+    "overweight": "Избыточный вес",
+    "obese": "Ожирение"
   }
 };
 
-// Function to get translation
-export const t = (key: string, language: LanguageKey): string => {
-  if (!translations[key]) {
-    console.warn(`Translation key "${key}" not found`);
+// Получение текущего языка из localStorage
+export const getLanguage = (): "en" | "ru" => {
+  const storedLanguage = localStorage.getItem("ar-fit-language");
+  return (storedLanguage as "en" | "ru") || "ru";
+};
+
+// Сохранение выбранного языка в localStorage
+export const setLanguage = (language: "en" | "ru"): void => {
+  localStorage.setItem("ar-fit-language", language);
+};
+
+// Функция перевода строк
+export const t = (key: string, language: "en" | "ru" = "ru"): string => {
+  if (!translations[language] || !translations[language][key]) {
+    console.warn(`Translation missing for key: ${key}, language: ${language}`);
     return key;
   }
-  
-  return translations[key][language] || translations[key]["en"];
-};
-
-// Function to get language from storage
-export const getLanguage = (): LanguageKey => {
-  const storedLanguage = localStorage.getItem("ar-fit-language");
-  return (storedLanguage as LanguageKey) || "ru"; // Default to Russian
-};
-
-// Function to set language in storage
-export const setLanguage = (language: LanguageKey): void => {
-  localStorage.setItem("ar-fit-language", language);
+  return translations[language][key];
 };

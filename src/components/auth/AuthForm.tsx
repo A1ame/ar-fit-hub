@@ -4,16 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GenderSelection from "./GenderSelection";
 import ProfileSetup from "./ProfileSetup";
+import BodyProblemsSurvey from "./BodyProblemsSurvey";
+import DietRestrictionsSurvey from "./DietRestrictionsSurvey";
 import { authenticateUser } from "@/utils/userUtils";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import { toast } from "sonner";
+import { ChevronLeft, Globe } from "lucide-react";
 
-type AuthStep = "auth" | "gender" | "profile";
+type AuthStep = "auth" | "gender" | "bodyProblems" | "dietRestrictions" | "profile";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -21,8 +24,10 @@ const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [step, setStep] = useState<AuthStep>("auth");
   const [gender, setGender] = useState<"male" | "female" | null>(null);
+  const [bodyProblems, setBodyProblems] = useState<string[]>([]);
+  const [dietRestrictions, setDietRestrictions] = useState<string[]>([]);
   const navigate = useNavigate();
-  const { language } = useTheme();
+  const { language, setLanguage } = useTheme();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +47,16 @@ const AuthForm = () => {
 
   const handleGenderSelect = (selectedGender: "male" | "female") => {
     setGender(selectedGender);
+    setStep("bodyProblems");
+  };
+
+  const handleBodyProblemsComplete = (problems: string[]) => {
+    setBodyProblems(problems);
+    setStep("dietRestrictions");
+  };
+
+  const handleDietRestrictionsComplete = (restrictions: string[]) => {
+    setDietRestrictions(restrictions);
     setStep("profile");
   };
 
@@ -52,6 +67,8 @@ const AuthForm = () => {
       email,
       password,
       gender,
+      bodyProblems,
+      dietRestrictions,
       ...profileData,
       loggedIn: true,
       createdAt: new Date().toISOString(),
@@ -71,23 +88,88 @@ const AuthForm = () => {
     });
   };
 
+  const goBack = () => {
+    if (step === "gender") {
+      setStep("auth");
+    } else if (step === "bodyProblems") {
+      setStep("gender");
+    } else if (step === "dietRestrictions") {
+      setStep("bodyProblems");
+    } else if (step === "profile") {
+      setStep("dietRestrictions");
+    }
+  };
+
   if (step === "gender") {
-    return <GenderSelection onSelect={handleGenderSelect} />;
+    return (
+      <>
+        <Button 
+          onClick={goBack} 
+          variant="ghost" 
+          className="absolute top-4 left-4 flex items-center p-2"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          {t("back", language)}
+        </Button>
+        <GenderSelection onSelect={handleGenderSelect} />
+      </>
+    );
+  }
+
+  if (step === "bodyProblems") {
+    return (
+      <>
+        <Button 
+          onClick={goBack} 
+          variant="ghost" 
+          className="absolute top-4 left-4 flex items-center p-2"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          {t("back", language)}
+        </Button>
+        <BodyProblemsSurvey onComplete={handleBodyProblemsComplete} />
+      </>
+    );
+  }
+
+  if (step === "dietRestrictions") {
+    return (
+      <>
+        <Button 
+          onClick={goBack} 
+          variant="ghost" 
+          className="absolute top-4 left-4 flex items-center p-2"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          {t("back", language)}
+        </Button>
+        <DietRestrictionsSurvey onComplete={handleDietRestrictionsComplete} />
+      </>
+    );
   }
 
   if (step === "profile") {
-    return <ProfileSetup onComplete={handleProfileComplete} gender={gender || "male"} />;
+    return (
+      <>
+        <Button 
+          onClick={goBack} 
+          variant="ghost" 
+          className="absolute top-4 left-4 flex items-center p-2"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          {t("back", language)}
+        </Button>
+        <ProfileSetup onComplete={handleProfileComplete} gender={gender || "male"} />
+      </>
+    );
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border border-arfit-purple/30">
-      <CardHeader className="space-y-1">
+    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
+      <CardHeader className="pb-2">
         <CardTitle className="text-3xl font-bold text-center text-arfit-purple">
           AR-FIT
         </CardTitle>
-        <CardDescription className="text-center">
-          {t("personalizedFitnessJourney", language)}
-        </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={isLogin ? "login" : "register"} className="w-full">
@@ -138,7 +220,7 @@ const AuthForm = () => {
           </form>
         </Tabs>
       </CardContent>
-      <CardFooter className="flex justify-center">
+      <CardFooter className="flex flex-col gap-4">
         <p className="text-sm text-muted-foreground">
           {isLogin ? t("dontHaveAccount", language) : t("alreadyHaveAccount", language)}
           <button 
@@ -148,6 +230,16 @@ const AuthForm = () => {
             {isLogin ? t("register", language) : t("login", language)}
           </button>
         </p>
+        
+        <div className="flex justify-center items-center gap-2 text-sm">
+          <Globe className="h-4 w-4" />
+          <button
+            onClick={() => setLanguage(language === "ru" ? "en" : "ru")}
+            className="text-arfit-purple hover:underline"
+          >
+            {language === "ru" ? "English" : "Русский"}
+          </button>
+        </div>
       </CardFooter>
     </Card>
   );

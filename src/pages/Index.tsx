@@ -30,18 +30,15 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-arfit-purple/5 to-arfit-blue/10">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-arfit-purple/10 via-white to-arfit-purple/5">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md mb-10"
+        className="w-full max-w-md"
       >
-        <h1 className="text-5xl font-bold text-center text-arfit-purple mb-2">AR-FIT</h1>
-        <p className="text-center text-muted-foreground">{t("personalizedFitnessJourney", language)}</p>
+        <AuthForm />
       </motion.div>
-      
-      <AuthForm />
     </div>
   );
 };

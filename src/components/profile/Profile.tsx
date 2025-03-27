@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { LogOut, Save, Bell, Moon, Settings, Lock, Globe } from "lucide-react";
+import { LogOut, Save, Bell, Moon, Settings, Lock, Globe, ChevronLeft } from "lucide-react";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 
@@ -53,14 +53,23 @@ const Profile = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      <Button 
+        onClick={() => navigate(-1)} 
+        variant="ghost" 
+        className="flex items-center mb-2"
+      >
+        <ChevronLeft className="w-5 h-5 mr-1" />
+        {t("back", language)}
+      </Button>
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className="glass-card">
+        <Card className="glass-card border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.01] transition-all">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-arfit-purple">{t("profileSettings", language)}</CardTitle>
+            <CardTitle className="text-2xl font-bold text-arfit-purple text-3d">{t("profileSettings", language)}</CardTitle>
             <CardDescription>{t("manageAccount", language)}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useTheme } from "../theme/ThemeProvider";
@@ -25,6 +25,7 @@ interface DailyTasksProps {
 
 const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
   const { language } = useTheme();
+  const navigate = useNavigate();
   
   const toggleTask = (id: string) => {
     const updatedTasks = tasks.map((task) =>
@@ -55,12 +56,16 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
         return "bg-gray-200 text-gray-700";
     }
   };
+  
+  const navigateToExercise = (category: string) => {
+    navigate(`/exercises?category=${category}`);
+  };
 
   return (
-    <Card className="glass-card border-arfit-purple/30">
+    <Card className="glass-card border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.01] transition-all">
       <CardHeader>
         <div>
-          <CardTitle className="text-xl font-semibold">{t("todaysTasks", language)}</CardTitle>
+          <CardTitle className="text-xl font-bold">{t("todaysTasks", language)}</CardTitle>
           <CardDescription>{t("completeExercises", language)}</CardDescription>
         </div>
       </CardHeader>
@@ -74,13 +79,15 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
-                className="flex items-start space-x-4 p-4 rounded-lg bg-white/40 dark:bg-black/10 hover:bg-white/60 dark:hover:bg-black/20 transition-colors border border-arfit-purple/20"
+                className="flex items-start space-x-4 p-4 rounded-lg bg-white/40 dark:bg-black/10 hover:bg-white/60 dark:hover:bg-black/20 transition-colors border border-arfit-purple/20 cursor-pointer transform hover:scale-[1.02]"
+                onClick={() => toggleTask(task.id)}
               >
                 <Checkbox
                   id={task.id}
                   checked={task.completed}
                   onCheckedChange={() => toggleTask(task.id)}
                   className="mt-1 data-[state=checked]:bg-arfit-purple data-[state=checked]:border-arfit-purple"
+                  onClick={(e) => e.stopPropagation()}
                 />
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between">
@@ -106,9 +113,12 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                       variant="outline" 
                       size="sm" 
                       className="text-arfit-purple border-arfit-purple hover:bg-arfit-purple hover:text-white"
-                      asChild
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigateToExercise(task.category);
+                      }}
                     >
-                      <Link to="/exercises">{t("moreDetails", language)}</Link>
+                      {t("moreDetails", language)}
                     </Button>
                   </div>
                 </div>

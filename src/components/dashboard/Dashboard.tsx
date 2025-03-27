@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -9,6 +10,9 @@ import { motion } from "framer-motion";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import { getCurrentUser, saveCurrentUser, UserData } from "@/utils/userUtils";
+import { ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const CALORIES_PER_TASK = {
   strength: 150,
@@ -36,6 +40,7 @@ const defaultActivityData = [
 
 const Dashboard = () => {
   const { language } = useTheme();
+  const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [tasks, setTasks] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
@@ -157,18 +162,53 @@ const Dashboard = () => {
   };
   
   const calculateBMI = () => {
-    if (!userData) return "N/A";
+    if (!userData) return 0;
     const heightInMeters = userData.height / 100;
     const bmi = userData.weight / (heightInMeters * heightInMeters);
-    return bmi.toFixed(1);
+    return bmi;
+  };
+
+  const getBMICategory = (bmi: number) => {
+    if (bmi < 18.5) return "underweight";
+    if (bmi < 25) return "normal";
+    if (bmi < 30) return "overweight";
+    return "obese";
+  };
+
+  const getBMIColor = (bmi: number) => {
+    if (bmi < 18.5) return "#3b82f6"; // blue - недостаточный вес
+    if (bmi < 25) return "#22c55e"; // green - нормальный вес
+    if (bmi < 30) return "#f97316"; // orange - избыточный вес
+    return "#ef4444"; // red - ожирение
+  };
+
+  const getPositionPercentage = (bmi: number) => {
+    // Ограничиваем BMI между 15 и 40 для масштабирования
+    const cappedBMI = Math.max(15, Math.min(40, bmi));
+    // Преобразуем в проценты от 0 до 100
+    return (cappedBMI - 15) * 100 / 25;
   };
 
   if (!userData) {
     return <div>{t("loading", language)}</div>;
   }
 
+  const bmi = calculateBMI();
+  const bmiCategory = getBMICategory(bmi);
+  const bmiColor = getBMIColor(bmi);
+  const bmiPosition = getPositionPercentage(bmi);
+
   return (
     <div className="w-full animate-fade-in space-y-6">
+      <Button 
+        onClick={() => navigate(-1)} 
+        variant="ghost" 
+        className="flex items-center mb-2"
+      >
+        <ChevronLeft className="w-5 h-5 mr-1" />
+        {t("back", language)}
+      </Button>
+      
       <div className="flex flex-col md:flex-row gap-6">
         {/* User stats card */}
         <motion.div 
@@ -177,7 +217,7 @@ const Dashboard = () => {
           transition={{ delay: 0.2 }}
           className="w-full md:w-1/3"
         >
-          <Card className="glass-card h-full border border-arfit-purple/30">
+          <Card className="glass-card h-full border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.02] transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl font-semibold flex items-center gap-2">
                 <span className="text-arfit-purple">{t(getGreeting(), language)},</span>
@@ -193,7 +233,25 @@ const Dashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">BMI</p>
-                  <p className="text-xl font-medium">{calculateBMI()}</p>
+                  <p className="text-xl font-medium">{bmi.toFixed(1)}</p>
+                </div>
+              </div>
+              
+              <div className="w-full h-12 relative">
+                <div className="w-full h-3 mt-2 rounded-full bg-gradient-to-r from-blue-500 via-green-500 via-orange-500 to-red-500"></div>
+                <div 
+                  className="absolute top-0 left-0 transform -translate-x-1/2" 
+                  style={{ left: `${bmiPosition}%` }}
+                >
+                  <div className="w-0.5 h-6 bg-black"></div>
+                  <div className="w-4 h-4 rounded-full bg-black -mt-5 -ml-1.5"></div>
+                </div>
+                
+                <div className="flex justify-between text-xs mt-1 px-1">
+                  <span className="text-blue-500">{t("underweight", language)}</span>
+                  <span className="text-green-500">{t("normal", language)}</span>
+                  <span className="text-orange-500">{t("overweight", language)}</span>
+                  <span className="text-red-500">{t("obese", language)}</span>
                 </div>
               </div>
               
@@ -228,7 +286,7 @@ const Dashboard = () => {
           transition={{ delay: 0.4 }}
           className="w-full md:w-2/3"
         >
-          <Card className="glass-card h-full border border-arfit-purple/30">
+          <Card className="glass-card h-full border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.02] transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl font-semibold">{t("weeklyActivity", language)}</CardTitle>
               <CardDescription>{t("caloriesBurn", language)}</CardDescription>
