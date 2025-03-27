@@ -13,10 +13,10 @@ interface BodyProblemsSurveyProps {
 }
 
 const bodyPartsList = [
-  { id: "back", nameKey: "back", x: 50, y: 30, width: 30, height: 25 },
+  { id: "back", nameKey: "backPain", x: 50, y: 30, width: 30, height: 25 },
   { id: "neck", nameKey: "neck", x: 50, y: 15, width: 15, height: 10 },
   { id: "shoulders", nameKey: "shoulders", x: 50, y: 20, width: 40, height: 10 },
-  { id: "arms", nameKey: "arms", x: 75, y: 35, width: 15, height: 20 },
+  { id: "arms", nameKey: "arms", x: 50, y: 35, width: 15, height: 20 },
   { id: "legs", nameKey: "legs", x: 50, y: 70, width: 30, height: 25 },
   { id: "knees", nameKey: "knees", x: 50, y: 60, width: 20, height: 10 },
   { id: "feet", nameKey: "feet", x: 50, y: 90, width: 20, height: 10 },

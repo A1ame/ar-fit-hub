@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,6 @@ const AuthForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isLogin) {
-      // Попытка входа в систему
       const user = authenticateUser(email, password);
       if (user) {
         navigate("/dashboard");
@@ -40,7 +38,6 @@ const AuthForm = () => {
         toast.error(t("invalidCredentials", language));
       }
     } else {
-      // Если регистрация, перейти к выбору пола
       setStep("gender");
     }
   };
@@ -61,7 +58,6 @@ const AuthForm = () => {
   };
 
   const handleProfileComplete = (profileData: any) => {
-    // Сохранить данные пользователя
     const userData = {
       id: crypto.randomUUID(),
       email,
@@ -80,7 +76,6 @@ const AuthForm = () => {
       }
     };
     
-    // Добавить нового пользователя
     import("@/utils/userUtils").then(({ addUser, saveCurrentUser }) => {
       addUser(userData);
       saveCurrentUser(userData);
@@ -109,7 +104,7 @@ const AuthForm = () => {
           className="absolute top-4 left-4 flex items-center p-2"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("back", language)}
+          {t("goBack", language)}
         </Button>
         <GenderSelection onSelect={handleGenderSelect} />
       </>
@@ -125,7 +120,7 @@ const AuthForm = () => {
           className="absolute top-4 left-4 flex items-center p-2"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("back", language)}
+          {t("goBack", language)}
         </Button>
         <BodyProblemsSurvey onComplete={handleBodyProblemsComplete} />
       </>
@@ -141,7 +136,7 @@ const AuthForm = () => {
           className="absolute top-4 left-4 flex items-center p-2"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("back", language)}
+          {t("goBack", language)}
         </Button>
         <DietRestrictionsSurvey onComplete={handleDietRestrictionsComplete} />
       </>
@@ -157,7 +152,7 @@ const AuthForm = () => {
           className="absolute top-4 left-4 flex items-center p-2"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("back", language)}
+          {t("goBack", language)}
         </Button>
         <ProfileSetup onComplete={handleProfileComplete} gender={gender || "male"} />
       </>

@@ -1,4 +1,3 @@
-
 // Объект с переводами для разных языков
 const translations: Record<string, Record<string, string>> = {
   "en": {
@@ -92,10 +91,10 @@ const translations: Record<string, Record<string, string>> = {
     "yogaPosesDuration": "Hold each pose for 1 minute",
     "dynamicStretching": "Dynamic Stretching",
     "dynamicStretchingDuration": "5 minutes of dynamic stretching",
-    "back": "Back",
+    "goBack": "Back",
     "bodyProblemsSurvey": "Body Issues Survey",
     "bodyProblemsSurveyDesc": "Select the areas of your body that you have issues with",
-    "back": "Back",
+    "backPain": "Back",
     "neck": "Neck",
     "shoulders": "Shoulders",
     "arms": "Arms",
@@ -120,7 +119,12 @@ const translations: Record<string, Record<string, string>> = {
     "underweight": "Underweight",
     "normal": "Normal",
     "overweight": "Overweight",
-    "obese": "Obese"
+    "obese": "Obese",
+    "appName": "AR-FIT",
+    "dashboard": "Dashboard",
+    "workout": "Workout",
+    "nutrition": "Nutrition",
+    "profile": "Profile"
   },
   "ru": {
     "loading": "Загрузка...",
@@ -213,10 +217,10 @@ const translations: Record<string, Record<string, string>> = {
     "yogaPosesDuration": "Удерживать каждую позу в течение 1 минуты",
     "dynamicStretching": "Динамическая растяжка",
     "dynamicStretchingDuration": "5 минут динамической растяжки",
-    "back": "Назад",
+    "goBack": "Назад",
     "bodyProblemsSurvey": "Опрос о проблемных зонах",
     "bodyProblemsSurveyDesc": "Выберите области вашего тела, с которыми у вас есть проблемы",
-    "back": "Спина",
+    "backPain": "Спина",
     "neck": "Шея",
     "shoulders": "Плечи",
     "arms": "Руки",
@@ -241,7 +245,12 @@ const translations: Record<string, Record<string, string>> = {
     "underweight": "Недовес",
     "normal": "Норма",
     "overweight": "Избыточный вес",
-    "obese": "Ожирение"
+    "obese": "Ожирение",
+    "appName": "AR-FIT",
+    "dashboard": "Главная",
+    "workout": "Тренировки",
+    "nutrition": "Питание",
+    "profile": "Профиль"
   }
 };
 
