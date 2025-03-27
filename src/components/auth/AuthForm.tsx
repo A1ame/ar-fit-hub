@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ import { authenticateUser } from "@/utils/userUtils";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import { toast } from "sonner";
-import { ChevronLeft, Globe } from "lucide-react";
+import { ChevronLeft, Globe, Dumbbell } from "lucide-react";
 import { v4 as uuidv4 } from 'uuid';
 
 type AuthStep = "auth" | "gender" | "bodyProblems" | "dietRestrictions" | "profile";
@@ -31,7 +30,6 @@ const AuthForm = () => {
   const { language, setLanguage } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile view
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -184,7 +182,7 @@ const AuthForm = () => {
   const welcomeText = t("welcome", language);
 
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
+    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
       <CardHeader className="pb-2">
         <CardTitle className="text-3xl font-bold text-center text-arfit-purple text-3d">
           {welcomeText}

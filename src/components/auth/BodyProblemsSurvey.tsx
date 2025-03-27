@@ -56,7 +56,7 @@ const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) =
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto glass-card border-6 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
+    <Card className="w-full max-w-md mx-auto glass-card border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center text-arfit-purple text-3d">
           {t("bodyProblemsSurvey", language)}
@@ -67,34 +67,69 @@ const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) =
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="relative w-full h-[350px] bg-white/30 rounded-lg p-4">
-          {/* Improved human figure */}
+          {/* Human figure */}
           <svg viewBox="0 0 100 100" className="w-full h-full">
             {/* Head */}
-            <circle cx="50" cy="10" r="6" fill="#f0e6ff" stroke="#d8c8ff" strokeWidth="1" />
+            <circle 
+              cx="50" cy="10" r="6" 
+              fill={selectedProblems.includes("neck") ? "rgba(255, 0, 0, 0.5)" : "#f0e6ff"} 
+              stroke="#d8c8ff" 
+              strokeWidth="1" 
+            />
             
             {/* Neck */}
-            <rect x="48" y="16" width="4" height="4" fill="#f0e6ff" stroke="#d8c8ff" strokeWidth="1" />
+            <rect 
+              x="48" y="16" width="4" height="4" 
+              fill={selectedProblems.includes("neck") ? "rgba(255, 0, 0, 0.5)" : "#f0e6ff"}
+              stroke="#d8c8ff" 
+              strokeWidth="1" 
+            />
             
             {/* Torso */}
             <path 
               d="M40,20 Q50,18 60,20 L60,45 Q50,50 40,45 Z" 
-              fill="#f0e6ff" 
+              fill={selectedProblems.includes("chest") || selectedProblems.includes("back") ? "rgba(255, 0, 0, 0.5)" : "#f0e6ff"}
               stroke="#d8c8ff" 
               strokeWidth="1"
+            />
+            
+            {/* Abdomen */}
+            <rect 
+              x="40" y="38" width="20" height="15" 
+              fill={selectedProblems.includes("abdomen") ? "rgba(255, 0, 0, 0.5)" : "#f0e6ff"}
+              stroke="#d8c8ff" 
+              strokeWidth="1" 
+              rx="2"
+            />
+            
+            {/* Shoulders */}
+            <path 
+              d="M40,22 L30,24 Q28,24 26,25" 
+              fill="none" 
+              stroke={selectedProblems.includes("shoulders") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
+              strokeWidth="3" 
+              strokeLinecap="round"
+            />
+            <path 
+              d="M60,22 L70,24 Q72,24 74,25" 
+              fill="none" 
+              stroke={selectedProblems.includes("shoulders") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
+              strokeWidth="3" 
+              strokeLinecap="round"
             />
             
             {/* Arms */}
             <path 
               d="M40,22 L30,35 Q28,40 26,45 Q25,46 24,45" 
               fill="none" 
-              stroke="#d8c8ff" 
+              stroke={selectedProblems.includes("arms") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
               strokeWidth="3" 
               strokeLinecap="round"
             />
             <path 
               d="M60,22 L70,35 Q72,40 74,45 Q75,46 76,45" 
               fill="none" 
-              stroke="#d8c8ff" 
+              stroke={selectedProblems.includes("arms") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
               strokeWidth="3" 
               strokeLinecap="round"
             />
@@ -103,54 +138,45 @@ const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) =
             <path 
               d="M45,45 L40,75 L38,95" 
               fill="none" 
-              stroke="#d8c8ff" 
+              stroke={selectedProblems.includes("legs") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
               strokeWidth="4" 
               strokeLinecap="round"
             />
             <path 
               d="M55,45 L60,75 L62,95" 
               fill="none" 
-              stroke="#d8c8ff" 
+              stroke={selectedProblems.includes("legs") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
               strokeWidth="4" 
               strokeLinecap="round"
             />
             
             {/* Knees */}
-            <circle cx="40" cy="60" r="2" fill="#f0e6ff" stroke="#d8c8ff" strokeWidth="1" />
-            <circle cx="60" cy="60" r="2" fill="#f0e6ff" stroke="#d8c8ff" strokeWidth="1" />
+            <circle 
+              cx="40" cy="60" r="2" 
+              fill={selectedProblems.includes("knees") ? "rgba(255, 0, 0, 0.8)" : "#f0e6ff"}
+              stroke="#d8c8ff" 
+              strokeWidth="1" 
+            />
+            <circle 
+              cx="60" cy="60" r="2" 
+              fill={selectedProblems.includes("knees") ? "rgba(255, 0, 0, 0.8)" : "#f0e6ff"}
+              stroke="#d8c8ff" 
+              strokeWidth="1" 
+            />
             
             {/* Feet */}
             <path 
               d="M38,95 L34,95" 
-              stroke="#d8c8ff" 
+              stroke={selectedProblems.includes("feet") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
               strokeWidth="3" 
               strokeLinecap="round"
             />
             <path 
               d="M62,95 L66,95" 
-              stroke="#d8c8ff" 
+              stroke={selectedProblems.includes("feet") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
               strokeWidth="3" 
               strokeLinecap="round"
             />
-            
-            {/* Highlighting selected body parts */}
-            {bodyPartsList.filter(part => part.id !== "none" && selectedProblems.includes(part.id)).map((part, index) => {
-              // Create a unique key combining part id and side if present
-              const key = `${part.id}-${part.side || ''}-${index}`;
-              return (
-                <rect 
-                  key={key}
-                  x={part.x - part.width/2}
-                  y={part.y - part.height/2}
-                  width={part.width} 
-                  height={part.height}
-                  fill="rgba(255, 0, 0, 0.3)"
-                  stroke="rgba(255, 0, 0, 0.7)"
-                  strokeWidth="1.5"
-                  rx="2"
-                />
-              );
-            })}
           </svg>
         </div>
         
