@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import { toast } from "sonner";
 import { ChevronLeft, Globe } from "lucide-react";
+import { v4 as uuidv4 } from 'uuid';
 
 type AuthStep = "auth" | "gender" | "bodyProblems" | "dietRestrictions" | "profile";
 
@@ -28,6 +29,21 @@ const AuthForm = () => {
   const [dietRestrictions, setDietRestrictions] = useState<string[]>([]);
   const navigate = useNavigate();
   const { language, setLanguage } = useTheme();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile view
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +76,7 @@ const AuthForm = () => {
 
   const handleProfileComplete = (profileData: any) => {
     const userData = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       email,
       password,
       gender,
@@ -78,9 +94,14 @@ const AuthForm = () => {
     };
     
     import("@/utils/userUtils").then(({ addUser, saveCurrentUser }) => {
-      addUser(userData);
-      saveCurrentUser(userData);
-      navigate("/dashboard");
+      try {
+        addUser(userData);
+        saveCurrentUser(userData);
+        navigate("/dashboard");
+      } catch (error) {
+        console.error("Registration error:", error);
+        toast.error(String(error));
+      }
     });
   };
 
@@ -160,10 +181,10 @@ const AuthForm = () => {
     );
   }
 
-  const welcomeText = language === "ru" ? "Добро пожаловать" : "Welcome";
+  const welcomeText = t("welcome", language);
 
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-6 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
+    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
       <CardHeader className="pb-2">
         <CardTitle className="text-3xl font-bold text-center text-arfit-purple text-3d">
           {welcomeText}
@@ -212,7 +233,10 @@ const AuthForm = () => {
                 className="glass-input border-arfit-purple/30 focus:border-arfit-purple"
               />
             </div>
-            <Button type="submit" className="w-full glass-button">
+            <Button 
+              type="submit" 
+              className={`w-full glass-button ${isMobile ? 'py-3 text-base' : ''}`}
+            >
               {isLogin ? t("login", language) : t("continue", language)}
             </Button>
           </form>

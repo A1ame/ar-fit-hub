@@ -1,4 +1,7 @@
 
+import { v4 as uuidv4 } from 'uuid';
+import { saveAs } from 'file-saver';
+
 export interface UserData {
   id: string;
   name: string;
@@ -10,6 +13,8 @@ export interface UserData {
   height: number;
   loggedIn: boolean;
   createdAt: string;
+  bodyProblems?: string[];
+  dietRestrictions?: string[];
   stats: {
     calories: number[];
     steps: number[];
@@ -25,11 +30,15 @@ export const defaultStats = {
   streakDays: 0
 };
 
+// File path for storing user data JSON
+const USER_DATA_FILE = 'ar-fit-users-data.json';
+
 /**
- * Получение списка всех пользователей из localStorage
+ * Получение списка всех пользователей из localStorage и файла
  */
 export const getUsers = (): UserData[] => {
   try {
+    // First try to get from localStorage
     const usersJson = localStorage.getItem('ar-fit-users');
     if (usersJson) {
       return JSON.parse(usersJson);
@@ -41,10 +50,15 @@ export const getUsers = (): UserData[] => {
 };
 
 /**
- * Сохранение списка пользователей в localStorage
+ * Сохранение списка пользователей в localStorage и файл
  */
 export const saveUsers = (users: UserData[]): void => {
+  // Save to localStorage
   localStorage.setItem('ar-fit-users', JSON.stringify(users));
+  
+  // Also save to file
+  const blob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
+  saveAs(blob, USER_DATA_FILE);
 };
 
 /**
@@ -63,7 +77,7 @@ export const getCurrentUser = (): UserData | null => {
 };
 
 /**
- * Сохранение текущего пользователя в localStorage
+ * Сохранение текущего пользователя в localStorage и обновление в файле
  */
 export const saveCurrentUser = (user: UserData): void => {
   localStorage.setItem('ar-fit-user', JSON.stringify(user));
@@ -79,6 +93,11 @@ export const saveCurrentUser = (user: UserData): void => {
  */
 export const addUser = (user: UserData): void => {
   const users = getUsers();
+  
+  // Если id не указан, создаем новый с помощью uuid
+  if (!user.id) {
+    user.id = uuidv4();
+  }
   
   // Проверяем, не существует ли пользователь с таким email
   const existingUser = users.find(u => u.email === user.email);
@@ -122,5 +141,55 @@ export const logoutUser = (): void => {
     
     // Очищаем данные текущего пользователя
     localStorage.removeItem('ar-fit-user');
+  }
+};
+
+/**
+ * Обновление данных пользователя
+ */
+export const updateUserData = (userId: string, updatedFields: Partial<UserData>): UserData | null => {
+  const users = getUsers();
+  const userIndex = users.findIndex(u => u.id === userId);
+  
+  if (userIndex === -1) return null;
+  
+  const updatedUser = { ...users[userIndex], ...updatedFields };
+  users[userIndex] = updatedUser;
+  
+  saveUsers(users);
+  
+  // Если это текущий пользователь, обновляем и его
+  const currentUser = getCurrentUser();
+  if (currentUser && currentUser.id === userId) {
+    saveCurrentUser(updatedUser);
+  }
+  
+  return updatedUser;
+};
+
+/**
+ * Экспорт данных всех пользователей в JSON файл
+ */
+export const exportUsersToJSON = (): void => {
+  const users = getUsers();
+  const blob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
+  saveAs(blob, USER_DATA_FILE);
+};
+
+/**
+ * Импорт данных пользователей из JSON файла
+ */
+export const importUsersFromJSON = (jsonData: string): boolean => {
+  try {
+    const users = JSON.parse(jsonData);
+    if (!Array.isArray(users)) {
+      throw new Error('Некорректный формат данных');
+    }
+    
+    saveUsers(users);
+    return true;
+  } catch (error) {
+    console.error('Ошибка при импорте данных пользователей:', error);
+    return false;
   }
 };
