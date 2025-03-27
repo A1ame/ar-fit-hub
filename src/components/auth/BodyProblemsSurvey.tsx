@@ -67,7 +67,7 @@ const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) =
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="relative w-full h-[350px] bg-white/30 rounded-lg p-4">
-          {/* Human figure */}
+          {/* Human figure - improved version */}
           <svg viewBox="0 0 100 100" className="w-full h-full">
             {/* Head */}
             <circle 
@@ -103,62 +103,60 @@ const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) =
             />
             
             {/* Shoulders */}
-            <path 
-              d="M40,22 L30,24 Q28,24 26,25" 
-              fill="none" 
-              stroke={selectedProblems.includes("shoulders") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
-              strokeWidth="3" 
-              strokeLinecap="round"
+            <ellipse 
+              cx="35" cy="22" rx="5" ry="3" 
+              fill={selectedProblems.includes("shoulders") ? "rgba(255, 0, 0, 0.5)" : "#f0e6ff"}
+              stroke="#d8c8ff" 
+              strokeWidth="1"
             />
-            <path 
-              d="M60,22 L70,24 Q72,24 74,25" 
-              fill="none" 
-              stroke={selectedProblems.includes("shoulders") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
-              strokeWidth="3" 
-              strokeLinecap="round"
+            <ellipse 
+              cx="65" cy="22" rx="5" ry="3" 
+              fill={selectedProblems.includes("shoulders") ? "rgba(255, 0, 0, 0.5)" : "#f0e6ff"}
+              stroke="#d8c8ff" 
+              strokeWidth="1"
             />
             
             {/* Arms */}
             <path 
-              d="M40,22 L30,35 Q28,40 26,45 Q25,46 24,45" 
-              fill="none" 
+              d="M30,23 L26,35 Q24,40 22,45" 
               stroke={selectedProblems.includes("arms") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
-              strokeWidth="3" 
+              fill="none"
+              strokeWidth="5" 
               strokeLinecap="round"
             />
             <path 
-              d="M60,22 L70,35 Q72,40 74,45 Q75,46 76,45" 
-              fill="none" 
+              d="M70,23 L74,35 Q76,40 78,45" 
               stroke={selectedProblems.includes("arms") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
-              strokeWidth="3" 
+              fill="none"
+              strokeWidth="5" 
               strokeLinecap="round"
             />
             
             {/* Legs */}
             <path 
               d="M45,45 L40,75 L38,95" 
-              fill="none" 
               stroke={selectedProblems.includes("legs") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
-              strokeWidth="4" 
+              fill="none"
+              strokeWidth="5" 
               strokeLinecap="round"
             />
             <path 
               d="M55,45 L60,75 L62,95" 
-              fill="none" 
               stroke={selectedProblems.includes("legs") ? "rgba(255, 0, 0, 0.8)" : "#d8c8ff"}
-              strokeWidth="4" 
+              fill="none"
+              strokeWidth="5" 
               strokeLinecap="round"
             />
             
-            {/* Knees */}
-            <circle 
-              cx="40" cy="60" r="2" 
+            {/* Knees - improved */}
+            <ellipse 
+              cx="40" cy="60" rx="4" ry="4" 
               fill={selectedProblems.includes("knees") ? "rgba(255, 0, 0, 0.8)" : "#f0e6ff"}
               stroke="#d8c8ff" 
               strokeWidth="1" 
             />
-            <circle 
-              cx="60" cy="60" r="2" 
+            <ellipse 
+              cx="60" cy="60" rx="4" ry="4" 
               fill={selectedProblems.includes("knees") ? "rgba(255, 0, 0, 0.8)" : "#f0e6ff"}
               stroke="#d8c8ff" 
               strokeWidth="1" 
