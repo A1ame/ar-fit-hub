@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -159,11 +160,13 @@ const AuthForm = () => {
     );
   }
 
+  const welcomeText = language === "ru" ? "Добро пожаловать" : "Welcome";
+
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
+    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-6 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
       <CardHeader className="pb-2">
-        <CardTitle className="text-3xl font-bold text-center text-arfit-purple">
-          AR-FIT
+        <CardTitle className="text-3xl font-bold text-center text-arfit-purple text-3d">
+          {welcomeText}
         </CardTitle>
       </CardHeader>
       <CardContent>

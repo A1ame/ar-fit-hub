@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,9 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { LogOut, Save, Bell, Moon, Settings, Lock, Globe, ChevronLeft } from "lucide-react";
+import { LogOut, Save, Bell, Moon, Settings, Lock, Globe, UserCircle, Ruler, Weight, Edit } from "lucide-react";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
+import BodyProblemsSurvey from "../auth/BodyProblemsSurvey";
+import DietRestrictionsSurvey from "../auth/DietRestrictionsSurvey";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -20,6 +23,10 @@ const Profile = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [height, setHeight] = useState<number>(0);
+  const [weight, setWeight] = useState<number>(0);
+  const [showBodyProblems, setShowBodyProblems] = useState(false);
+  const [showDietRestrictions, setShowDietRestrictions] = useState(false);
   
   useEffect(() => {
     const storedUser = localStorage.getItem("ar-fit-user");
@@ -28,6 +35,8 @@ const Profile = () => {
       setUser(userData);
       setName(userData.name || "");
       setEmail(userData.email || "");
+      setHeight(userData.height || 170);
+      setWeight(userData.weight || 70);
     }
   }, []);
   
@@ -39,9 +48,29 @@ const Profile = () => {
   
   const handleSaveProfile = () => {
     if (user) {
-      const updatedUser = { ...user, name, email };
+      const updatedUser = { ...user, name, email, height, weight };
       localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
       setUser(updatedUser);
+      toast.success(t("profileUpdated", language));
+    }
+  };
+
+  const handleBodyProblemsComplete = (problems: string[]) => {
+    if (user) {
+      const updatedUser = { ...user, bodyProblems: problems };
+      localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setShowBodyProblems(false);
+      toast.success(t("profileUpdated", language));
+    }
+  };
+
+  const handleDietRestrictionsComplete = (restrictions: string[]) => {
+    if (user) {
+      const updatedUser = { ...user, dietRestrictions: restrictions };
+      localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setShowDietRestrictions(false);
       toast.success(t("profileUpdated", language));
     }
   };
@@ -50,30 +79,54 @@ const Profile = () => {
     return <div>{t("loading", language)}</div>;
   }
 
+  if (showBodyProblems) {
+    return (
+      <div>
+        <Button 
+          onClick={() => setShowBodyProblems(false)} 
+          variant="ghost" 
+          className="flex items-center mb-2"
+        >
+          {t("goBack", language)}
+        </Button>
+        <BodyProblemsSurvey onComplete={handleBodyProblemsComplete} />
+      </div>
+    );
+  }
+
+  if (showDietRestrictions) {
+    return (
+      <div>
+        <Button 
+          onClick={() => setShowDietRestrictions(false)} 
+          variant="ghost" 
+          className="flex items-center mb-2"
+        >
+          {t("goBack", language)}
+        </Button>
+        <DietRestrictionsSurvey onComplete={handleDietRestrictionsComplete} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button 
-        onClick={() => navigate(-1)} 
-        variant="ghost" 
-        className="flex items-center mb-2"
-      >
-        <ChevronLeft className="w-5 h-5 mr-1" />
-        {t("goBack", language)}
-      </Button>
-      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className="glass-card border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.01] transition-all">
+        <Card className="glass-card border-6 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transition-transform hover:scale-[1.01]">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-arfit-purple text-3d">{t("profileSettings", language)}</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center text-arfit-purple text-3d">{t("profileSettings", language)}</CardTitle>
             <CardDescription>{t("manageAccount", language)}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">{t("personalInfo", language)}</h3>
+              <h3 className="text-lg font-medium flex items-center">
+                <UserCircle className="mr-2 h-5 w-5" />
+                {t("personalInfo", language)}
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">{t("name", language)}</Label>
@@ -94,10 +147,58 @@ const Profile = () => {
                     className="glass-input"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="height" className="flex items-center">
+                    <Ruler className="mr-2 h-4 w-4" />
+                    {t("height", language)}
+                  </Label>
+                  <div className="flex">
+                    <Input
+                      id="height"
+                      type="number"
+                      value={height}
+                      onChange={(e) => setHeight(Number(e.target.value))}
+                      className="glass-input"
+                    />
+                    <span className="ml-2 flex items-center">{t("cm", language)}</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="weight" className="flex items-center">
+                    <Weight className="mr-2 h-4 w-4" />
+                    {t("weight", language)}
+                  </Label>
+                  <div className="flex">
+                    <Input
+                      id="weight"
+                      type="number"
+                      value={weight}
+                      onChange={(e) => setWeight(Number(e.target.value))}
+                      className="glass-input"
+                    />
+                    <span className="ml-2 flex items-center">{t("kg", language)}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <Button 
+                  onClick={() => setShowBodyProblems(true)}
+                  className="glass-button"
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  {t("bodyProblemsSurvey", language)}
+                </Button>
+                <Button 
+                  onClick={() => setShowDietRestrictions(true)}
+                  className="glass-button"
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  {t("dietRestrictionsSurvey", language)}
+                </Button>
               </div>
               <Button 
                 onClick={handleSaveProfile}
-                className="glass-button"
+                className="glass-button w-full mt-4"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {t("saveChanges", language)}
