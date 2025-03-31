@@ -17,7 +17,7 @@ const DashboardPage = () => {
   }, [navigate, language]);
   
   return (
-    <div className="min-h-screen pt-6 pb-20">
+    <div className="min-h-screen pt-16 pb-20">
       <div className="fixed top-0 left-0 right-0 p-4 flex items-center justify-center shadow-sm bg-white/50 backdrop-blur-sm z-10">
         <div className="flex items-center">
           <Dumbbell className="h-6 w-6 text-arfit-purple mr-2" />
@@ -25,7 +25,7 @@ const DashboardPage = () => {
         </div>
       </div>
       
-      <div className="container mx-auto px-4 mt-8">
+      <div className="container mx-auto px-4 mt-4">
         <Dashboard />
       </div>
       <Navigation />

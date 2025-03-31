@@ -38,7 +38,7 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
     if (task) {
       if (!task.completed) {
         toast.success(t("taskCompleted", language), {
-          description: `${t("youCompleted", language)} ${task.title}`,
+          description: `${t("youCompleted", language)} ${t(task.title, language)}`,
         });
       }
     }
@@ -97,7 +97,7 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                         task.completed ? "line-through text-muted-foreground" : ""
                       }`}
                     >
-                      {task.title}
+                      {t(task.title, language)}
                     </label>
                     <Badge className={`${getCategoryColor(task.category)}`}>
                       {t(task.category, language)}
@@ -106,7 +106,7 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                   <p className={`text-sm text-muted-foreground ${
                     task.completed ? "line-through" : ""
                   }`}>
-                    {task.description}
+                    {t(task.description, language)}
                   </p>
                   <div className="flex justify-end mt-2">
                     <Button
