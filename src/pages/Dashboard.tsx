@@ -17,7 +17,7 @@ const DashboardPage = () => {
   }, [navigate, language]);
   
   return (
-    <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-screen pt-20 pb-20">
       <div className="fixed top-0 left-0 right-0 p-4 flex items-center justify-center shadow-sm bg-white/50 backdrop-blur-sm z-10">
         <div className="flex items-center">
           <Dumbbell className="h-6 w-6 text-arfit-purple mr-2" />

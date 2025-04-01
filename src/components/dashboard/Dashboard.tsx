@@ -226,17 +226,18 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              <div className="w-full h-12 relative">
+              <div className="w-full h-16 relative">
                 <div className="w-full h-3 mt-2 rounded-full bg-gradient-to-r from-blue-500 via-green-500 via-orange-500 to-red-500"></div>
                 <div 
-                  className="absolute top-0 left-0 transform -translate-x-1/2" 
+                  className="absolute top-0 -mt-1 transform -translate-x-1/2" 
                   style={{ left: `${bmiPosition}%` }}
                 >
-                  <div className="w-0.5 h-6 bg-black"></div>
-                  <div className="w-4 h-4 rounded-full bg-black -mt-5 -ml-1.5"></div>
+                  <svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 0L23.2583 19.5H0.741669L12 0Z" fill="black"/>
+                  </svg>
                 </div>
                 
-                <div className="flex justify-between text-xs mt-1 px-1">
+                <div className="flex justify-between text-xs mt-3 px-1">
                   <span className="text-blue-500">{t("underweight", language)}</span>
                   <span className="text-green-500">{t("normal", language)}</span>
                   <span className="text-orange-500">{t("overweight", language)}</span>

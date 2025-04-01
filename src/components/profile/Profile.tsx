@@ -10,11 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { LogOut, Save, Bell, Moon, Settings, Lock, Globe, UserCircle, Ruler, Weight, Edit } from "lucide-react";
+import { LogOut, Save, Bell, Moon, Settings, Lock, Globe, UserCircle, Ruler, Weight, CreditCard } from "lucide-react";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
-import BodyProblemsSurvey from "../auth/BodyProblemsSurvey";
-import DietRestrictionsSurvey from "../auth/DietRestrictionsSurvey";
+import SubscriptionOptions from "./SubscriptionOptions";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -25,8 +24,6 @@ const Profile = () => {
   const [email, setEmail] = useState("");
   const [height, setHeight] = useState<number>(0);
   const [weight, setWeight] = useState<number>(0);
-  const [showBodyProblems, setShowBodyProblems] = useState(false);
-  const [showDietRestrictions, setShowDietRestrictions] = useState(false);
   
   useEffect(() => {
     const storedUser = localStorage.getItem("ar-fit-user");
@@ -55,58 +52,16 @@ const Profile = () => {
     }
   };
 
-  const handleBodyProblemsComplete = (problems: string[]) => {
-    if (user) {
-      const updatedUser = { ...user, bodyProblems: problems };
-      localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      setShowBodyProblems(false);
-      toast.success(t("profileUpdated", language));
-    }
-  };
-
-  const handleDietRestrictionsComplete = (restrictions: string[]) => {
-    if (user) {
-      const updatedUser = { ...user, dietRestrictions: restrictions };
-      localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      setShowDietRestrictions(false);
-      toast.success(t("profileUpdated", language));
+  const handleSubscriptionChange = () => {
+    // Refresh user data after subscription change
+    const storedUser = localStorage.getItem("ar-fit-user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
   };
   
   if (!user) {
     return <div>{t("loading", language)}</div>;
-  }
-
-  if (showBodyProblems) {
-    return (
-      <div>
-        <Button 
-          onClick={() => setShowBodyProblems(false)} 
-          variant="ghost" 
-          className="flex items-center mb-2"
-        >
-          {t("goBack", language)}
-        </Button>
-        <BodyProblemsSurvey onComplete={handleBodyProblemsComplete} />
-      </div>
-    );
-  }
-
-  if (showDietRestrictions) {
-    return (
-      <div>
-        <Button 
-          onClick={() => setShowDietRestrictions(false)} 
-          variant="ghost" 
-          className="flex items-center mb-2"
-        >
-          {t("goBack", language)}
-        </Button>
-        <DietRestrictionsSurvey onComplete={handleDietRestrictionsComplete} />
-      </div>
-    );
   }
 
   return (
@@ -180,22 +135,6 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                <Button 
-                  onClick={() => setShowBodyProblems(true)}
-                  className="glass-button"
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  {t("bodyProblemsSurvey", language)}
-                </Button>
-                <Button 
-                  onClick={() => setShowDietRestrictions(true)}
-                  className="glass-button"
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  {t("dietRestrictionsSurvey", language)}
-                </Button>
-              </div>
               <Button 
                 onClick={handleSaveProfile}
                 className="glass-button w-full mt-4"
@@ -203,6 +142,17 @@ const Profile = () => {
                 <Save className="mr-2 h-4 w-4" />
                 {t("saveChanges", language)}
               </Button>
+            </div>
+            
+            <Separator />
+            
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium flex items-center">
+                <CreditCard className="mr-2 h-5 w-5" />
+                {t("subscriptions", language) || "Подписки"}
+              </h3>
+              
+              <SubscriptionOptions onSubscriptionChange={handleSubscriptionChange} />
             </div>
             
             <Separator />

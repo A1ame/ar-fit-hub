@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GenderSelection from "./GenderSelection";
 import ProfileSetup from "./ProfileSetup";
-import BodyProblemsSurvey from "./BodyProblemsSurvey";
-import DietRestrictionsSurvey from "./DietRestrictionsSurvey";
 import { authenticateUser } from "@/utils/userUtils";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
@@ -16,7 +15,7 @@ import { toast } from "sonner";
 import { ChevronLeft, Globe, Dumbbell } from "lucide-react";
 import { v4 as uuidv4 } from 'uuid';
 
-type AuthStep = "auth" | "gender" | "bodyProblems" | "dietRestrictions" | "profile";
+type AuthStep = "auth" | "gender" | "profile";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -24,8 +23,6 @@ const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [step, setStep] = useState<AuthStep>("auth");
   const [gender, setGender] = useState<"male" | "female" | null>(null);
-  const [bodyProblems, setBodyProblems] = useState<string[]>([]);
-  const [dietRestrictions, setDietRestrictions] = useState<string[]>([]);
   const navigate = useNavigate();
   const { language, setLanguage } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
@@ -59,16 +56,6 @@ const AuthForm = () => {
 
   const handleGenderSelect = (selectedGender: "male" | "female") => {
     setGender(selectedGender);
-    setStep("bodyProblems");
-  };
-
-  const handleBodyProblemsComplete = (problems: string[]) => {
-    setBodyProblems(problems);
-    setStep("dietRestrictions");
-  };
-
-  const handleDietRestrictionsComplete = (restrictions: string[]) => {
-    setDietRestrictions(restrictions);
     setStep("profile");
   };
 
@@ -78,8 +65,8 @@ const AuthForm = () => {
       email,
       password,
       gender,
-      bodyProblems,
-      dietRestrictions,
+      bodyProblems: [],
+      dietRestrictions: [],
       ...profileData,
       loggedIn: true,
       createdAt: new Date().toISOString(),
@@ -88,6 +75,10 @@ const AuthForm = () => {
         steps: [0, 0, 0, 0, 0, 0, 0],
         workoutsCompleted: 0,
         streakDays: 0
+      },
+      subscriptions: {
+        workout: null,
+        nutrition: null
       }
     };
     
@@ -106,12 +97,8 @@ const AuthForm = () => {
   const goBack = () => {
     if (step === "gender") {
       setStep("auth");
-    } else if (step === "bodyProblems") {
-      setStep("gender");
-    } else if (step === "dietRestrictions") {
-      setStep("bodyProblems");
     } else if (step === "profile") {
-      setStep("dietRestrictions");
+      setStep("gender");
     }
   };
 
@@ -127,38 +114,6 @@ const AuthForm = () => {
           {t("goBack", language)}
         </Button>
         <GenderSelection onSelect={handleGenderSelect} />
-      </>
-    );
-  }
-
-  if (step === "bodyProblems") {
-    return (
-      <>
-        <Button 
-          onClick={goBack} 
-          variant="ghost" 
-          className="absolute top-4 left-4 flex items-center p-2"
-        >
-          <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("goBack", language)}
-        </Button>
-        <BodyProblemsSurvey onComplete={handleBodyProblemsComplete} />
-      </>
-    );
-  }
-
-  if (step === "dietRestrictions") {
-    return (
-      <>
-        <Button 
-          onClick={goBack} 
-          variant="ghost" 
-          className="absolute top-4 left-4 flex items-center p-2"
-        >
-          <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("goBack", language)}
-        </Button>
-        <DietRestrictionsSurvey onComplete={handleDietRestrictionsComplete} />
       </>
     );
   }

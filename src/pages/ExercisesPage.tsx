@@ -6,6 +6,7 @@ import Navigation from "@/components/layout/Navigation";
 import { requireAuth } from "@/utils/authUtils";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
+import SubscriptionPrompt from "@/components/subscription/SubscriptionPrompt";
 
 const ExercisesPage = () => {
   const navigate = useNavigate();
@@ -16,11 +17,12 @@ const ExercisesPage = () => {
   }, [navigate]);
   
   return (
-    <div className="min-h-screen pt-6 pb-20">
+    <div className="min-h-screen pt-20 pb-20">
       <div className="container mx-auto px-4">
         <Exercises />
       </div>
       <Navigation />
+      <SubscriptionPrompt type="workout" />
     </div>
   );
 };

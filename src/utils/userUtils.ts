@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 import { saveAs } from 'file-saver';
 
@@ -21,6 +20,18 @@ export interface UserData {
     workoutsCompleted: number;
     streakDays: number;
   };
+  subscriptions?: {
+    workout: SubscriptionData | null;
+    nutrition: SubscriptionData | null;
+  };
+}
+
+export interface SubscriptionData {
+  type: 'workout' | 'nutrition' | 'combo';
+  duration: 1 | 6 | 12; // months
+  startDate: string;
+  endDate: string;
+  price: number;
 }
 
 export const defaultStats = {
@@ -192,4 +203,63 @@ export const importUsersFromJSON = (jsonData: string): boolean => {
     console.error('Ошибка при импорте данных пользователей:', error);
     return false;
   }
+};
+
+/**
+ * Проверка, имеет ли пользователь активную подписку определенного типа
+ */
+export const hasActiveSubscription = (user: UserData | null, type: 'workout' | 'nutrition'): boolean => {
+  if (!user || !user.subscriptions) return false;
+  
+  const { workout, nutrition } = user.subscriptions;
+  
+  // Проверка подписки комбо, которая действует для обоих типов
+  if (workout?.type === 'combo') {
+    const endDate = new Date(workout.endDate);
+    if (endDate > new Date()) return true;
+  }
+  
+  // Проверка конкретной подписки
+  const subscription = type === 'workout' ? workout : nutrition;
+  if (!subscription) return false;
+  
+  const endDate = new Date(subscription.endDate);
+  return endDate > new Date();
+};
+
+/**
+ * Активация подписки для пользователя
+ */
+export const activateSubscription = (
+  userId: string, 
+  type: 'workout' | 'nutrition' | 'combo', 
+  duration: 1 | 6 | 12,
+  price: number
+): UserData | null => {
+  const user = getCurrentUser();
+  if (!user || user.id !== userId) return null;
+  
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setMonth(endDate.getMonth() + duration);
+  
+  const subscriptionData: SubscriptionData = {
+    type,
+    duration,
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
+    price
+  };
+  
+  const updatedUser = {
+    ...user,
+    subscriptions: {
+      ...user.subscriptions || {},
+      workout: type === 'workout' || type === 'combo' ? subscriptionData : user.subscriptions?.workout || null,
+      nutrition: type === 'nutrition' || type === 'combo' ? subscriptionData : user.subscriptions?.nutrition || null
+    }
+  };
+  
+  saveCurrentUser(updatedUser);
+  return updatedUser;
 };
