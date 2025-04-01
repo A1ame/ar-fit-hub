@@ -1,4 +1,3 @@
-
 // src/utils/languageUtils.ts
 
 // Функция получения текущего выбранного языка
@@ -386,6 +385,110 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
     ru: 'Гибкость'
   },
   
+  // Задания на сегодня
+  todaysWorkout: {
+    en: "Today's Workout",
+    ru: "Сегодняшняя тренировка"
+  },
+  cardioExercise: {
+    en: "Cardio Exercise",
+    ru: "Кардио упражнение"
+  },
+  strengthTraining: {
+    en: "Strength Training",
+    ru: "Силовая тренировка"
+  },
+  morningYoga: {
+    en: "Morning Yoga",
+    ru: "Утренняя йога"
+  },
+  minutes: {
+    en: "minutes",
+    ru: "минут"
+  },
+  seconds: {
+    en: "seconds",
+    ru: "секунд"
+  },
+  reps: {
+    en: "reps",
+    ru: "повторений"
+  },
+  sets: {
+    en: "sets",
+    ru: "подходов"
+  },
+  completed: {
+    en: "Completed",
+    ru: "Выполнено"
+  },
+  pending: {
+    en: "Pending",
+    ru: "Ожидается"
+  },
+  
+  // Калории
+  calorieCalculator: {
+    en: "Calorie Calculator",
+    ru: "Калькулятор калорий"
+  },
+  addMeal: {
+    en: "Add Meal",
+    ru: "Добавить прием пищи"
+  },
+  mealName: {
+    en: "Meal Name",
+    ru: "Название блюда"
+  },
+  calorieAmount: {
+    en: "Calories",
+    ru: "Калории"
+  },
+  add: {
+    en: "Add",
+    ru: "Добавить"
+  },
+  calorieHistory: {
+    en: "Calorie History",
+    ru: "История калорий"
+  },
+  day: {
+    en: "Day",
+    ru: "День"
+  },
+  total: {
+    en: "Total",
+    ru: "Всего"
+  },
+  monday: {
+    en: "Monday",
+    ru: "Понедельник"
+  },
+  tuesday: {
+    en: "Tuesday",
+    ru: "Вторник"
+  },
+  wednesday: {
+    en: "Wednesday",
+    ru: "Среда"
+  },
+  thursday: {
+    en: "Thursday",
+    ru: "Четверг"
+  },
+  friday: {
+    en: "Friday",
+    ru: "Пятница"
+  },
+  saturday: {
+    en: "Saturday",
+    ru: "Суббота"
+  },
+  sunday: {
+    en: "Sunday",
+    ru: "Воскресенье"
+  },
+
   // Скоро
   comingSoon: {
     en: 'Coming Soon',
