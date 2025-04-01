@@ -1,4 +1,3 @@
-
 // src/utils/languageUtils.ts
 
 // Функция получения текущего выбранного языка
@@ -366,8 +365,8 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
     ru: 'Цель на сегодня'
   },
   tasksForToday: {
-    en: 'Tasks for Today',
-    ru: 'Задания на сегодня'
+    en: "Today's Tasks",
+    ru: "Задания на сегодня"
   },
   tasksDesc: {
     en: 'Complete these tasks to reach your goals',
@@ -415,7 +414,6 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
     en: "Cardio Exercise",
     ru: "Кардио упражнение"
   },
-  // Fixed duplicate - removed redundant 'strengthTraining' entry
   morningYoga: {
     en: "Morning Yoga",
     ru: "Утренняя йога"
@@ -446,7 +444,7 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
   },
   
   // Additional translations for Today's Tasks
-  todaysTasks: {
+  tasksForToday: {
     en: "Today's Tasks",
     ru: "Задания на сегодня"
   },
@@ -889,6 +887,10 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
   calorieAmount: {
     en: "Calorie amount",
     ru: "Количество калорий"
+  },
+  add: {
+    en: "Add",
+    ru: "Добавить"
   },
   addMeal: {
     en: "Add meal",

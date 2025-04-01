@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,9 +19,7 @@ interface MealEntry {
 
 const getDayOfWeek = (dateString: string): number => {
   const date = new Date(dateString);
-  // Получаем день недели, где 0 - воскресенье, 1 - понедельник и т.д.
   let day = date.getDay();
-  // Преобразуем в формат, где 0 - понедельник, 1 - вторник и т.д.
   return day === 0 ? 6 : day - 1;
 };
 
@@ -41,7 +38,6 @@ const CalorieCalculator: React.FC = () => {
   const { language } = useTheme();
 
   useEffect(() => {
-    // Загрузка сохраненных приемов пищи из профиля пользователя
     const user = getCurrentUser();
     if (user && user.meals) {
       setMeals(user.meals);
@@ -51,25 +47,20 @@ const CalorieCalculator: React.FC = () => {
 
   const updateWeeklyCalories = (mealsList: MealEntry[]) => {
     const currentDate = new Date();
-    // Получаем дату понедельника текущей недели
     const monday = new Date(currentDate);
     monday.setDate(currentDate.getDate() - (currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1));
     monday.setHours(0, 0, 0, 0);
     
-    // Получаем дату следующего понедельника
     const nextMonday = new Date(monday);
     nextMonday.setDate(monday.getDate() + 7);
     
-    // Фильтруем приемы пищи только за текущую неделю
     const thisWeekMeals = mealsList.filter(meal => {
       const mealDate = new Date(meal.date);
       return mealDate >= monday && mealDate < nextMonday;
     });
     
-    // Инициализируем массив для калорий по дням недели
     const weekCalories = [0, 0, 0, 0, 0, 0, 0];
     
-    // Суммируем калории по дням недели
     thisWeekMeals.forEach(meal => {
       const dayIndex = getDayOfWeek(meal.date);
       weekCalories[dayIndex] += meal.calories;
@@ -77,7 +68,6 @@ const CalorieCalculator: React.FC = () => {
     
     setWeeklyCalories(weekCalories);
     
-    // Обновляем данные для графика
     const days = language === "ru" 
       ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] 
       : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -120,7 +110,6 @@ const CalorieCalculator: React.FC = () => {
     setMeals(updatedMeals);
     updateWeeklyCalories(updatedMeals);
 
-    // Сохраняем в профиль пользователя
     const user = getCurrentUser();
     if (user) {
       saveCurrentUser({
@@ -186,7 +175,7 @@ const CalorieCalculator: React.FC = () => {
                 onClick={handleAddMeal}
                 className="w-full bg-arfit-purple hover:bg-arfit-purple/90"
               >
-                {t("add", language)}
+                {t("addMeal", language)}
               </Button>
             </div>
           </TabsContent>
