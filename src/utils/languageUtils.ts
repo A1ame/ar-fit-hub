@@ -1,3 +1,4 @@
+
 // src/utils/languageUtils.ts
 
 // Функция получения текущего выбранного языка
@@ -97,6 +98,26 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
   profileSetup: {
     en: 'Set Up Your Profile',
     ru: 'Настройка профиля'
+  },
+  completeProfile: {
+    en: 'Complete Your Profile',
+    ru: 'Заполните ваш профиль'
+  },
+  completeProfileDesc: {
+    en: 'Provide your basic information',
+    ru: 'Укажите вашу основную информацию'
+  },
+  yourName: {
+    en: 'Your Name',
+    ru: 'Ваше имя'
+  },
+  enterName: {
+    en: 'Enter your name',
+    ru: 'Введите ваше имя'
+  },
+  complete: {
+    en: 'Complete',
+    ru: 'Завершить'
   },
   profileUpdated: {
     en: 'Profile successfully updated',
@@ -394,10 +415,7 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
     en: "Cardio Exercise",
     ru: "Кардио упражнение"
   },
-  strengthTraining: {
-    en: "Strength Training",
-    ru: "Силовая тренировка"
-  },
+  // Fixed duplicate - removed redundant 'strengthTraining' entry
   morningYoga: {
     en: "Morning Yoga",
     ru: "Утренняя йога"
@@ -852,6 +870,38 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
     en: "Sunday",
     ru: "Воскресенье"
   },
+  authRequired: {
+    en: "Authentication required",
+    ru: "Требуется авторизация"
+  },
+  nutritionDesc: {
+    en: "Track your nutrition intake",
+    ru: "Отслеживайте ваше питание"
+  },
+  calorieCalculator: {
+    en: "Calorie Calculator",
+    ru: "Калькулятор калорий"
+  },
+  mealName: {
+    en: "Meal name",
+    ru: "Название блюда"
+  },
+  calorieAmount: {
+    en: "Calorie amount",
+    ru: "Количество калорий"
+  },
+  addMeal: {
+    en: "Add meal",
+    ru: "Добавить блюдо"
+  },
+  calorieHistory: {
+    en: "Calorie History",
+    ru: "История калорий"
+  },
+  weeklyIntake: {
+    en: "Weekly calorie intake",
+    ru: "Потребление калорий за неделю"
+  }
 };
 
 // Функция перевода текста
