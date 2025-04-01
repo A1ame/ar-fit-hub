@@ -17,6 +17,11 @@ export const getLanguage = (): 'en' | 'ru' => {
   return 'en'; // Английский по умолчанию
 };
 
+// Функция установки языка
+export const setLanguage = (language: 'en' | 'ru'): void => {
+  localStorage.setItem('ar-fit-language', language);
+};
+
 // Словарь с переводами
 const translations: Record<string, Record<'en' | 'ru', string>> = {
   // Приветствия
