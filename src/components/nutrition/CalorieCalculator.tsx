@@ -9,6 +9,7 @@ import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import { getCurrentUser, saveCurrentUser } from "@/utils/userUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface MealEntry {
   id: string;
@@ -35,6 +36,7 @@ const CalorieCalculator: React.FC = () => {
   const [calories, setCalories] = useState<string>("");
   const [meals, setMeals] = useState<MealEntry[]>([]);
   const [weeklyCalories, setWeeklyCalories] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
+  const [chartData, setChartData] = useState<any[]>([]);
   const { toast } = useToast();
   const { language } = useTheme();
 
@@ -74,6 +76,18 @@ const CalorieCalculator: React.FC = () => {
     });
     
     setWeeklyCalories(weekCalories);
+    
+    // Обновляем данные для графика
+    const days = language === "ru" 
+      ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] 
+      : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      
+    const newChartData = weekCalories.map((calories, index) => ({
+      day: days[index],
+      calories: calories
+    }));
+    
+    setChartData(newChartData);
   };
 
   const handleAddMeal = () => {
@@ -178,6 +192,35 @@ const CalorieCalculator: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="history" className="pt-4">
+            <div className="h-[230px] w-full mb-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={chartData}
+                  margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: "rgba(255, 255, 255, 0.8)",
+                      borderRadius: "0.5rem",
+                      border: "none",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+                    }}
+                    formatter={(value) => [`${value} ${t("calories", language)}`, '']}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="calories" 
+                    stroke="#4A2A82" 
+                    strokeWidth={2}
+                    activeDot={{ r: 8, fill: "#9B87F5" }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            
             <div className="rounded-md border">
               <Table>
                 <TableHeader>

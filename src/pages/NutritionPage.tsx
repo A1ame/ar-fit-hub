@@ -28,7 +28,7 @@ const NutritionPage = () => {
   }, [navigate, language]);
   
   return (
-    <div className="min-h-screen pt-16 pb-20">
+    <div className="min-h-screen pt-10 pb-20">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-6">
           <Nutrition />

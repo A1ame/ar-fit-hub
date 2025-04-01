@@ -427,69 +427,207 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
     ru: "Ожидается"
   },
   
-  // Калории
-  calorieCalculator: {
-    en: "Calorie Calculator",
-    ru: "Калькулятор калорий"
+  // Additional translations for Today's Tasks
+  todaysTasks: {
+    en: "Today's Tasks",
+    ru: "Задания на сегодня"
   },
-  addMeal: {
-    en: "Add Meal",
-    ru: "Добавить прием пищи"
+  completeExercises: {
+    en: "Complete exercises to reach your goals",
+    ru: "Выполните упражнения для достижения целей"
   },
-  mealName: {
-    en: "Meal Name",
-    ru: "Название блюда"
+  moreDetails: {
+    en: "More Details",
+    ru: "Подробнее"
   },
-  calorieAmount: {
-    en: "Calories",
-    ru: "Калории"
+  taskCompleted: {
+    en: "Task Completed",
+    ru: "Задание выполнено"
   },
-  add: {
-    en: "Add",
-    ru: "Добавить"
+  youCompleted: {
+    en: "You completed",
+    ru: "Вы выполнили"
   },
-  calorieHistory: {
-    en: "Calorie History",
-    ru: "История калорий"
+  
+  // Additional translations for Exercises page
+  chooseCategory: {
+    en: "Choose a category of exercises",
+    ru: "Выберите категорию упражнений"
   },
-  day: {
-    en: "Day",
-    ru: "День"
+  strengthDesc: {
+    en: "Build muscle and increase strength with these exercises",
+    ru: "Наращивайте мышцы и увеличивайте силу с помощью этих упражнений"
   },
-  total: {
-    en: "Total",
-    ru: "Всего"
+  cardioDesc: {
+    en: "Improve heart health and burn calories",
+    ru: "Улучшите здоровье сердца и сжигайте калории"
   },
-  monday: {
-    en: "Monday",
-    ru: "Понедельник"
+  flexibilityDesc: {
+    en: "Increase flexibility and prevent injuries",
+    ru: "Повысьте гибкость и предотвратите травмы"
   },
-  tuesday: {
-    en: "Tuesday",
-    ru: "Вторник"
+  beginner: {
+    en: "Beginner",
+    ru: "Начинающий"
   },
-  wednesday: {
-    en: "Wednesday",
-    ru: "Среда"
+  intermediate: {
+    en: "Intermediate",
+    ru: "Средний"
   },
-  thursday: {
-    en: "Thursday",
-    ru: "Четверг"
+  advanced: {
+    en: "Advanced",
+    ru: "Продвинутый"
   },
-  friday: {
-    en: "Friday",
-    ru: "Пятница"
+  
+  // Exercise types translations
+  pushUps: {
+    en: "Push-ups",
+    ru: "Отжимания"
   },
-  saturday: {
-    en: "Saturday",
-    ru: "Суббота"
+  pushUpsDesc: {
+    en: "Great exercise for chest, shoulders and triceps",
+    ru: "Отличное упражнение для груди, плеч и трицепсов"
   },
-  sunday: {
-    en: "Sunday",
-    ru: "Воскресенье"
+  pushUpsDuration: {
+    en: "3 sets of 10 reps",
+    ru: "3 подхода по 10 повторений"
   },
-
-  // Скоро
+  squats: {
+    en: "Squats",
+    ru: "Приседания"
+  },
+  squatsDesc: {
+    en: "Build strong legs and glutes",
+    ru: "Укрепите ноги и ягодицы"
+  },
+  squatsDuration: {
+    en: "3 sets of 15 reps",
+    ru: "3 подхода по 15 повторений"
+  },
+  lunges: {
+    en: "Lunges",
+    ru: "Выпады"
+  },
+  lungesDesc: {
+    en: "Improve balance and leg strength",
+    ru: "Улучшите равновесие и силу ног"
+  },
+  lungesDuration: {
+    en: "3 sets of 10 reps per leg",
+    ru: "3 подхода по 10 повторений на каждую ногу"
+  },
+  running: {
+    en: "Running",
+    ru: "Бег"
+  },
+  runningDesc: {
+    en: "Excellent cardio exercise for endurance",
+    ru: "Отличное кардио упражнение для выносливости"
+  },
+  runningDuration: {
+    en: "20 minutes",
+    ru: "20 минут"
+  },
+  jumpingJacks: {
+    en: "Jumping Jacks",
+    ru: "Прыжки с хлопком"
+  },
+  jumpingJacksDesc: {
+    en: "Full body cardio workout",
+    ru: "Кардио для всего тела"
+  },
+  jumpingJacksDuration: {
+    en: "3 sets of 30 seconds",
+    ru: "3 подхода по 30 секунд"
+  },
+  burpees: {
+    en: "Burpees",
+    ru: "Берпи"
+  },
+  burpeesDesc: {
+    en: "Intense full body exercise",
+    ru: "Интенсивное упражнение для всего тела"
+  },
+  burpeesDuration: {
+    en: "3 sets of 10 reps",
+    ru: "3 подхода по 10 повторений"
+  },
+  hamstringStretch: {
+    en: "Hamstring Stretch",
+    ru: "Растяжка подколенных сухожилий"
+  },
+  hamstringStretchDesc: {
+    en: "Stretch the backs of your legs",
+    ru: "Растяните заднюю поверхность ног"
+  },
+  hamstringStretchDuration: {
+    en: "Hold for 30 seconds each leg",
+    ru: "Удерживайте 30 секунд на каждую ногу"
+  },
+  shoulderStretch: {
+    en: "Shoulder Stretch",
+    ru: "Растяжка плеч"
+  },
+  shoulderStretchDesc: {
+    en: "Relieve tension in the shoulders",
+    ru: "Снимите напряжение в плечах"
+  },
+  shoulderStretchDuration: {
+    en: "Hold for 20 seconds each side",
+    ru: "Удерживайте 20 секунд на каждую сторону"
+  },
+  hipFlexorStretch: {
+    en: "Hip Flexor Stretch",
+    ru: "Растяжка сгибателей бедра"
+  },
+  hipFlexorStretchDesc: {
+    en: "Great for people who sit all day",
+    ru: "Отлично подходит для людей, которые сидят весь день"
+  },
+  hipFlexorStretchDuration: {
+    en: "Hold for 30 seconds each side",
+    ru: "Удерживайте 30 секунд на каждую сторону"
+  },
+  
+  // Categories
+  strengthTraining: {
+    en: "Strength Training",
+    ru: "Силовые тренировки"
+  },
+  cardioTraining: {
+    en: "Cardio Training",
+    ru: "Кардио тренировки"
+  },
+  warmupStretching: {
+    en: "Warmup & Stretching",
+    ru: "Разминка и растяжка"
+  },
+  
+  // Calorie tracking
+  trackYourCalories: {
+    en: "Track your calorie intake",
+    ru: "Отслеживайте потребление калорий"
+  },
+  enterMealName: {
+    en: "Please enter meal name",
+    ru: "Пожалуйста, введите название блюда"
+  },
+  enterValidCalories: {
+    en: "Please enter valid calorie amount",
+    ru: "Пожалуйста, введите корректное количество калорий"
+  },
+  success: {
+    en: "Success",
+    ru: "Успешно"
+  },
+  error: {
+    en: "Error",
+    ru: "Ошибка"
+  },
+  mealAdded: {
+    en: "Meal added successfully",
+    ru: "Прием пищи успешно добавлен"
+  },
   comingSoon: {
     en: 'Coming Soon',
     ru: 'Скоро'
@@ -677,6 +815,42 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
   subscribeNow: {
     en: 'Subscribe Now',
     ru: 'Подписаться'
+  },
+  day: {
+    en: "Day",
+    ru: "День"
+  },
+  total: {
+    en: "Total",
+    ru: "Всего"
+  },
+  monday: {
+    en: "Monday",
+    ru: "Понедельник"
+  },
+  tuesday: {
+    en: "Tuesday",
+    ru: "Вторник"
+  },
+  wednesday: {
+    en: "Wednesday",
+    ru: "Среда"
+  },
+  thursday: {
+    en: "Thursday",
+    ru: "Четверг"
+  },
+  friday: {
+    en: "Friday",
+    ru: "Пятница"
+  },
+  saturday: {
+    en: "Saturday",
+    ru: "Суббота"
+  },
+  sunday: {
+    en: "Sunday",
+    ru: "Воскресенье"
   },
 };
 
