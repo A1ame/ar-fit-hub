@@ -25,7 +25,7 @@ const DashboardPage = () => {
         </div>
       </div>
       
-      <div className="container mx-auto px-4 mt-2">
+      <div className="container mx-auto px-4 mt-0">
         <Dashboard />
       </div>
       <Navigation />

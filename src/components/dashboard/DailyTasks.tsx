@@ -65,7 +65,7 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
     <Card className="glass-card border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.01] transition-all">
       <CardHeader>
         <div>
-          <CardTitle className="text-xl font-bold">{t("todaysTasks", language)}</CardTitle>
+          <CardTitle className="text-xl font-bold">{t("tasksForToday", language)}</CardTitle>
           <CardDescription>{t("completeExercises", language)}</CardDescription>
         </div>
       </CardHeader>
