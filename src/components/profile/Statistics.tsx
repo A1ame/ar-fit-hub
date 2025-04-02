@@ -185,6 +185,14 @@ const Statistics = () => {
             
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                <div className="text-sm text-muted-foreground">{t("caloriesBurned")}</div>
+                <div className="text-xl font-medium">{todayStats.caloriesBurned} {t("calories")}</div>
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                <div className="text-sm text-muted-foreground">{t("caloriesConsumed")}</div>
+                <div className="text-xl font-medium">{todayStats.caloriesConsumed} {t("calories")}</div>
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
                 <div className="text-sm text-muted-foreground">{t("weight")}</div>
                 <div className="text-xl font-medium">{todayStats.weight} {t("kg")}</div>
               </div>

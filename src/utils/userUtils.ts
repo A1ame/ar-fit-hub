@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { saveAs } from 'file-saver';
 
 export interface MealEntry {
   id: string;
@@ -52,7 +51,7 @@ export const defaultStats = {
 const USER_DATA_FILE = 'ar-fit-users-data.json';
 
 /**
- * Получение списка всех пользователей из localStorage и файла
+ * Получение списка всех пользователей из localStorage
  */
 export const getUsers = (): UserData[] => {
   try {
@@ -67,13 +66,13 @@ export const getUsers = (): UserData[] => {
 };
 
 /**
- * Сохранение списка пользователей в localStorage и файл
+ * Сохранение списка пользователей в localStorage
  */
 export const saveUsers = (users: UserData[]): void => {
   localStorage.setItem('ar-fit-users', JSON.stringify(users));
   
-  const blob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
-  saveAs(blob, USER_DATA_FILE);
+  // Больше не скачиваем файл при каждом сохранении
+  // Данные хранятся только в localStorage
 };
 
 /**
@@ -176,12 +175,11 @@ export const updateUserData = (userId: string, updatedFields: Partial<UserData>)
 };
 
 /**
- * Экспорт данных всех пользователей в JSON файл
+ * Экспорт данных всех пользователей в JSON файл - функция сохранена для совместимости
+ * но не используется автоматически при каждом изменении
  */
 export const exportUsersToJSON = (): void => {
-  const users = getUsers();
-  const blob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
-  saveAs(blob, USER_DATA_FILE);
+  console.log("Экспорт данных пользователей можно сделать вручную");
 };
 
 /**
