@@ -3,28 +3,24 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { getLanguage, setLanguage as setStoredLanguage } from "@/utils/languageUtils";
 
 type Theme = "light" | "dark" | "system";
-type Language = "en" | "ru";
+type Language = "ru";
 
 interface ThemeProviderProps {
   children: React.ReactNode;
   defaultTheme?: Theme;
-  defaultLanguage?: Language;
   storageKey?: string;
-  languageStorageKey?: string;
 }
 
 interface ThemeProviderState {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   language: Language;
-  setLanguage: (language: Language) => void;
 }
 
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
   language: "ru",
-  setLanguage: () => null,
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -32,18 +28,14 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  defaultLanguage = "ru",
   storageKey = "ar-fit-theme",
-  languageStorageKey = "ar-fit-language",
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
   
-  const [language, setLanguage] = useState<Language>(
-    () => getLanguage() || defaultLanguage
-  );
+  const language: Language = "ru";
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -68,10 +60,6 @@ export function ThemeProvider({
       setTheme(theme);
     },
     language,
-    setLanguage: (language: Language) => {
-      setStoredLanguage(language);
-      setLanguage(language);
-    },
   };
 
   return (

@@ -8,7 +8,6 @@ import { t } from "@/utils/languageUtils";
 
 const Navigation = () => {
   const location = useLocation();
-  const { language } = useTheme();
   
   const navItems = [
     {
@@ -60,7 +59,7 @@ const Navigation = () => {
                     />
                   )}
                   {item.icon}
-                  <span className="text-xs mt-1">{t(item.name, language)}</span>
+                  <span className="text-xs mt-1">{t(item.name)}</span>
                 </Link>
               </li>
             );

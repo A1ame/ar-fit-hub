@@ -2,183 +2,19 @@
 // Language storage key
 const LANGUAGE_STORAGE_KEY = 'ar-fit-language';
 
-// Get language from localStorage
-export const getLanguage = (): 'en' | 'ru' => {
-  const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  return (storedLanguage === 'en' || storedLanguage === 'ru') ? storedLanguage : 'ru';
+// Get language - now always returns 'ru'
+export const getLanguage = (): 'ru' => {
+  return 'ru';
 };
 
-// Set language in localStorage
-export const setLanguage = (language: 'en' | 'ru'): void => {
+// Set language in localStorage - kept for compatibility
+export const setLanguage = (language: 'ru'): void => {
   localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
 };
 
-// Export translation function
-export const t = (key: string, language: 'en' | 'ru'): string => {
-  if (language === 'en') {
-    return en[key] || key;
-  }
-  return ru[key] || en[key] || key;
-};
-
-// English translations
-const en: Record<string, string> = {
-  // Auth
-  signIn: "Sign In",
-  signUp: "Sign Up",
-  email: "Email",
-  password: "Password",
-  forgotPassword: "Forgot Password?",
-  noAccount: "Don't have an account?",
-  createAccount: "Create Account",
-  haveAccount: "Already have an account?",
-  
-  // Navigation
-  home: "Home",
-  workout: "Workout",
-  nutrition: "Nutrition",
-  profile: "Profile",
-  
-  // Dashboard
-  dashboard: "Dashboard",
-  yourWorkouts: "Your Workouts",
-  todayTasks: "Tasks for Today",
-  weeklyActivity: "Weekly Activity",
-  caloriesBurn: "Calories burned this week",
-  
-  // Profile
-  profileSettings: "Profile Settings",
-  manageAccount: "Manage your account and preferences",
-  personalInfo: "Personal Information",
-  name: "Name",
-  gender: "Gender",
-  age: "Age",
-  years: "years",
-  height: "Height",
-  weight: "Weight",
-  saveChanges: "Save Changes",
-  preferences: "Preferences",
-  notifications: "Notifications",
-  notificationsDesc: "Receive workout reminders and updates",
-  darkMode: "Dark Mode",
-  darkModeDesc: "Switch between light and dark theme",
-  language: "Language",
-  languageDesc: "Change application language",
-  account: "Account",
-  logOut: "Log Out",
-  
-  // Units
-  cm: "cm",
-  kg: "kg",
-  calories: "calories",
-  
-  // Toasts
-  profileUpdated: "Profile updated successfully",
-  loggedOut: "Logged out successfully",
-  
-  // Language Selection
-  english: "English",
-  russian: "Russian",
-  
-  // Tasks
-  complete: "Complete",
-  completed: "Completed",
-  markAsDone: "Mark as Done",
-  strength: "Strength",
-  cardio: "Cardio",
-  flexibility: "Flexibility",
-  
-  // Exercise Types 
-  pushUps: "Push-ups",
-  squats: "Squats",
-  lunges: "Lunges",
-  plank: "Plank",
-  running: "Running",
-  jogging: "Jogging",
-  jumpingJacks: "Jumping Jacks",
-  burpees: "Burpees",
-  mountainClimbers: "Mountain Climbers",
-  dynamicStretching: "Dynamic Stretching",
-  yoga: "Yoga",
-  staticStretching: "Static Stretching",
-  
-  // Statistics
-  statistics: "Statistics",
-  statisticsDesc: "Track your progress over time",
-  
-  // Body Metrics
-  bmi: "BMI",
-  underweight: "Underweight",
-  normal: "Normal",
-  overweight: "Overweight",
-  obese: "Obese",
-  currentWeight: "Current Weight",
-  currentHeight: "Current Height",
-  
-  // Time-related
-  today: "Today",
-  thisWeek: "This Week",
-  thisMonth: "This Month",
-  viewMonthly: "View Monthly",
-  
-  // Greetings
-  goodMorning: "Good Morning",
-  goodAfternoon: "Good Afternoon",
-  goodEvening: "Good Evening",
-  yourFitnessProfile: "Your Fitness Profile",
-  
-  // Goals
-  todaysGoal: "Today's Goal",
-  
-  // Subscriptions
-  subscriptions: "Subscriptions",
-  
-  // Loading
-  loading: "Loading...",
-  
-  // Nutrition
-  calorieCalculator: "Calorie Calculator",
-  trackYourCalories: "Track your calorie intake",
-  addMeal: "Add Meal",
-  mealName: "Meal Name",
-  calorieAmount: "Calories",
-  calorieHistory: "Calorie History",
-  day: "Day",
-  total: "Total",
-  
-  // Days of the week
-  monday: "Monday",
-  tuesday: "Tuesday",
-  wednesday: "Wednesday",
-  thursday: "Thursday",
-  friday: "Friday",
-  saturday: "Saturday",
-  sunday: "Sunday",
-  
-  // Months
-  january: "January",
-  february: "February",
-  march: "March",
-  april: "April",
-  may: "May",
-  june: "June",
-  july: "July",
-  august: "August",
-  september: "September",
-  october: "October",
-  november: "November",
-  december: "December",
-  
-  // Form validations
-  error: "Error",
-  success: "Success",
-  enterMealName: "Please enter a meal name",
-  enterValidCalories: "Please enter valid calories",
-  mealAdded: "Meal added successfully",
-  
-  // Stats
-  caloriesBurned: "Calories Burned",
-  caloriesConsumed: "Calories Consumed"
+// Export translation function - now only returns Russian
+export const t = (key: string): string => {
+  return ru[key] || key;
 };
 
 // Russian translations
@@ -195,12 +31,13 @@ const ru: Record<string, string> = {
   
   // Navigation
   home: "Главная",
+  dashboard: "Главная",
   workout: "Тренировки",
+  exercises: "Тренировки",
   nutrition: "Питание",
   profile: "Профиль",
   
   // Dashboard
-  dashboard: "Панель управления",
   yourWorkouts: "Ваши тренировки",
   todayTasks: "Задания на сегодня",
   weeklyActivity: "Активность за неделю",
@@ -268,9 +105,9 @@ const ru: Record<string, string> = {
   
   // Body Metrics
   bmi: "ИМТ",
-  underweight: "Недостаточный вес",
-  normal: "Нормальный",
-  overweight: "Избыточный вес",
+  underweight: "Недостаток",
+  normal: "Нормально",
+  overweight: "Избыток",
   obese: "Ожирение",
   currentWeight: "Текущий вес",
   currentHeight: "Текущий рост",
@@ -280,6 +117,7 @@ const ru: Record<string, string> = {
   thisWeek: "Эта неделя",
   thisMonth: "Этот месяц",
   viewMonthly: "Помесячный просмотр",
+  hideMonthly: "Скрыть помесячный вид",
   
   // Greetings
   goodMorning: "Доброе утро",
@@ -299,6 +137,7 @@ const ru: Record<string, string> = {
   // Nutrition
   calorieCalculator: "Калькулятор калорий",
   trackYourCalories: "Отслеживайте потребление калорий",
+  nutritionDesc: "Отслеживайте питание и достигайте своих целей",
   addMeal: "Добавить прием пищи",
   mealName: "Название блюда",
   calorieAmount: "Калории",
@@ -314,6 +153,15 @@ const ru: Record<string, string> = {
   friday: "Пятница",
   saturday: "Суббота",
   sunday: "Воскресенье",
+  
+  // Short day names
+  mon: "Пн",
+  tue: "Вт",
+  wed: "Ср",
+  thu: "Чт",
+  fri: "Пт",
+  sat: "Сб",
+  sun: "Вс",
   
   // Months
   january: "Январь",
@@ -338,5 +186,18 @@ const ru: Record<string, string> = {
   
   // Stats
   caloriesBurned: "Сожжено калорий",
-  caloriesConsumed: "Потреблено калорий"
+  caloriesConsumed: "Потреблено калорий",
+  
+  // Tasks & Activities
+  completeExercises: "Выполните упражнения на сегодня",
+  youCompleted: "Вы выполнили",
+  taskCompleted: "Задание выполнено",
+  moreDetails: "Подробнее",
+  
+  // Calendar
+  selectDate: "Выбрать дату"
 };
+
+// English translations - kept for backward compatibility
+const en: Record<string, string> = {};
+

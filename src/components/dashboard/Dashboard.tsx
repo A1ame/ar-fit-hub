@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -25,15 +24,14 @@ const getGreeting = () => {
   return "goodEvening";
 };
 
-// Sample data for the chart
 const defaultActivityData = [
-  { day: "Mon", calories: 0 },
-  { day: "Tue", calories: 0 },
-  { day: "Wed", calories: 0 },
-  { day: "Thu", calories: 0 },
-  { day: "Fri", calories: 0 },
-  { day: "Sat", calories: 0 },
-  { day: "Sun", calories: 0 },
+  { day: "Пн", calories: 0 },
+  { day: "Вт", calories: 0 },
+  { day: "Ср", calories: 0 },
+  { day: "Чт", calories: 0 },
+  { day: "Пт", calories: 0 },
+  { day: "Сб", calories: 0 },
+  { day: "Вс", calories: 0 },
 ];
 
 const Dashboard = () => {
@@ -42,16 +40,8 @@ const Dashboard = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [tasks, setTasks] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
-  const [activityData, setActivityData] = useState(() => {
-    const days = language === "ru" 
-      ? [{ day: "Пн", calories: 0 }, { day: "Вт", calories: 0 }, { day: "Ср", calories: 0 }, 
-         { day: "Чт", calories: 0 }, { day: "Пт", calories: 0 }, { day: "Сб", calories: 0 }, 
-         { day: "Вс", calories: 0 }]
-      : defaultActivityData;
-    return days;
-  });
+  const [activityData, setActivityData] = useState(defaultActivityData);
   
-  // Calculate calories burned based on completed tasks
   const calculateCaloriesBurned = (tasks: any[]) => {
     return tasks.reduce((total, task) => {
       if (task.completed) {
@@ -61,13 +51,10 @@ const Dashboard = () => {
     }, 0);
   };
   
-  // Update activity data for the current day
   const updateActivityData = (caloriesBurned: number) => {
     const today = new Date().getDay();
-    // Convert to 0-6 where 0 is Monday (not Sunday)
     const dayIndex = today === 0 ? 6 : today - 1;
     
-    // Update chart data immediately
     const newActivityData = [...activityData];
     newActivityData[dayIndex] = {
       ...newActivityData[dayIndex],
@@ -75,13 +62,11 @@ const Dashboard = () => {
     };
     setActivityData(newActivityData);
     
-    // Get current user data to update stats
     const currentUser = userData;
     if (currentUser && currentUser.stats) {
       const newCalories = [...currentUser.stats.calories];
       newCalories[dayIndex] = caloriesBurned;
       
-      // Update user stats
       const updatedUser = {
         ...currentUser,
         stats: {
@@ -90,24 +75,18 @@ const Dashboard = () => {
         }
       };
       
-      // Save updated user data
       saveCurrentUser(updatedUser);
       setUserData(updatedUser);
     }
   };
   
   useEffect(() => {
-    // Load user data from localStorage
     const currentUser = getCurrentUser();
     if (currentUser) {
       setUserData(currentUser);
       
-      // Initialize activity data from user stats
       if (currentUser.stats && currentUser.stats.calories) {
-        const days = language === "ru" 
-          ? ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] 
-          : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
+        const days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
         const newActivityData = currentUser.stats.calories.map((cal: number, index: number) => ({
           day: days[index],
           calories: cal
@@ -115,7 +94,6 @@ const Dashboard = () => {
         setActivityData(newActivityData);
       }
       
-      // Load or generate tasks for today for the current user
       const today = new Date().toISOString().split('T')[0];
       const taskKey = `ar-fit-tasks-${currentUser.id}-${today}`;
       const storedTasks = localStorage.getItem(taskKey);
@@ -124,11 +102,9 @@ const Dashboard = () => {
         const parsedTasks = JSON.parse(storedTasks);
         setTasks(parsedTasks);
         
-        // Calculate progress
         const completedPercentage = parsedTasks.filter((t: any) => t.completed).length / parsedTasks.length * 100;
         setProgress(completedPercentage || 0);
         
-        // Calculate calories burned
         const calories = calculateCaloriesBurned(parsedTasks);
         updateActivityData(calories);
       } else {
@@ -138,9 +114,8 @@ const Dashboard = () => {
         setProgress(0);
       }
     }
-  }, [language]);
+  }, []);
   
-  // Update the tasks when they change
   const updateTasks = (updatedTasks: any[]) => {
     if (!userData) return;
     
@@ -148,11 +123,9 @@ const Dashboard = () => {
     const taskKey = `ar-fit-tasks-${userData.id}-${today}`;
     localStorage.setItem(taskKey, JSON.stringify(updatedTasks));
     
-    // Update progress
     const completedPercentage = updatedTasks.filter(t => t.completed).length / updatedTasks.length * 100;
     setProgress(completedPercentage || 0);
     
-    // Calculate calories burned and update activity data immediately
     const calories = calculateCaloriesBurned(updatedTasks);
     updateActivityData(calories);
     
@@ -174,21 +147,19 @@ const Dashboard = () => {
   };
 
   const getBMIColor = (bmi: number) => {
-    if (bmi < 18.5) return "#3b82f6"; // blue - недостаточный вес
-    if (bmi < 25) return "#22c55e"; // green - нормальный вес
-    if (bmi < 30) return "#f97316"; // orange - избыточный вес
-    return "#ef4444"; // red - ожирение
+    if (bmi < 18.5) return "#3b82f6";
+    if (bmi < 25) return "#22c55e";
+    if (bmi < 30) return "#f97316";
+    return "#ef4444";
   };
 
   const getPositionPercentage = (bmi: number) => {
-    // Ограничиваем BMI между 15 и 40 для масштабирования
     const cappedBMI = Math.max(15, Math.min(40, bmi));
-    // Преобразуем в проценты от 0 до 100
     return (cappedBMI - 15) * 100 / 25;
   };
 
   if (!userData) {
-    return <div>{t("loading", language)}</div>;
+    return <div>{t("loading")}</div>;
   }
 
   const bmi = calculateBMI();
@@ -199,7 +170,6 @@ const Dashboard = () => {
   return (
     <div className="w-full animate-fade-in space-y-6">      
       <div className="flex flex-col md:flex-row gap-6">
-        {/* User stats card */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -209,16 +179,16 @@ const Dashboard = () => {
           <Card className="glass-card h-full border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.02] transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                <span className="text-arfit-purple">{t(getGreeting(), language)},</span>
+                <span className="text-arfit-purple">{t(getGreeting())},</span>
                 <span>{userData.name}</span>
               </CardTitle>
-              <CardDescription>{t("yourFitnessProfile", language)}</CardDescription>
+              <CardDescription>{t("yourFitnessProfile")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <div className="text-left">
-                  <p className="text-sm text-muted-foreground">{t("age", language)}</p>
-                  <p className="text-xl font-medium">{userData.age} {t("years", language)}</p>
+                  <p className="text-sm text-muted-foreground">{t("age")}</p>
+                  <p className="text-xl font-medium">{userData.age} {t("years")}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">BMI</p>
@@ -238,27 +208,27 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="flex justify-between text-xs mt-3 px-1">
-                  <span className="text-blue-500">{t("underweight", language)}</span>
-                  <span className="text-green-500">{t("normal", language)}</span>
-                  <span className="text-orange-500">{t("overweight", language)}</span>
-                  <span className="text-red-500">{t("obese", language)}</span>
+                  <span className="text-blue-500">{t("underweight")}</span>
+                  <span className="text-green-500">{t("normal")}</span>
+                  <span className="text-orange-500">{t("overweight")}</span>
+                  <span className="text-red-500">{t("obese")}</span>
                 </div>
               </div>
               
               <div className="flex justify-between items-center">
                 <div className="text-left">
-                  <p className="text-sm text-muted-foreground">{t("weight", language)}</p>
-                  <p className="text-xl font-medium">{userData.weight} kg</p>
+                  <p className="text-sm text-muted-foreground">{t("weight")}</p>
+                  <p className="text-xl font-medium">{userData.weight} {t("kg")}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">{t("height", language)}</p>
-                  <p className="text-xl font-medium">{userData.height} cm</p>
+                  <p className="text-sm text-muted-foreground">{t("height")}</p>
+                  <p className="text-xl font-medium">{userData.height} {t("cm")}</p>
                 </div>
               </div>
               
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <p className="text-sm text-muted-foreground">{t("todaysGoal", language)}</p>
+                  <p className="text-sm text-muted-foreground">{t("todaysGoal")}</p>
                   <Badge variant="outline" className="bg-arfit-purple/10 text-arfit-purple">
                     {progress.toFixed(0)}%
                   </Badge>
@@ -269,7 +239,6 @@ const Dashboard = () => {
           </Card>
         </motion.div>
         
-        {/* Activity chart */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -278,8 +247,8 @@ const Dashboard = () => {
         >
           <Card className="glass-card h-full border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.02] transition-all">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl font-semibold">{t("weeklyActivity", language)}</CardTitle>
-              <CardDescription>{t("caloriesBurn", language)}</CardDescription>
+              <CardTitle className="text-xl font-semibold">{t("weeklyActivity")}</CardTitle>
+              <CardDescription>{t("caloriesBurn")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-[200px] w-full">
@@ -298,7 +267,7 @@ const Dashboard = () => {
                         border: "none",
                         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
                       }}
-                      formatter={(value) => [`${value} ${t("calories", language)}`, '']}
+                      formatter={(value) => [`${value} ${t("calories")}`, '']}
                     />
                     <Line 
                       type="monotone" 
@@ -315,7 +284,6 @@ const Dashboard = () => {
         </motion.div>
       </div>
       
-      {/* Daily tasks */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

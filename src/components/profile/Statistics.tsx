@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +6,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import { BarChart3, Calendar as CalendarIcon } from "lucide-react";
 import { getCurrentUser } from "@/utils/userUtils";
@@ -18,10 +16,9 @@ interface DailyStatProps {
   caloriesConsumed: number;
   weight: number;
   height: number;
-  language: 'en' | 'ru';
 }
 
-const DailyStatDetails = ({ date, caloriesBurned, caloriesConsumed, weight, height, language }: DailyStatProps) => {
+const DailyStatDetails = ({ date, caloriesBurned, caloriesConsumed, weight, height }: DailyStatProps) => {
   const formattedDate = format(date, 'PP');
   
   return (
@@ -29,20 +26,20 @@ const DailyStatDetails = ({ date, caloriesBurned, caloriesConsumed, weight, heig
       <h3 className="font-medium">{formattedDate}</h3>
       <div className="space-y-2">
         <div className="flex justify-between">
-          <span className="text-sm text-muted-foreground">{t("caloriesBurned", language)}:</span>
+          <span className="text-sm text-muted-foreground">{t("caloriesBurned")}:</span>
           <span className="font-medium">{caloriesBurned}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-sm text-muted-foreground">{t("caloriesConsumed", language)}:</span>
+          <span className="text-sm text-muted-foreground">{t("caloriesConsumed")}:</span>
           <span className="font-medium">{caloriesConsumed}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-sm text-muted-foreground">{t("currentWeight", language)}:</span>
-          <span className="font-medium">{weight} {t("kg", language)}</span>
+          <span className="text-sm text-muted-foreground">{t("currentWeight")}:</span>
+          <span className="font-medium">{weight} {t("kg")}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-sm text-muted-foreground">{t("currentHeight", language)}:</span>
-          <span className="font-medium">{height} {t("cm", language)}</span>
+          <span className="text-sm text-muted-foreground">{t("currentHeight")}:</span>
+          <span className="font-medium">{height} {t("cm")}</span>
         </div>
       </div>
     </div>
@@ -50,7 +47,6 @@ const DailyStatDetails = ({ date, caloriesBurned, caloriesConsumed, weight, heig
 };
 
 const Statistics = () => {
-  const { language } = useTheme();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showMonthlyView, setShowMonthlyView] = useState(false);
   const [todayStats, setTodayStats] = useState({
@@ -61,18 +57,16 @@ const Statistics = () => {
   });
   const [monthlyData, setMonthlyData] = useState<any[]>([]);
   
-  // Get calories burned from user stats
   const getTodayCaloriesBurned = () => {
     const user = getCurrentUser();
     if (user && user.stats && user.stats.calories) {
       const today = new Date().getDay();
-      const dayIndex = today === 0 ? 6 : today - 1; // Convert to 0-6 where 0 is Monday
+      const dayIndex = today === 0 ? 6 : today - 1;
       return user.stats.calories[dayIndex] || 0;
     }
     return 0;
   };
   
-  // Get calories consumed from meals
   const getTodayCaloriesConsumed = () => {
     const user = getCurrentUser();
     if (user && user.meals) {
@@ -86,7 +80,6 @@ const Statistics = () => {
     return 0;
   };
   
-  // Generate monthly data for chart
   const generateMonthlyData = () => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
@@ -102,7 +95,6 @@ const Statistics = () => {
       const date = new Date(currentYear, currentMonth, i);
       const dateString = format(date, 'yyyy-MM-dd');
       
-      // Get calorie data for this day
       let caloriesConsumed = 0;
       if (user.meals) {
         const dayMeals = user.meals.filter((meal: any) => 
@@ -111,8 +103,6 @@ const Statistics = () => {
         caloriesConsumed = dayMeals.reduce((sum: number, meal: any) => sum + meal.calories, 0);
       }
       
-      // For calories burned, we just use what we have for the current week
-      // In a real app, historical data would be available
       let caloriesBurned = 0;
       if (date.getDate() === currentDate.getDate()) {
         caloriesBurned = getTodayCaloriesBurned();
@@ -131,7 +121,6 @@ const Statistics = () => {
     return data;
   };
   
-  // Load data
   useEffect(() => {
     const user = getCurrentUser();
     if (user) {
@@ -149,14 +138,13 @@ const Statistics = () => {
     }
   }, []);
   
-  // Bar chart data for today
   const todayChartData = [
     {
-      name: t("caloriesBurned", language),
+      name: t("caloriesBurned"),
       value: todayStats.caloriesBurned
     },
     {
-      name: t("caloriesConsumed", language),
+      name: t("caloriesConsumed"),
       value: todayStats.caloriesConsumed
     }
   ];
@@ -166,45 +154,43 @@ const Statistics = () => {
       <CardHeader>
         <CardTitle className="text-lg font-semibold flex items-center">
           <BarChart3 className="mr-2 h-5 w-5" />
-          {t("statistics", language)}
+          {t("statistics")}
         </CardTitle>
-        <CardDescription>{t("statisticsDesc", language)}</CardDescription>
+        <CardDescription>{t("statisticsDesc")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Tabs defaultValue="today">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="today">{t("today", language)}</TabsTrigger>
-            <TabsTrigger value="calendar">{t("thisMonth", language)}</TabsTrigger>
+            <TabsTrigger value="today">{t("today")}</TabsTrigger>
+            <TabsTrigger value="calendar">{t("thisMonth")}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="today" className="space-y-4">
-            {/* Today's stats bar chart */}
             <div className="h-[200px] w-full mt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={todayChartData}>
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip 
-                    formatter={(value) => [`${value} ${t("calories", language)}`, '']}
+                    formatter={(value) => [`${value} ${t("calories")}`, '']}
                   />
                   <Bar 
                     dataKey="value" 
                     fill="#8884d8" 
-                    name={t("calories", language)}
+                    name={t("calories")}
                   />
                 </BarChart>
               </ResponsiveContainer>
             </div>
             
-            {/* Today's stats summary */}
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                <div className="text-sm text-muted-foreground">{t("weight", language)}</div>
-                <div className="text-xl font-medium">{todayStats.weight} {t("kg", language)}</div>
+                <div className="text-sm text-muted-foreground">{t("weight")}</div>
+                <div className="text-xl font-medium">{todayStats.weight} {t("kg")}</div>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                <div className="text-sm text-muted-foreground">{t("height", language)}</div>
-                <div className="text-xl font-medium">{todayStats.height} {t("cm", language)}</div>
+                <div className="text-sm text-muted-foreground">{t("height")}</div>
+                <div className="text-xl font-medium">{todayStats.height} {t("cm")}</div>
               </div>
             </div>
           </TabsContent>
@@ -218,7 +204,7 @@ const Statistics = () => {
                     className="flex items-center justify-center"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, 'PPP') : t("selectDate", language)}
+                    {selectedDate ? format(selectedDate, 'PPP') : t("selectDate")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -241,7 +227,6 @@ const Statistics = () => {
                   d.date.getDate() === selectedDate.getDate())?.caloriesConsumed || 0}
                 weight={todayStats.weight}
                 height={todayStats.height}
-                language={language}
               />
             )}
             
@@ -251,7 +236,7 @@ const Statistics = () => {
                 className="w-full"
                 onClick={() => setShowMonthlyView(!showMonthlyView)}
               >
-                {showMonthlyView ? t("hideMonthly", language) : t("viewMonthly", language)}
+                {showMonthlyView ? t("hideMonthly") : t("viewMonthly")}
               </Button>
             </div>
             
@@ -264,20 +249,20 @@ const Statistics = () => {
                     <Tooltip 
                       formatter={(value, name) => {
                         const label = name === "caloriesBurned" 
-                          ? t("caloriesBurned", language) 
-                          : t("caloriesConsumed", language);
-                        return [`${value} ${t("calories", language)}`, label];
+                          ? t("caloriesBurned") 
+                          : t("caloriesConsumed");
+                        return [`${value} ${t("calories")}`, label];
                       }}
                     />
                     <Bar 
                       dataKey="caloriesBurned" 
                       fill="#8884d8" 
-                      name={t("caloriesBurned", language)}
+                      name={t("caloriesBurned")}
                     />
                     <Bar 
                       dataKey="caloriesConsumed" 
                       fill="#82ca9d" 
-                      name={t("caloriesConsumed", language)}
+                      name={t("caloriesConsumed")}
                     />
                   </BarChart>
                 </ResponsiveContainer>

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 
 interface Task {
@@ -24,7 +23,6 @@ interface DailyTasksProps {
 }
 
 const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
-  const { language } = useTheme();
   const navigate = useNavigate();
   
   const toggleTask = (id: string) => {
@@ -37,8 +35,8 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
     const task = tasks.find((t) => t.id === id);
     if (task) {
       if (!task.completed) {
-        toast.success(t("taskCompleted", language), {
-          description: `${t("youCompleted", language)} ${t(task.title, language)}`,
+        toast.success(t("taskCompleted"), {
+          description: `${t("youCompleted")} ${t(task.title)}`,
         });
       }
     }
@@ -65,8 +63,8 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
     <Card className="glass-card border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)] transform hover:scale-[1.01] transition-all">
       <CardHeader>
         <div>
-          <CardTitle className="text-xl font-bold">{t("tasksForToday", language)}</CardTitle>
-          <CardDescription>{t("completeExercises", language)}</CardDescription>
+          <CardTitle className="text-xl font-bold">{t("todayTasks")}</CardTitle>
+          <CardDescription>{t("completeExercises")}</CardDescription>
         </div>
       </CardHeader>
       <CardContent>
@@ -97,16 +95,16 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                         task.completed ? "line-through text-muted-foreground" : ""
                       }`}
                     >
-                      {t(task.title, language)}
+                      {t(task.title)}
                     </label>
                     <Badge className={`${getCategoryColor(task.category)}`}>
-                      {t(task.category, language)}
+                      {t(task.category)}
                     </Badge>
                   </div>
                   <p className={`text-sm text-muted-foreground ${
                     task.completed ? "line-through" : ""
                   }`}>
-                    {t(task.description, language)}
+                    {t(task.description)}
                   </p>
                   <div className="flex justify-end mt-2">
                     <Button
@@ -118,7 +116,7 @@ const DailyTasks: React.FC<DailyTasksProps> = ({ tasks, updateTasks }) => {
                         navigateToExercise(task.category);
                       }}
                     >
-                      {t("moreDetails", language)}
+                      {t("moreDetails")}
                     </Button>
                   </div>
                 </div>
