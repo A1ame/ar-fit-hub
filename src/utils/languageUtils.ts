@@ -903,6 +903,88 @@ const translations: Record<string, Record<'en' | 'ru', string>> = {
   weeklyIntake: {
     en: "Weekly calorie intake",
     ru: "Потребление калорий за неделю"
+  },
+  
+  // Additional translations for Today's Tasks
+  dynamicStretching: {
+    en: "Dynamic Stretching",
+    ru: "Динамическая растяжка"
+  },
+  morningExercise: {
+    en: "Morning Exercise",
+    ru: "Утренняя зарядка"
+  },
+  waterIntake: {
+    en: "Water Intake",
+    ru: "Приём воды"
+  },
+  eveningWalk: {
+    en: "Evening Walk",
+    ru: "Вечерняя прогулка"
+  },
+  
+  // Categories
+  warmupStretching: {
+    en: "Warmup & Stretching",
+    ru: "Разминка и растяжка"
+  },
+  stretchingWorkout: {
+    en: "Stretching Workout",
+    ru: "Растяжка"
+  },
+  cardioWorkout: {
+    en: "Cardio Workout",
+    ru: "Кардио тренировка"
+  },
+  strengthWorkout: {
+    en: "Strength Workout",
+    ru: "Силовая тренировка"
+  },
+  
+  // Statistics
+  statistics: {
+    en: "Statistics",
+    ru: "Статистика"
+  },
+  statisticsDesc: {
+    en: "View your daily activity and progress",
+    ru: "Просмотр ежедневной активности и прогресса"
+  },
+  dailyActivity: {
+    en: "Daily Activity",
+    ru: "Ежедневная активность"
+  },
+  caloriesBurned: {
+    en: "Calories Burned",
+    ru: "Сожжено калорий"
+  },
+  caloriesConsumed: {
+    en: "Calories Consumed",
+    ru: "Потреблено калорий"
+  },
+  currentWeight: {
+    en: "Current Weight",
+    ru: "Текущий вес"
+  },
+  currentHeight: {
+    en: "Current Height",
+    ru: "Текущий рост"
+  },
+  viewDetails: {
+    en: "View Details",
+    ru: "Просмотр деталей"
+  },
+  details: {
+    en: "Details",
+    ru: "Детали"
+  },
+  dailyStatistics: {
+    en: "Daily Statistics",
+    ru: "Ежедневная статистика"
+  },
+  april: {
+    en: "April",
+    ru: "Апрель"
   }
 };
 

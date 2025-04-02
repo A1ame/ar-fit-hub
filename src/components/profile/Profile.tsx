@@ -13,6 +13,7 @@ import { LogOut, Save, Bell, Moon, Settings, Lock, Globe, UserCircle, Ruler, Wei
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import SubscriptionOptions from "./SubscriptionOptions";
+import Statistics from "./Statistics";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ const Profile = () => {
     <div className="space-y-6">
       <Card className="border-6 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center text-arfit-purple text-3d">{t("profileSettings", language)}</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center text-arfit-purple">{t("profileSettings", language)}</CardTitle>
           <CardDescription>{t("manageAccount", language)}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -136,10 +137,15 @@ const Profile = () => {
           
           <Separator />
           
+          {/* Statistics Section */}
+          <Statistics />
+          
+          <Separator />
+          
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <CreditCard className="mr-2 h-5 w-5" />
-              {t("subscriptions", language) || "Подписки"}
+              {t("subscriptions", language)}
             </h3>
             
             <SubscriptionOptions onSubscriptionChange={handleSubscriptionChange} />
