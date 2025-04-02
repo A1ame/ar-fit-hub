@@ -1,4 +1,18 @@
 
+// Language storage key
+const LANGUAGE_STORAGE_KEY = 'ar-fit-language';
+
+// Get language from localStorage
+export const getLanguage = (): 'en' | 'ru' => {
+  const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  return (storedLanguage === 'en' || storedLanguage === 'ru') ? storedLanguage : 'ru';
+};
+
+// Set language in localStorage
+export const setLanguage = (language: 'en' | 'ru'): void => {
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+};
+
 // Export translation function
 export const t = (key: string, language: 'en' | 'ru'): string => {
   if (language === 'en') {
