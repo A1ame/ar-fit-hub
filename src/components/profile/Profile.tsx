@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { LogOut, Save, Bell, Moon, Settings, Lock, UserCircle, Ruler, Weight, CreditCard } from "lucide-react";
+import { LogOut, Save, Bell, Moon, Settings, Lock, UserCircle, Ruler, Weight, CreditCard, Globe } from "lucide-react";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import SubscriptionOptions from "./SubscriptionOptions";
@@ -15,7 +16,7 @@ import Statistics from "./Statistics";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, language, setLanguage } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [name, setName] = useState("");
@@ -189,6 +190,23 @@ const Profile = () => {
                   id="darkMode"
                   checked={theme === "dark"}
                   onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="language" className="flex items-center">
+                    <Globe className="mr-2 h-4 w-4" />
+                    {t("language")}
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t("languageDesc")}
+                  </p>
+                </div>
+                <Switch
+                  id="language"
+                  checked={language === 'en'}
+                  onCheckedChange={(checked) => setLanguage(checked ? 'en' : 'ru')}
                 />
               </div>
             </div>

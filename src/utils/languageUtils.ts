@@ -2,18 +2,28 @@
 // Language storage key
 const LANGUAGE_STORAGE_KEY = 'ar-fit-language';
 
-// Get language - now always returns 'ru'
-export const getLanguage = (): 'ru' => {
-  return 'ru';
+// Language types
+export type Language = 'ru' | 'en';
+
+// Get language from localStorage or return default (ru)
+export const getLanguage = (): Language => {
+  const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language;
+  return storedLanguage || 'ru';
 };
 
-// Set language in localStorage - kept for compatibility
-export const setLanguage = (language: 'ru'): void => {
+// Set language in localStorage
+export const setLanguage = (language: Language): void => {
   localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
 };
 
-// Export translation function - now only returns Russian
+// Export translation function
 export const t = (key: string): string => {
+  const language = getLanguage();
+  
+  if (language === 'en') {
+    return en[key] || key;
+  }
+  
   return ru[key] || key;
 };
 
@@ -195,9 +205,188 @@ const ru: Record<string, string> = {
   moreDetails: "Подробнее",
   
   // Calendar
-  selectDate: "Выбрать дату"
+  selectDate: "Выбрать дату",
+  
+  // Language Switching
+  changeLanguage: "Сменить язык",
+  welcome: "Добро пожаловать",
+  login: "Вход",
+  register: "Регистрация",
+  continue: "Продолжить",
+  dontHaveAccount: "Еще нет аккаунта?",
+  alreadyHaveAccount: "Уже есть аккаунт?",
+  goBack: "Назад",
+  invalidCredentials: "Неверные учетные данные",
 };
 
-// English translations - kept for backward compatibility
-const en: Record<string, string> = {};
-
+// English translations
+const en: Record<string, string> = {
+  // Auth
+  signIn: "Sign In",
+  signUp: "Sign Up",
+  email: "Email",
+  password: "Password",
+  forgotPassword: "Forgot password?",
+  noAccount: "Don't have an account?",
+  createAccount: "Create Account",
+  haveAccount: "Already have an account?",
+  
+  // Navigation
+  home: "Home",
+  dashboard: "Home",
+  workout: "Workouts",
+  exercises: "Exercises",
+  nutrition: "Nutrition",
+  profile: "Profile",
+  
+  // Profile
+  profileSettings: "Profile Settings",
+  manageAccount: "Manage your account and settings",
+  personalInfo: "Personal Information",
+  name: "Name",
+  gender: "Gender",
+  age: "Age",
+  years: "years",
+  height: "Height",
+  weight: "Weight",
+  saveChanges: "Save Changes",
+  preferences: "Preferences",
+  notifications: "Notifications",
+  notificationsDesc: "Receive workout reminders and updates",
+  darkMode: "Dark Mode",
+  darkModeDesc: "Toggle between light and dark themes",
+  language: "Language",
+  languageDesc: "Change application language",
+  account: "Account",
+  logOut: "Log Out",
+  
+  // Units
+  cm: "cm",
+  kg: "kg",
+  calories: "calories",
+  
+  // Toasts
+  profileUpdated: "Profile updated successfully",
+  loggedOut: "Logged out successfully",
+  
+  // Language Selection
+  english: "English",
+  russian: "Russian",
+  
+  // Tasks
+  complete: "Complete",
+  completed: "Completed",
+  markAsDone: "Mark as done",
+  strength: "Strength",
+  cardio: "Cardio",
+  flexibility: "Flexibility",
+  
+  // Statistics
+  statistics: "Statistics",
+  statisticsDesc: "Track your progress",
+  
+  // Body Metrics
+  bmi: "BMI",
+  underweight: "Underweight",
+  normal: "Normal",
+  overweight: "Overweight",
+  obese: "Obese",
+  currentWeight: "Current Weight",
+  currentHeight: "Current Height",
+  
+  // Time-related
+  today: "Today",
+  thisWeek: "This Week",
+  thisMonth: "This Month",
+  viewMonthly: "View Monthly",
+  hideMonthly: "Hide Monthly View",
+  
+  // Greetings
+  goodMorning: "Good Morning",
+  goodAfternoon: "Good Afternoon",
+  goodEvening: "Good Evening",
+  yourFitnessProfile: "Your Fitness Profile",
+  
+  // Goals
+  todaysGoal: "Today's Goal",
+  
+  // Subscriptions
+  subscriptions: "Subscriptions",
+  
+  // Loading
+  loading: "Loading...",
+  
+  // Nutrition
+  calorieCalculator: "Calorie Calculator",
+  trackYourCalories: "Track your calorie intake",
+  nutritionDesc: "Track nutrition and achieve your goals",
+  addMeal: "Add Meal",
+  mealName: "Meal Name",
+  calorieAmount: "Calories",
+  calorieHistory: "Calorie History",
+  day: "Day",
+  total: "Total",
+  
+  // Days of the week
+  monday: "Monday",
+  tuesday: "Tuesday",
+  wednesday: "Wednesday",
+  thursday: "Thursday",
+  friday: "Friday",
+  saturday: "Saturday",
+  sunday: "Sunday",
+  
+  // Short day names
+  mon: "Mon",
+  tue: "Tue",
+  wed: "Wed",
+  thu: "Thu",
+  fri: "Fri",
+  sat: "Sat",
+  sun: "Sun",
+  
+  // Months
+  january: "January",
+  february: "February",
+  march: "March",
+  april: "April",
+  may: "May",
+  june: "June",
+  july: "July",
+  august: "August",
+  september: "September",
+  october: "October",
+  november: "November",
+  december: "December",
+  
+  // Form validations
+  error: "Error",
+  success: "Success",
+  enterMealName: "Please enter a meal name",
+  enterValidCalories: "Please enter a valid calorie amount",
+  mealAdded: "Meal added successfully",
+  
+  // Stats
+  caloriesBurned: "Calories Burned",
+  caloriesConsumed: "Calories Consumed",
+  
+  // Tasks & Activities
+  completeExercises: "Complete today's exercises",
+  youCompleted: "You completed",
+  taskCompleted: "Task completed",
+  moreDetails: "More Details",
+  
+  // Calendar
+  selectDate: "Select Date",
+  
+  // Language Switching
+  changeLanguage: "Change Language",
+  welcome: "Welcome",
+  login: "Login",
+  register: "Register",
+  continue: "Continue",
+  dontHaveAccount: "Don't have an account?",
+  alreadyHaveAccount: "Already have an account?",
+  goBack: "Go Back",
+  invalidCredentials: "Invalid credentials",
+};

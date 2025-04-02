@@ -25,7 +25,7 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse-subtle">{t("loading", language)}</div>
+        <div className="animate-pulse-subtle">{t("loading")}</div>
       </div>
     );
   }

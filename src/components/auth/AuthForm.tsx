@@ -47,7 +47,7 @@ const AuthForm = () => {
       if (user) {
         navigate("/dashboard");
       } else {
-        toast.error(t("invalidCredentials", language));
+        toast.error(t("invalidCredentials"));
       }
     } else {
       setStep("gender");
@@ -111,7 +111,7 @@ const AuthForm = () => {
           className="absolute top-4 left-4 flex items-center p-2"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("goBack", language)}
+          {t("goBack")}
         </Button>
         <GenderSelection onSelect={handleGenderSelect} />
       </>
@@ -127,20 +127,18 @@ const AuthForm = () => {
           className="absolute top-4 left-4 flex items-center p-2"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("goBack", language)}
+          {t("goBack")}
         </Button>
         <ProfileSetup onComplete={handleProfileComplete} gender={gender || "male"} />
       </>
     );
   }
 
-  const welcomeText = t("welcome", language);
-
   return (
     <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
       <CardHeader className="pb-2">
         <CardTitle className="text-3xl font-bold text-center text-arfit-purple text-3d">
-          {welcomeText}
+          {t("welcome")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -151,20 +149,20 @@ const AuthForm = () => {
               onClick={() => setIsLogin(true)}
               className="data-[state=active]:bg-arfit-purple data-[state=active]:text-white"
             >
-              {t("login", language)}
+              {t("login")}
             </TabsTrigger>
             <TabsTrigger 
               value="register" 
               onClick={() => setIsLogin(false)}
               className="data-[state=active]:bg-arfit-purple data-[state=active]:text-white"
             >
-              {t("register", language)}
+              {t("register")}
             </TabsTrigger>
           </TabsList>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">{t("email", language)}</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -176,7 +174,7 @@ const AuthForm = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{t("password", language)}</Label>
+              <Label htmlFor="password">{t("password")}</Label>
               <Input
                 id="password"
                 type="password"
@@ -190,19 +188,19 @@ const AuthForm = () => {
               type="submit" 
               className={`w-full glass-button ${isMobile ? 'py-3 text-base' : ''}`}
             >
-              {isLogin ? t("login", language) : t("continue", language)}
+              {isLogin ? t("login") : t("continue")}
             </Button>
           </form>
         </Tabs>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
         <p className="text-sm text-muted-foreground">
-          {isLogin ? t("dontHaveAccount", language) : t("alreadyHaveAccount", language)}
+          {isLogin ? t("dontHaveAccount") : t("alreadyHaveAccount")}
           <button 
             onClick={() => setIsLogin(!isLogin)}
             className="text-arfit-purple hover:underline ml-1"
           >
-            {isLogin ? t("register", language) : t("login", language)}
+            {isLogin ? t("register") : t("login")}
           </button>
         </p>
         

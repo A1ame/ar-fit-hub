@@ -12,7 +12,6 @@ import ExercisesPage from "./pages/ExercisesPage";
 import NutritionPage from "./pages/NutritionPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
-import { getLanguage } from "./utils/languageUtils";
 import "./App.css";
 
 // Add Google Fonts Jost
@@ -24,11 +23,9 @@ document.head.appendChild(fontLink);
 const queryClient = new QueryClient();
 
 const App = () => {
-  const defaultLanguage = getLanguage();
-  
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" defaultLanguage="ru">
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
           <Sonner />
