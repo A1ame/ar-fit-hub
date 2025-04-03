@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 import { fs, path } from './fsMiddleware';
 
@@ -54,8 +55,10 @@ const DB_FILE_PATH = path.join('src', 'data', 'users-db.json');
 
 // Ensure data directory exists
 const ensureDataDir = () => {
+  console.log('Ensuring data directory exists...');
   const dir = path.dirname(DB_FILE_PATH);
   if (!fs.existsSync(dir)) {
+    console.log(`Creating directory: ${dir}`);
     fs.mkdirSync(dir, { recursive: true });
   }
 };
@@ -63,17 +66,26 @@ const ensureDataDir = () => {
 // Initialize db file if it doesn't exist
 const initDbFile = () => {
   ensureDataDir();
+  console.log(`Checking if database file exists: ${DB_FILE_PATH}`);
   if (!fs.existsSync(DB_FILE_PATH)) {
+    console.log('Creating empty users database file');
     fs.writeFileSync(DB_FILE_PATH, JSON.stringify([], null, 2));
+    console.log('Users database file created successfully');
+  } else {
+    console.log('Users database file already exists');
   }
 };
 
 // Get all users from JSON file
 export const getUsers = (): UserData[] => {
   try {
+    console.log('Getting all users from database');
     initDbFile();
     const data = fs.readFileSync(DB_FILE_PATH, 'utf8');
-    return JSON.parse(data);
+    console.log(`Read ${data.length} bytes from users database`);
+    const users = JSON.parse(data);
+    console.log(`Found ${users.length} users in database`);
+    return users;
   } catch (error) {
     console.error('Error reading user database:', error);
     return [];
@@ -83,8 +95,10 @@ export const getUsers = (): UserData[] => {
 // Save users to JSON file
 export const saveUsers = (users: UserData[]): void => {
   try {
+    console.log(`Saving ${users.length} users to database`);
     ensureDataDir();
-    fs.writeFileSync(DB_FILE_PATH, JSON.stringify(users, null, 2));
+    const data = JSON.stringify(users, null, 2);
+    fs.writeFileSync(DB_FILE_PATH, data);
     console.log('User data successfully saved to database file');
   } catch (error) {
     console.error('Error saving user database:', error);
@@ -101,14 +115,17 @@ export const getCurrentUser = (): UserData | null => {
 
 // Save current user and update in database
 export const saveCurrentUser = (user: UserData): void => {
+  console.log(`Saving current user: ${user.name} (${user.id})`);
   currentUserSession = user;
   
   const users = getUsers();
   const userIndex = users.findIndex(u => u.id === user.id);
   
   if (userIndex !== -1) {
+    console.log(`Updating existing user at index ${userIndex}`);
     users[userIndex] = user;
   } else {
+    console.log('Adding new user to database');
     users.push(user);
   }
   
@@ -117,32 +134,39 @@ export const saveCurrentUser = (user: UserData): void => {
 
 // Add new user to database
 export const addUser = (user: UserData): void => {
+  console.log('Adding new user to database');
   const users = getUsers();
   
   if (!user.id) {
     user.id = uuidv4();
+    console.log(`Generated new user ID: ${user.id}`);
   }
   
   const existingUser = users.find(u => u.email === user.email);
   if (existingUser) {
+    console.error(`User with email ${user.email} already exists`);
     throw new Error('Пользователь с таким email уже существует');
   }
   
   users.push(user);
+  console.log(`Added user: ${user.name} (${user.id})`);
   saveUsers(users);
 };
 
 // Authenticate user
 export const authenticateUser = (email: string, password: string): UserData | null => {
+  console.log(`Authenticating user: ${email}`);
   const users = getUsers();
   const user = users.find(u => u.email === email && u.password === password);
   
   if (user) {
+    console.log(`User authenticated successfully: ${user.name} (${user.id})`);
     const loggedInUser = { ...user, loggedIn: true };
     saveCurrentUser(loggedInUser);
     return loggedInUser;
   }
   
+  console.log('Authentication failed: invalid credentials');
   return null;
 };
 
