@@ -1,4 +1,6 @@
+
 import { v4 as uuidv4 } from 'uuid';
+import { saveAs } from 'file-saver';
 
 export interface MealEntry {
   id: string;
@@ -51,28 +53,33 @@ export const defaultStats = {
 const USER_DATA_FILE = 'ar-fit-users-data.json';
 
 /**
- * Получение списка всех пользователей из localStorage
+ * Получение списка всех пользователей из localStorage и файла
  */
 export const getUsers = (): UserData[] => {
   try {
+    // Сначала пробуем получить из localStorage
     const usersJson = localStorage.getItem('ar-fit-users');
     if (usersJson) {
       return JSON.parse(usersJson);
     }
   } catch (error) {
-    console.error('Ошибка при получении данных пользователей:', error);
+    console.error('Ошибка при получении данных пользователей из localStorage:', error);
   }
   return [];
 };
 
 /**
- * Сохранение списка пользователей в localStorage
+ * Сохранение списка пользователей в localStorage и файл
  */
 export const saveUsers = (users: UserData[]): void => {
+  // Сохраняем в localStorage
   localStorage.setItem('ar-fit-users', JSON.stringify(users));
   
-  // Больше не скачиваем файл при каждом сохранении
-  // Данные хранятся только в localStorage
+  // Создаем и сохраняем JSON файл
+  const usersJsonBlob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
+  saveAs(usersJsonBlob, USER_DATA_FILE);
+  
+  console.log(`Данные пользователей успешно сохранены в файл ${USER_DATA_FILE}`);
 };
 
 /**
@@ -97,8 +104,15 @@ export const saveCurrentUser = (user: UserData): void => {
   localStorage.setItem('ar-fit-user', JSON.stringify(user));
   
   const users = getUsers();
-  const updatedUsers = users.map(u => u.id === user.id ? user : u);
-  saveUsers(updatedUsers);
+  const userIndex = users.findIndex(u => u.id === user.id);
+  
+  if (userIndex !== -1) {
+    users[userIndex] = user;
+  } else {
+    users.push(user);
+  }
+  
+  saveUsers(users);
 };
 
 /**
@@ -175,15 +189,41 @@ export const updateUserData = (userId: string, updatedFields: Partial<UserData>)
 };
 
 /**
- * Экспорт данных всех пользователей в JSON файл - функция сохранена для совместимости
- * но не используется автоматически при каждом изменении
+ * Ручной импорт данных из JSON файла
+ * Эта функция можно использовать для загрузки данных из файла
  */
-export const exportUsersToJSON = (): void => {
-  console.log("Экспорт данных пользователей можно сделать вручную");
+export const importUsersFromFile = (file: File): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const users = JSON.parse(content);
+        
+        if (!Array.isArray(users)) {
+          throw new Error('Некорректный формат данных');
+        }
+        
+        saveUsers(users);
+        resolve(true);
+      } catch (error) {
+        console.error('Ошибка при импорте данных пользователей:', error);
+        reject(error);
+      }
+    };
+    
+    reader.onerror = (error) => {
+      console.error('Ошибка при чтении файла:', error);
+      reject(error);
+    };
+    
+    reader.readAsText(file);
+  });
 };
 
 /**
- * Импорт данных пользователей из JSON файла
+ * Импорт данных пользователей из JSON строки
  */
 export const importUsersFromJSON = (jsonData: string): boolean => {
   try {

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { LogOut, Save, Bell, Moon, Settings, Lock, UserCircle, Ruler, Weight, CreditCard, Globe } from "lucide-react";
+import { LogOut, Save, Bell, Moon, Settings, Lock, UserCircle, Ruler, Weight, CreditCard, Globe, Download, Upload } from "lucide-react";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import SubscriptionOptions from "./SubscriptionOptions";
@@ -19,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { saveUsers, getUsers, importUsersFromFile } from "@/utils/userUtils";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -58,11 +58,34 @@ const Profile = () => {
   };
 
   const handleSubscriptionChange = () => {
-    // Refresh user data after subscription change
     const storedUser = localStorage.getItem("ar-fit-user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+  };
+  
+  const handleDownloadUserData = () => {
+    const users = getUsers();
+    saveUsers(users);
+    toast.success(t("userDataDownloaded"));
+  };
+  
+  const handleUploadUserData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    importUsersFromFile(file)
+      .then(() => {
+        toast.success(t("userDataUploaded"));
+        const storedUser = localStorage.getItem("ar-fit-user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+      })
+      .catch((error) => {
+        toast.error(t("errorUploadingData"));
+        console.error("Error uploading user data:", error);
+      });
   };
   
   if (!user) {
@@ -71,7 +94,28 @@ const Profile = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-between mb-2">
+        <div>
+          <input
+            type="file"
+            id="file-upload"
+            accept=".json"
+            className="hidden"
+            onChange={handleUploadUserData}
+          />
+          <label htmlFor="file-upload">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 mr-2" asChild>
+              <span>
+                <Upload className="h-4 w-4" />
+                {t("uploadData")}
+              </span>
+            </Button>
+          </label>
+          <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={handleDownloadUserData}>
+            <Download className="h-4 w-4" />
+            {t("downloadData")}
+          </Button>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
@@ -161,7 +205,6 @@ const Profile = () => {
           
           <Separator />
           
-          {/* Statistics Section */}
           <Statistics />
           
           <Separator />
