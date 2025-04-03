@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { LogOut, Save, Bell, Moon, Settings, Lock, UserCircle, Ruler, Weight, CreditCard, Globe, Download, Upload } from "lucide-react";
+import { LogOut, Save, Bell, Moon, Settings, Lock, UserCircle, Ruler, Weight, CreditCard, Globe } from "lucide-react";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import SubscriptionOptions from "./SubscriptionOptions";
@@ -18,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { saveUsers, getUsers, importUsersFromFile } from "@/utils/userUtils";
+import { updateUserData, getCurrentUser } from "@/utils/userUtils";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -31,9 +32,8 @@ const Profile = () => {
   const [weight, setWeight] = useState<number>(0);
   
   useEffect(() => {
-    const storedUser = localStorage.getItem("ar-fit-user");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
+    const userData = getCurrentUser();
+    if (userData) {
       setUser(userData);
       setName(userData.name || "");
       setEmail(userData.email || "");
@@ -43,49 +43,26 @@ const Profile = () => {
   }, []);
   
   const handleLogout = () => {
-    localStorage.removeItem("ar-fit-user");
-    toast.success(t("loggedOut"));
-    navigate("/");
+    import("@/utils/authUtils").then(({ logout }) => {
+      logout(navigate, language);
+    });
   };
   
   const handleSaveProfile = () => {
     if (user) {
-      const updatedUser = { ...user, name, email, height, weight };
-      localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      toast.success(t("profileUpdated"));
+      const updatedUser = updateUserData(user.id, { name, email, height, weight });
+      if (updatedUser) {
+        setUser(updatedUser);
+        toast.success(t("profileUpdated", language));
+      }
     }
   };
 
   const handleSubscriptionChange = () => {
-    const storedUser = localStorage.getItem("ar-fit-user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const userData = getCurrentUser();
+    if (userData) {
+      setUser(userData);
     }
-  };
-  
-  const handleDownloadUserData = () => {
-    const users = getUsers();
-    saveUsers(users);
-    toast.success(t("userDataDownloaded"));
-  };
-  
-  const handleUploadUserData = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    
-    importUsersFromFile(file)
-      .then(() => {
-        toast.success(t("userDataUploaded"));
-        const storedUser = localStorage.getItem("ar-fit-user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-      })
-      .catch((error) => {
-        toast.error(t("errorUploadingData"));
-        console.error("Error uploading user data:", error);
-      });
   };
   
   if (!user) {
@@ -94,28 +71,7 @@ const Profile = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between mb-2">
-        <div>
-          <input
-            type="file"
-            id="file-upload"
-            accept=".json"
-            className="hidden"
-            onChange={handleUploadUserData}
-          />
-          <label htmlFor="file-upload">
-            <Button variant="outline" size="sm" className="flex items-center gap-2 mr-2" asChild>
-              <span>
-                <Upload className="h-4 w-4" />
-                {t("uploadData")}
-              </span>
-            </Button>
-          </label>
-          <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={handleDownloadUserData}>
-            <Download className="h-4 w-4" />
-            {t("downloadData")}
-          </Button>
-        </div>
+      <div className="flex justify-end mb-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
@@ -136,18 +92,18 @@ const Profile = () => {
       
       <Card className="border-6 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center text-arfit-purple">{t("profileSettings")}</CardTitle>
-          <CardDescription>{t("manageAccount")}</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center text-arfit-purple">{t("profileSettings", language)}</CardTitle>
+          <CardDescription>{t("manageAccount", language)}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <UserCircle className="mr-2 h-5 w-5" />
-              {t("personalInfo")}
+              {t("personalInfo", language)}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">{t("name")}</Label>
+                <Label htmlFor="name">{t("name", language)}</Label>
                 <Input
                   id="name"
                   value={name}
@@ -155,7 +111,7 @@ const Profile = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">{t("email")}</Label>
+                <Label htmlFor="email">{t("email", language)}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -166,7 +122,7 @@ const Profile = () => {
               <div className="space-y-2">
                 <Label htmlFor="height" className="flex items-center">
                   <Ruler className="mr-2 h-4 w-4" />
-                  {t("height")}
+                  {t("height", language)}
                 </Label>
                 <div className="flex">
                   <Input
@@ -175,13 +131,13 @@ const Profile = () => {
                     value={height}
                     onChange={(e) => setHeight(Number(e.target.value))}
                   />
-                  <span className="ml-2 flex items-center">{t("cm")}</span>
+                  <span className="ml-2 flex items-center">{t("cm", language)}</span>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="weight" className="flex items-center">
                   <Weight className="mr-2 h-4 w-4" />
-                  {t("weight")}
+                  {t("weight", language)}
                 </Label>
                 <div className="flex">
                   <Input
@@ -190,7 +146,7 @@ const Profile = () => {
                     value={weight}
                     onChange={(e) => setWeight(Number(e.target.value))}
                   />
-                  <span className="ml-2 flex items-center">{t("kg")}</span>
+                  <span className="ml-2 flex items-center">{t("kg", language)}</span>
                 </div>
               </div>
             </div>
@@ -199,7 +155,7 @@ const Profile = () => {
               className="w-full mt-4"
             >
               <Save className="mr-2 h-4 w-4" />
-              {t("saveChanges")}
+              {t("saveChanges", language)}
             </Button>
           </div>
           
@@ -212,7 +168,7 @@ const Profile = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <CreditCard className="mr-2 h-5 w-5" />
-              {t("subscriptions")}
+              {t("subscriptions", language)}
             </h3>
             
             <SubscriptionOptions onSubscriptionChange={handleSubscriptionChange} />
@@ -223,7 +179,7 @@ const Profile = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <Settings className="mr-2 h-5 w-5" />
-              {t("preferences")}
+              {t("preferences", language)}
             </h3>
             
             <div className="space-y-4">
@@ -231,10 +187,10 @@ const Profile = () => {
                 <div className="space-y-0.5">
                   <Label htmlFor="notifications" className="flex items-center">
                     <Bell className="mr-2 h-4 w-4" />
-                    {t("notifications")}
+                    {t("notifications", language)}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    {t("notificationsDesc")}
+                    {t("notificationsDesc", language)}
                   </p>
                 </div>
                 <Switch
@@ -248,10 +204,10 @@ const Profile = () => {
                 <div className="space-y-0.5">
                   <Label htmlFor="darkMode" className="flex items-center">
                     <Moon className="mr-2 h-4 w-4" />
-                    {t("darkMode")}
+                    {t("darkMode", language)}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    {t("darkModeDesc")}
+                    {t("darkModeDesc", language)}
                   </p>
                 </div>
                 <Switch
@@ -265,10 +221,10 @@ const Profile = () => {
                 <div className="space-y-0.5">
                   <Label htmlFor="language" className="flex items-center">
                     <Globe className="mr-2 h-4 w-4" />
-                    {t("language")}
+                    {t("language", language)}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    {t("languageDesc")}
+                    {t("languageDesc", language)}
                   </p>
                 </div>
                 <Switch
@@ -285,7 +241,7 @@ const Profile = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <Lock className="mr-2 h-5 w-5" />
-              {t("account")}
+              {t("account", language)}
             </h3>
             <Button 
               variant="destructive" 
@@ -293,7 +249,7 @@ const Profile = () => {
               className="w-full bg-red-500 hover:bg-red-600"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              {t("logOut")}
+              {t("logOut", language)}
             </Button>
           </div>
         </CardContent>
