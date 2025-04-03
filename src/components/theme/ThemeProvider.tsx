@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getLanguage, setLanguage as setStoredLanguage, Language } from "@/utils/languageUtils";
+import { getLanguage, setDefaultLanguage as setStoredLanguage, Language } from "@/utils/languageUtils";
 
 type Theme = "light" | "dark" | "system";
 
