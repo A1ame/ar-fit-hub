@@ -13,6 +13,12 @@ import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import SubscriptionOptions from "./SubscriptionOptions";
 import Statistics from "./Statistics";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -65,6 +71,25 @@ const Profile = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end mb-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              {language === 'ru' ? 'Русский' : 'English'}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setLanguage('ru')}>
+              {language === 'ru' ? '✓ Русский' : 'Русский'}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLanguage('en')}>
+              {language === 'en' ? '✓ English' : 'English'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      
       <Card className="border-6 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center text-arfit-purple">{t("profileSettings")}</CardTitle>
