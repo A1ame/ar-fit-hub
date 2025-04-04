@@ -1,6 +1,12 @@
-
 import { v4 as uuidv4 } from 'uuid';
-import { fs, path } from './fsMiddleware';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  UserCredential,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { auth, db } from './firebase';
 
 export interface MealEntry {
   id: string;
@@ -13,7 +19,7 @@ export interface UserData {
   id: string;
   name: string;
   email: string;
-  password: string;
+  password: string; // Не будем хранить в Firestore
   gender: "male" | "female";
   age: number;
   weight: number;
@@ -37,7 +43,7 @@ export interface UserData {
 
 export interface SubscriptionData {
   type: 'workout' | 'nutrition' | 'combo';
-  duration: 1 | 6 | 12; // months
+  duration: 1 | 6 | 12;
   startDate: string;
   endDate: string;
   price: number;
@@ -50,209 +56,136 @@ export const defaultStats = {
   streakDays: 0
 };
 
-// Path to the JSON database file
-const DB_FILE_PATH = path.join('src', 'data', 'users-db.json');
-
-// Ensure data directory exists
-const ensureDataDir = () => {
-  console.log('Ensuring data directory exists...');
-  const dir = path.dirname(DB_FILE_PATH);
-  if (!fs.existsSync(dir)) {
-    console.log(`Creating directory: ${dir}`);
-    fs.mkdirSync(dir, { recursive: true });
-  }
-};
-
-// Initialize db file if it doesn't exist
-const initDbFile = () => {
-  ensureDataDir();
-  console.log(`Checking if database file exists: ${DB_FILE_PATH}`);
-  if (!fs.existsSync(DB_FILE_PATH)) {
-    console.log('Creating empty users database file');
-    fs.writeFileSync(DB_FILE_PATH, JSON.stringify([], null, 2));
-    console.log('Users database file created successfully');
-  } else {
-    console.log('Users database file already exists');
-  }
-};
-
-// Get all users from JSON file
-export const getUsers = (): UserData[] => {
-  try {
-    console.log('Getting all users from database');
-    initDbFile();
-    const data = fs.readFileSync(DB_FILE_PATH, 'utf8');
-    console.log(`Read ${data.length} bytes from users database`);
-    const users = JSON.parse(data);
-    console.log(`Found ${users.length} users in database`);
-    return users;
-  } catch (error) {
-    console.error('Error reading user database:', error);
-    return [];
-  }
-};
-
-// Save users to JSON file
-export const saveUsers = (users: UserData[]): void => {
-  try {
-    console.log(`Saving ${users.length} users to database`);
-    ensureDataDir();
-    const data = JSON.stringify(users, null, 2);
-    fs.writeFileSync(DB_FILE_PATH, data);
-    console.log('User data successfully saved to database file');
-  } catch (error) {
-    console.error('Error saving user database:', error);
-  }
-};
-
-// Current user session variable (in-memory only)
 let currentUserSession: UserData | null = null;
 
-// Get current logged in user
 export const getCurrentUser = (): UserData | null => {
   return currentUserSession;
 };
 
-// Save current user and update in database
-export const saveCurrentUser = (user: UserData): void => {
+export const saveCurrentUser = async (user: UserData): Promise<void> => {
   console.log(`Saving current user: ${user.name} (${user.id})`);
   currentUserSession = user;
-  
-  const users = getUsers();
-  const userIndex = users.findIndex(u => u.id === user.id);
-  
-  if (userIndex !== -1) {
-    console.log(`Updating existing user at index ${userIndex}`);
-    users[userIndex] = user;
-  } else {
-    console.log('Adding new user to database');
-    users.push(user);
-  }
-  
-  saveUsers(users);
+  const userRef = doc(db, 'users', user.id);
+  await setDoc(userRef, { ...user, password: undefined }, { merge: true }); // Не сохраняем пароль
 };
 
-// Add new user to database
-export const addUser = (user: UserData): void => {
-  console.log('Adding new user to database');
-  const users = getUsers();
-  
-  if (!user.id) {
-    user.id = uuidv4();
-    console.log(`Generated new user ID: ${user.id}`);
-  }
-  
-  const existingUser = users.find(u => u.email === user.email);
-  if (existingUser) {
-    console.error(`User with email ${user.email} already exists`);
-    throw new Error('Пользователь с таким email уже существует');
-  }
-  
-  users.push(user);
-  console.log(`Added user: ${user.name} (${user.id})`);
-  saveUsers(users);
+export const addUser = async (user: Partial<UserData>): Promise<UserData> => {
+  const { email, password, name, gender, age, weight, height } = user;
+  if (!email || !password) throw new Error('Email and password are required');
+
+  const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const uid = userCredential.user.uid;
+
+  const newUser: UserData = {
+    id: uid,
+    name: name || '',
+    email,
+    password: '', // Не храним в Firestore
+    gender: gender || 'male',
+    age: age || 0,
+    weight: weight || 0,
+    height: height || 0,
+    loggedIn: true,
+    createdAt: new Date().toISOString(),
+    stats: defaultStats,
+  };
+
+  await saveCurrentUser(newUser);
+  return newUser;
 };
 
-// Authenticate user
-export const authenticateUser = (email: string, password: string): UserData | null => {
-  console.log(`Authenticating user: ${email}`);
-  const users = getUsers();
-  const user = users.find(u => u.email === email && u.password === password);
-  
-  if (user) {
-    console.log(`User authenticated successfully: ${user.name} (${user.id})`);
-    const loggedInUser = { ...user, loggedIn: true };
-    saveCurrentUser(loggedInUser);
-    return loggedInUser;
+export const authenticateUser = async (email: string, password: string): Promise<UserData | null> => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+    const userRef = doc(db, 'users', uid);
+    const userDoc = await getDoc(userRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data() as UserData;
+      const loggedInUser = { ...userData, loggedIn: true };
+      await saveCurrentUser(loggedInUser);
+      return loggedInUser;
+    }
+    return null;
+  } catch (error) {
+    console.error('Authentication failed:', error);
+    return null;
   }
-  
-  console.log('Authentication failed: invalid credentials');
-  return null;
 };
 
-// Logout user
-export const logoutUser = (): void => {
+export const logoutUser = async (): Promise<void> => {
   const currentUser = getCurrentUser();
   if (currentUser) {
-    const loggedOutUser = { ...currentUser, loggedIn: false };
-    
-    const users = getUsers();
-    const updatedUsers = users.map(u => u.id === currentUser.id ? loggedOutUser : u);
-    saveUsers(updatedUsers);
-    
+    const updatedUser = { ...currentUser, loggedIn: false };
+    await saveCurrentUser(updatedUser);
+    await signOut(auth);
     currentUserSession = null;
   }
 };
 
-// Update user data
-export const updateUserData = (userId: string, updatedFields: Partial<UserData>): UserData | null => {
-  const users = getUsers();
-  const userIndex = users.findIndex(u => u.id === userId);
-  
-  if (userIndex === -1) return null;
-  
-  const updatedUser = { ...users[userIndex], ...updatedFields };
-  users[userIndex] = updatedUser;
-  
-  saveUsers(users);
-  
-  const currentUser = getCurrentUser();
-  if (currentUser && currentUser.id === userId) {
+export const updateUserData = async (userId: string, updatedFields: Partial<UserData>): Promise<UserData | null> => {
+  const userRef = doc(db, 'users', userId);
+  const userDoc = await getDoc(userRef);
+
+  if (!userDoc.exists()) return null;
+
+  const updatedUser = { ...userDoc.data(), ...updatedFields } as UserData;
+  await updateDoc(userRef, updatedFields);
+
+  if (currentUserSession?.id === userId) {
     currentUserSession = updatedUser;
   }
-  
   return updatedUser;
 };
 
-// Check if user has active subscription
 export const hasActiveSubscription = (user: UserData | null, type: 'workout' | 'nutrition'): boolean => {
   if (!user || !user.subscriptions) return false;
-  
+
   const { workout, nutrition } = user.subscriptions;
-  
+
   if (workout?.type === 'combo') {
     const endDate = new Date(workout.endDate);
     if (endDate > new Date()) return true;
   }
-  
+
   const subscription = type === 'workout' ? workout : nutrition;
   if (!subscription) return false;
-  
+
   const endDate = new Date(subscription.endDate);
   return endDate > new Date();
 };
 
-// Activate subscription for user
-export const activateSubscription = (
-  userId: string, 
-  type: 'workout' | 'nutrition' | 'combo', 
+export const activateSubscription = async (
+  userId: string,
+  type: 'workout' | 'nutrition' | 'combo',
   duration: 1 | 6 | 12,
   price: number
-): UserData | null => {
+): Promise<UserData | null> => {
   const user = getCurrentUser();
   if (!user || user.id !== userId) return null;
-  
+
   const startDate = new Date();
   const endDate = new Date();
   endDate.setMonth(endDate.getMonth() + duration);
-  
+
   const subscriptionData: SubscriptionData = {
     type,
     duration,
     startDate: startDate.toISOString(),
     endDate: endDate.toISOString(),
-    price
+    price,
   };
-  
+
   const updatedUser = {
     ...user,
     subscriptions: {
       ...user.subscriptions || {},
       workout: type === 'workout' || type === 'combo' ? subscriptionData : user.subscriptions?.workout || null,
-      nutrition: type === 'nutrition' || type === 'combo' ? subscriptionData : user.subscriptions?.nutrition || null
-    }
+      nutrition: type === 'nutrition' || type === 'combo' ? subscriptionData : user.subscriptions?.nutrition || null,
+    },
   };
-  
-  saveCurrentUser(updatedUser);
+
+  await saveCurrentUser(updatedUser);
   return updatedUser;
 };
