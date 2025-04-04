@@ -5,6 +5,9 @@
 // Simple in-memory storage for development
 const fileSystem: Record<string, string> = {};
 
+// Database file path
+const DB_FILE_PATH = 'src/data/users-db.json';
+
 // Initialize the file system on load
 const initFileSystem = () => {
   console.log('Initializing file system middleware...');
@@ -23,12 +26,19 @@ const initFileSystem = () => {
   }
   
   // Ensure users database exists
-  const usersDbPath = 'src/data/users-db.json';
-  if (!fileSystem[usersDbPath]) {
+  if (!fileSystem[DB_FILE_PATH]) {
     console.log('Users database not found, creating...');
-    fileSystem[usersDbPath] = JSON.stringify([], null, 2);
-    localStorage.setItem(`fs-file:${usersDbPath}`, fileSystem[usersDbPath]);
+    fileSystem[DB_FILE_PATH] = JSON.stringify([], null, 2);
+    localStorage.setItem(`fs-file:${DB_FILE_PATH}`, fileSystem[DB_FILE_PATH]);
     console.log('Users database created successfully');
+  }
+  
+  // Debug: Print the current users database content
+  try {
+    const usersDb = JSON.parse(fileSystem[DB_FILE_PATH]);
+    console.log(`Current users in database: ${usersDb.length}`);
+  } catch (error) {
+    console.error('Error parsing users database:', error);
   }
 };
 
@@ -56,6 +66,17 @@ export const fs = {
     // Also store in localStorage for persistence between page refreshes
     try {
       localStorage.setItem(`fs-file:${path}`, data);
+      
+      // If this is the users database, log the update
+      if (path === DB_FILE_PATH) {
+        try {
+          const usersDb = JSON.parse(data);
+          console.log(`Updated users database. Current users: ${usersDb.length}`);
+        } catch (error) {
+          console.error('Error parsing updated users database:', error);
+        }
+      }
+      
       console.log(`File written successfully: ${path}`);
     } catch (error) {
       console.error('Error writing to localStorage:', error);
@@ -80,7 +101,7 @@ export const fs = {
     }
     
     // If file doesn't exist but it's the users database, create it
-    if (path === 'src/data/users-db.json') {
+    if (path === DB_FILE_PATH) {
       console.log('Users database not found, creating empty database');
       const emptyDb = JSON.stringify([], null, 2);
       fileSystem[path] = emptyDb;
@@ -108,3 +129,19 @@ export const path = {
     return dirPath;
   }
 };
+
+// Create a placeholder file that will be visible in the project structure
+// This won't work in the browser but helps with file system visibility
+export const createPlaceholderFile = () => {
+  console.log('Creating placeholder database file for visualization...');
+  try {
+    const placeholderContent = JSON.stringify([], null, 2);
+    fs.writeFileSync(DB_FILE_PATH, placeholderContent);
+    console.log('Placeholder file created successfully');
+  } catch (error) {
+    console.error('Error creating placeholder file:', error);
+  }
+};
+
+// Call this function to attempt creating the placeholder file
+createPlaceholderFile();
