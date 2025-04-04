@@ -8,11 +8,15 @@ import { type ThemeProviderProps } from "next-themes/dist/types"
 interface ThemeContextType {
   language: "en" | "ru";
   setLanguage: (language: "en" | "ru") => void;
+  theme: string;
+  setTheme: (theme: string) => void;
 }
 
 const ThemeContext = React.createContext<ThemeContextType>({
   language: "en",
   setLanguage: () => {},
+  theme: "system",
+  setTheme: () => {}
 });
 
 export const useTheme = () => React.useContext(ThemeContext);
@@ -30,6 +34,7 @@ export function ThemeProvider({
   const [language, setLanguage] = React.useState<"en" | "ru">(
     defaultLanguage === "ru" ? "ru" : "en"
   );
+  const [theme, setTheme] = React.useState(defaultTheme);
 
   // Store the language preference in localStorage
   React.useEffect(() => {
@@ -44,13 +49,30 @@ export function ThemeProvider({
     if (storedLanguage === "en" || storedLanguage === "ru") {
       setLanguage(storedLanguage);
     }
+    
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      setTheme(storedTheme);
+    }
+  }, []);
+
+  // Update theme in the NextThemesProvider and localStorage
+  const handleThemeChange = React.useCallback((newTheme: string) => {
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ language, setLanguage }}>
+    <ThemeContext.Provider value={{ 
+      language, 
+      setLanguage, 
+      theme, 
+      setTheme: handleThemeChange 
+    }}>
       <NextThemesProvider
         {...props}
         defaultTheme={defaultTheme}
+        theme={theme}
         enableSystem
         attribute="class"
       >
