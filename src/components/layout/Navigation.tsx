@@ -17,7 +17,7 @@ const Navigation = () => {
       path: "/dashboard",
     },
     {
-      name: "workout",
+      name: "exercises",
       icon: <Dumbbell className="h-5 w-5" />,
       path: "/exercises",
     },

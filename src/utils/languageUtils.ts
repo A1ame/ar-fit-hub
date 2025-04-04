@@ -1,586 +1,342 @@
 
-// src/utils/languageUtils.ts
+// Language storage key
+const LANGUAGE_STORAGE_KEY = 'ar-fit-language';
 
-// Функция получения текущего выбранного языка
+// Get language from localStorage
 export const getLanguage = (): 'en' | 'ru' => {
-  const storedLanguage = localStorage.getItem('ar-fit-language');
-  if (storedLanguage === 'en' || storedLanguage === 'ru') {
-    return storedLanguage;
-  }
-  
-  // Определение языка браузера
-  const browserLanguage = navigator.language.split('-')[0];
-  if (browserLanguage === 'ru') {
-    return 'ru';
-  }
-  
-  return 'en'; // Английский по умолчанию
+  const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  return (storedLanguage === 'en' || storedLanguage === 'ru') ? storedLanguage : 'ru';
 };
 
-// Функция установки языка
+// Set language in localStorage
 export const setLanguage = (language: 'en' | 'ru'): void => {
-  localStorage.setItem('ar-fit-language', language);
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
 };
 
-// Словарь с переводами
-const translations: Record<string, Record<'en' | 'ru', string>> = {
-  // Приветствия
-  welcome: {
-    en: 'Welcome to AR-FIT',
-    ru: 'Добро пожаловать в AR-FIT'
-  },
-  goodMorning: {
-    en: 'Good morning',
-    ru: 'Доброе утро'
-  },
-  goodAfternoon: {
-    en: 'Good afternoon',
-    ru: 'Добрый день'
-  },
-  goodEvening: {
-    en: 'Good evening',
-    ru: 'Добрый вечер'
-  },
-  
-  // Аутентификация
-  login: {
-    en: 'Login',
-    ru: 'Вход'
-  },
-  register: {
-    en: 'Register',
-    ru: 'Регистрация'
-  },
-  email: {
-    en: 'Email',
-    ru: 'Эл. почта'
-  },
-  password: {
-    en: 'Password',
-    ru: 'Пароль'
-  },
-  dontHaveAccount: {
-    en: 'Don\'t have an account?',
-    ru: 'Нет учетной записи?'
-  },
-  alreadyHaveAccount: {
-    en: 'Already have an account?',
-    ru: 'Уже есть учетная запись?'
-  },
-  invalidCredentials: {
-    en: 'Invalid email or password',
-    ru: 'Неверная эл. почта или пароль'
-  },
-  loggedOut: {
-    en: 'Successfully logged out',
-    ru: 'Вы успешно вышли из системы'
-  },
-  continue: {
-    en: 'Continue',
-    ru: 'Продолжить'
-  },
-  
-  // Пол
-  selectGender: {
-    en: 'Select Your Gender',
-    ru: 'Выберите ваш пол'
-  },
-  male: {
-    en: 'Male',
-    ru: 'Мужской'
-  },
-  female: {
-    en: 'Female',
-    ru: 'Женский'
-  },
-  
-  // Настройка профиля
-  profileSetup: {
-    en: 'Set Up Your Profile',
-    ru: 'Настройка профиля'
-  },
-  profileUpdated: {
-    en: 'Profile successfully updated',
-    ru: 'Профиль успешно обновлен'
-  },
-  name: {
-    en: 'Name',
-    ru: 'Имя'
-  },
-  age: {
-    en: 'Age',
-    ru: 'Возраст'
-  },
-  years: {
-    en: 'years',
-    ru: 'лет'
-  },
-  height: {
-    en: 'Height',
-    ru: 'Рост'
-  },
-  weight: {
-    en: 'Weight',
-    ru: 'Вес'
-  },
-  cm: {
-    en: 'cm',
-    ru: 'см'
-  },
-  kg: {
-    en: 'kg',
-    ru: 'кг'
-  },
-  
-  // Навигация
-  dashboard: {
-    en: 'Home',
-    ru: 'Главная'
-  },
-  exercises: {
-    en: 'Exercises',
-    ru: 'Тренировки'
-  },
-  nutrition: {
-    en: 'Nutrition',
-    ru: 'Питание'
-  },
-  profile: {
-    en: 'Profile',
-    ru: 'Профиль'
-  },
-  
-  // Проблемные зоны тела
-  bodyProblemsSurvey: {
-    en: 'Body Problems Survey',
-    ru: 'Опрос о проблемных зонах'
-  },
-  bodyProblemsSurveyDesc: {
-    en: 'Select the areas you want to improve',
-    ru: 'Выберите зоны, которые хотите улучшить'
-  },
-  selectBodyParts: {
-    en: 'Select the areas of your body you want to improve:',
-    ru: 'Выберите зоны тела, которые вы хотите улучшить:'
-  },
-  backPain: {
-    en: 'Back',
-    ru: 'Спина'
-  },
-  neck: {
-    en: 'Neck',
-    ru: 'Шея'
-  },
-  shoulders: {
-    en: 'Shoulders',
-    ru: 'Плечи'
-  },
-  arms: {
-    en: 'Arms',
-    ru: 'Руки'
-  },
-  legs: {
-    en: 'Legs',
-    ru: 'Ноги'
-  },
-  knees: {
-    en: 'Knees',
-    ru: 'Колени'
-  },
-  feet: {
-    en: 'Feet',
-    ru: 'Ступни'
-  },
-  chest: {
-    en: 'Chest',
-    ru: 'Грудь'
-  },
-  abdomen: {
-    en: 'Abdomen',
-    ru: 'Живот'
-  },
-  noProblems: {
-    en: 'No problems',
-    ru: 'Нет проблем'
-  },
-  
-  // Пищевые ограничения
-  dietRestrictionsSurvey: {
-    en: 'Dietary Restrictions Survey',
-    ru: 'Пищевые ограничения'
-  },
-  dietRestrictionsSurveyDesc: {
-    en: 'Tell us about your dietary preferences and restrictions',
-    ru: 'Расскажите нам о ваших пищевых предпочтениях и ограничениях'
-  },
-  lactose: {
-    en: 'Lactose intolerance',
-    ru: 'Непереносимость лактозы'
-  },
-  gluten: {
-    en: 'Gluten intolerance',
-    ru: 'Непереносимость глютена'
-  },
-  nuts: {
-    en: 'Nut allergy',
-    ru: 'Аллергия на орехи'
-  },
-  seafood: {
-    en: 'Seafood allergy',
-    ru: 'Аллергия на морепродукты'
-  },
-  eggs: {
-    en: 'Egg allergy',
-    ru: 'Аллергия на яйца'
-  },
-  soy: {
-    en: 'Soy allergy',
-    ru: 'Аллергия на сою'
-  },
-  vegetarian: {
-    en: 'Vegetarian',
-    ru: 'Вегетарианец'
-  },
-  vegan: {
-    en: 'Vegan',
-    ru: 'Веган'
-  },
-  keto: {
-    en: 'Keto diet',
-    ru: 'Кето-диета'
-  },
-  paleo: {
-    en: 'Paleo diet',
-    ru: 'Палео-диета'
-  },
-  noRestrictions: {
-    en: 'No restrictions',
-    ru: 'Нет ограничений'
-  },
-  
-  // Профиль пользователя
-  profileSettings: {
-    en: 'Profile Settings',
-    ru: 'Настройки профиля'
-  },
-  manageAccount: {
-    en: 'Manage your account and preferences',
-    ru: 'Управление учетной записью и настройками'
-  },
-  personalInfo: {
-    en: 'Personal Information',
-    ru: 'Личная информация'
-  },
-  preferences: {
-    en: 'Preferences',
-    ru: 'Предпочтения'
-  },
-  saveChanges: {
-    en: 'Save Changes',
-    ru: 'Сохранить изменения'
-  },
-  notifications: {
-    en: 'Notifications',
-    ru: 'Уведомления'
-  },
-  notificationsDesc: {
-    en: 'Receive reminders and updates',
-    ru: 'Получайте напоминания и обновления'
-  },
-  darkMode: {
-    en: 'Dark Mode',
-    ru: 'Темная тема'
-  },
-  darkModeDesc: {
-    en: 'Toggle dark theme on/off',
-    ru: 'Переключить темную тему'
-  },
-  language: {
-    en: 'Language',
-    ru: 'Язык'
-  },
-  languageDesc: {
-    en: 'Select your preferred language',
-    ru: 'Выберите предпочитаемый язык'
-  },
-  english: {
-    en: 'English',
-    ru: 'Английский'
-  },
-  russian: {
-    en: 'Russian',
-    ru: 'Русский'
-  },
-  account: {
-    en: 'Account',
-    ru: 'Учетная запись'
-  },
-  logOut: {
-    en: 'Log Out',
-    ru: 'Выйти'
-  },
-  goBack: {
-    en: 'Back',
-    ru: 'Назад'
-  },
-  
-  // Панель управления
-  yourFitnessProfile: {
-    en: 'Your fitness profile overview',
-    ru: 'Обзор вашего фитнес-профиля'
-  },
-  weeklyActivity: {
-    en: 'Weekly Activity',
-    ru: 'Активность за неделю'
-  },
-  caloriesBurn: {
-    en: 'Calories burned throughout the week',
-    ru: 'Сожженные калории за неделю'
-  },
-  calories: {
-    en: 'calories',
-    ru: 'калорий'
-  },
-  todaysGoal: {
-    en: 'Today\'s Goal',
-    ru: 'Цель на сегодня'
-  },
-  tasksForToday: {
-    en: 'Tasks for Today',
-    ru: 'Задания на сегодня'
-  },
-  tasksDesc: {
-    en: 'Complete these tasks to reach your goals',
-    ru: 'Выполните эти задания, чтобы достичь своих целей'
-  },
-  
-  // Индекс массы тела
-  underweight: {
-    en: 'Underweight',
-    ru: 'Недовес'
-  },
-  normal: {
-    en: 'Normal',
-    ru: 'Норма'
-  },
-  overweight: {
-    en: 'Overweight',
-    ru: 'Избыточный'
-  },
-  obese: {
-    en: 'Obese',
-    ru: 'Ожирение'
-  },
-  
-  // Категории тренировок
-  strength: {
-    en: 'Strength',
-    ru: 'Сила'
-  },
-  cardio: {
-    en: 'Cardio',
-    ru: 'Кардио'
-  },
-  flexibility: {
-    en: 'Flexibility',
-    ru: 'Гибкость'
-  },
-  
-  // Скоро
-  comingSoon: {
-    en: 'Coming Soon',
-    ru: 'Скоро'
-  },
-  nutritionComingSoonDesc: {
-    en: 'We\'re working on personalized nutrition plans for your goals. Check back soon!',
-    ru: 'Мы работаем над персонализированными планами питания для ваших целей. Загляните позже!'
-  },
-  exercisesComingSoonDesc: {
-    en: 'We\'re working on personalized exercise plans for your goals. Check back soon!',
-    ru: 'Мы работаем над персонализированными планами тренировок для ваших целей. Загляните позже!'
-  },
-  
-  // Общие
-  loading: {
-    en: 'Loading...',
-    ru: 'Загрузка...'
-  },
-  month: {
-    en: 'month',
-    ru: 'мес'
-  },
-  months: {
-    en: 'months',
-    ru: 'мес'
-  },
-  
-  // Подписки
-  subscriptions: {
-    en: 'Subscriptions',
-    ru: 'Подписки'
-  },
-  subscriptionsDesc: {
-    en: 'Choose a subscription for personalized workouts and nutrition plans',
-    ru: 'Выберите подписку для получения индивидуальных тренировок и планов питания'
-  },
-  monthly: {
-    en: '1 month',
-    ru: '1 месяц'
-  },
-  sixMonths: {
-    en: '6 months',
-    ru: '6 месяцев'
-  },
-  yearly: {
-    en: '12 months',
-    ru: '12 месяцев'
-  },
-  workoutPlan: {
-    en: 'Workout Plan',
-    ru: 'План тренировок'
-  },
-  nutritionPlan: {
-    en: 'Nutrition Plan',
-    ru: 'План питания'
-  },
-  comboPlan: {
-    en: 'Combo Plan',
-    ru: 'Комбо'
-  },
-  personalWorkout: {
-    en: 'Personalized workouts',
-    ru: 'Индивидуальные упражнения'
-  },
-  personalNutrition: {
-    en: 'Personalized nutrition',
-    ru: 'Индивидуальное питание'
-  },
-  bestValue: {
-    en: 'Best value',
-    ru: 'Лучшее предложение'
-  },
-  save: {
-    en: 'Save 10%',
-    ru: 'Скидка 10%'
-  },
-  personalizedWorkouts: {
-    en: 'Personalized workouts',
-    ru: 'Персонализированные тренировки'
-  },
-  problemZonesAnalysis: {
-    en: 'Problem zones analysis',
-    ru: 'Анализ проблемных зон'
-  },
-  personalizedMeals: {
-    en: 'Personalized meals',
-    ru: 'Персонализированные блюда'
-  },
-  dietaryRestrictions: {
-    en: 'Dietary restrictions',
-    ru: 'Учет пищевых ограничений'
-  },
-  fullSupport: {
-    en: 'Full support',
-    ru: 'Полная поддержка'
-  },
-  active: {
-    en: 'Active',
-    ru: 'Активно'
-  },
-  subscribe: {
-    en: 'Subscribe',
-    ru: 'Подписаться'
-  },
-  subscribed: {
-    en: 'Subscribed',
-    ru: 'Подписка активна'
-  },
-  confirmSubscription: {
-    en: 'Confirm Subscription',
-    ru: 'Подтверждение подписки'
-  },
-  confirmWorkoutSubscription: {
-    en: 'You are about to subscribe to personalized workouts',
-    ru: 'Вы собираетесь оформить подписку на индивидуальные тренировки'
-  },
-  confirmNutritionSubscription: {
-    en: 'You are about to subscribe to personalized nutrition',
-    ru: 'Вы собираетесь оформить подписку на индивидуальное питание'
-  },
-  confirmComboSubscription: {
-    en: 'You are about to subscribe to combo plan',
-    ru: 'Вы собираетесь оформить комбо-подписку'
-  },
-  plan: {
-    en: 'Plan',
-    ru: 'План'
-  },
-  duration: {
-    en: 'Duration',
-    ru: 'Длительность'
-  },
-  price: {
-    en: 'Price',
-    ru: 'Цена'
-  },
-  paymentSimulation: {
-    en: 'This is a payment simulation for demonstration purposes.',
-    ru: 'Это симуляция оплаты для демонстрационных целей.'
-  },
-  cancel: {
-    en: 'Cancel',
-    ru: 'Отмена'
-  },
-  confirmPayment: {
-    en: 'Confirm Payment',
-    ru: 'Подтвердить оплату'
-  },
-  subscriptionActivated: {
-    en: 'Subscription successfully activated!',
-    ru: 'Подписка успешно активирована!'
-  },
-  subscriptionNeeded: {
-    en: 'Subscription Required',
-    ru: 'Требуется подписка'
-  },
-  workoutSubscriptionDesc: {
-    en: 'To access personalized workouts, a subscription is required',
-    ru: 'Для доступа к индивидуальным тренировкам необходима подписка'
-  },
-  nutritionSubscriptionDesc: {
-    en: 'To access personalized nutrition, a subscription is required',
-    ru: 'Для доступа к персонализированному питанию необходима подписка'
-  },
-  workoutSubscriptionBenefit: {
-    en: 'Get a personalized workout program based on your problem areas and goals.',
-    ru: 'Получите персонализированную программу тренировок на основе ваших проблемных зон и целей.'
-  },
-  nutritionSubscriptionBenefit: {
-    en: 'Get a personalized nutrition plan taking into account your preferences and restrictions.',
-    ru: 'Получите персонализированный план питания, учитывающий ваши предпочтения и ограничения.'
-  },
-  workoutPriceInfo: {
-    en: 'Subscription from $6.99/month',
-    ru: 'Подписка от 499 ₽/месяц'
-  },
-  nutritionPriceInfo: {
-    en: 'Subscription from $6.99/month',
-    ru: 'Подписка от 499 ₽/месяц'
-  },
-  later: {
-    en: 'Later',
-    ru: 'Позже'
-  },
-  subscribeNow: {
-    en: 'Subscribe Now',
-    ru: 'Подписаться'
-  },
-};
-
-// Функция перевода текста
+// Export translation function
 export const t = (key: string, language: 'en' | 'ru'): string => {
-  const translation = translations[key];
-  if (!translation) return key;
+  if (language === 'en') {
+    return en[key] || key;
+  }
+  return ru[key] || en[key] || key;
+};
+
+// English translations
+const en: Record<string, string> = {
+  // Auth
+  signIn: "Sign In",
+  signUp: "Sign Up",
+  email: "Email",
+  password: "Password",
+  forgotPassword: "Forgot Password?",
+  noAccount: "Don't have an account?",
+  createAccount: "Create Account",
+  haveAccount: "Already have an account?",
   
-  return translation[language] || key;
+  // Navigation
+  home: "Home",
+  workout: "Workout",
+  nutrition: "Nutrition",
+  profile: "Profile",
+  
+  // Dashboard
+  dashboard: "Dashboard",
+  yourWorkouts: "Your Workouts",
+  todayTasks: "Tasks for Today",
+  weeklyActivity: "Weekly Activity",
+  caloriesBurn: "Calories burned this week",
+  
+  // Profile
+  profileSettings: "Profile Settings",
+  manageAccount: "Manage your account and preferences",
+  personalInfo: "Personal Information",
+  name: "Name",
+  gender: "Gender",
+  age: "Age",
+  years: "years",
+  height: "Height",
+  weight: "Weight",
+  saveChanges: "Save Changes",
+  preferences: "Preferences",
+  notifications: "Notifications",
+  notificationsDesc: "Receive workout reminders and updates",
+  darkMode: "Dark Mode",
+  darkModeDesc: "Switch between light and dark theme",
+  language: "Language",
+  languageDesc: "Change application language",
+  account: "Account",
+  logOut: "Log Out",
+  
+  // Units
+  cm: "cm",
+  kg: "kg",
+  calories: "calories",
+  
+  // Toasts
+  profileUpdated: "Profile updated successfully",
+  loggedOut: "Logged out successfully",
+  
+  // Language Selection
+  english: "English",
+  russian: "Russian",
+  
+  // Tasks
+  complete: "Complete",
+  completed: "Completed",
+  markAsDone: "Mark as Done",
+  strength: "Strength",
+  cardio: "Cardio",
+  flexibility: "Flexibility",
+  
+  // Exercise Types 
+  pushUps: "Push-ups",
+  squats: "Squats",
+  lunges: "Lunges",
+  plank: "Plank",
+  running: "Running",
+  jogging: "Jogging",
+  jumpingJacks: "Jumping Jacks",
+  burpees: "Burpees",
+  mountainClimbers: "Mountain Climbers",
+  dynamicStretching: "Dynamic Stretching",
+  yoga: "Yoga",
+  staticStretching: "Static Stretching",
+  
+  // Statistics
+  statistics: "Statistics",
+  statisticsDesc: "Track your progress over time",
+  
+  // Body Metrics
+  bmi: "BMI",
+  underweight: "Underweight",
+  normal: "Normal",
+  overweight: "Overweight",
+  obese: "Obese",
+  currentWeight: "Current Weight",
+  currentHeight: "Current Height",
+  
+  // Time-related
+  today: "Today",
+  thisWeek: "This Week",
+  thisMonth: "This Month",
+  viewMonthly: "View Monthly",
+  
+  // Greetings
+  goodMorning: "Good Morning",
+  goodAfternoon: "Good Afternoon",
+  goodEvening: "Good Evening",
+  yourFitnessProfile: "Your Fitness Profile",
+  
+  // Goals
+  todaysGoal: "Today's Goal",
+  
+  // Subscriptions
+  subscriptions: "Subscriptions",
+  
+  // Loading
+  loading: "Loading...",
+  
+  // Nutrition
+  calorieCalculator: "Calorie Calculator",
+  trackYourCalories: "Track your calorie intake",
+  addMeal: "Add Meal",
+  mealName: "Meal Name",
+  calorieAmount: "Calories",
+  calorieHistory: "Calorie History",
+  day: "Day",
+  total: "Total",
+  
+  // Days of the week
+  monday: "Monday",
+  tuesday: "Tuesday",
+  wednesday: "Wednesday",
+  thursday: "Thursday",
+  friday: "Friday",
+  saturday: "Saturday",
+  sunday: "Sunday",
+  
+  // Months
+  january: "January",
+  february: "February",
+  march: "March",
+  april: "April",
+  may: "May",
+  june: "June",
+  july: "July",
+  august: "August",
+  september: "September",
+  october: "October",
+  november: "November",
+  december: "December",
+  
+  // Form validations
+  error: "Error",
+  success: "Success",
+  enterMealName: "Please enter a meal name",
+  enterValidCalories: "Please enter valid calories",
+  mealAdded: "Meal added successfully",
+  
+  // Stats
+  caloriesBurned: "Calories Burned",
+  caloriesConsumed: "Calories Consumed"
+};
+
+// Russian translations
+const ru: Record<string, string> = {
+  // Auth
+  signIn: "Войти",
+  signUp: "Зарегистрироваться",
+  email: "Электронная почта",
+  password: "Пароль",
+  forgotPassword: "Забыли пароль?",
+  noAccount: "Нет учетной записи?",
+  createAccount: "Создать учетную запись",
+  haveAccount: "Уже есть учетная запись?",
+  
+  // Navigation
+  home: "Главная",
+  workout: "Тренировки",
+  nutrition: "Питание",
+  profile: "Профиль",
+  
+  // Dashboard
+  dashboard: "Панель управления",
+  yourWorkouts: "Ваши тренировки",
+  todayTasks: "Задания на сегодня",
+  weeklyActivity: "Активность за неделю",
+  caloriesBurn: "Сожжено калорий за неделю",
+  
+  // Profile
+  profileSettings: "Настройки профиля",
+  manageAccount: "Управление аккаунтом и настройками",
+  personalInfo: "Личная информация",
+  name: "Имя",
+  gender: "Пол",
+  age: "Возраст",
+  years: "лет",
+  height: "Рост",
+  weight: "Вес",
+  saveChanges: "Сохранить изменения",
+  preferences: "Предпочтения",
+  notifications: "Уведомления",
+  notificationsDesc: "Получать напоминания о тренировках и обновления",
+  darkMode: "Темная тема",
+  darkModeDesc: "Переключение между светлой и темной темой",
+  language: "Язык",
+  languageDesc: "Изменить язык приложения",
+  account: "Аккаунт",
+  logOut: "Выйти",
+  
+  // Units
+  cm: "см",
+  kg: "кг",
+  calories: "калорий",
+  
+  // Toasts
+  profileUpdated: "Профиль успешно обновлен",
+  loggedOut: "Выход выполнен успешно",
+  
+  // Language Selection
+  english: "Английский",
+  russian: "Русский",
+  
+  // Tasks
+  complete: "Завершить",
+  completed: "Завершено",
+  markAsDone: "Отметить как выполненное",
+  strength: "Сила",
+  cardio: "Кардио",
+  flexibility: "Гибкость",
+  
+  // Exercise Types
+  pushUps: "Отжимания",
+  squats: "Приседания",
+  lunges: "Выпады",
+  plank: "Планка",
+  running: "Бег",
+  jogging: "Бег трусцой",
+  jumpingJacks: "Прыжки Джека",
+  burpees: "Бёрпи",
+  mountainClimbers: "Скалолаз",
+  dynamicStretching: "Динамическая растяжка",
+  yoga: "Йога",
+  staticStretching: "Статическая растяжка",
+  
+  // Statistics
+  statistics: "Статистика",
+  statisticsDesc: "Отслеживайте свой прогресс",
+  
+  // Body Metrics
+  bmi: "ИМТ",
+  underweight: "Недостаточный вес",
+  normal: "Нормальный",
+  overweight: "Избыточный вес",
+  obese: "Ожирение",
+  currentWeight: "Текущий вес",
+  currentHeight: "Текущий рост",
+  
+  // Time-related
+  today: "Сегодня",
+  thisWeek: "Эта неделя",
+  thisMonth: "Этот месяц",
+  viewMonthly: "Помесячный просмотр",
+  
+  // Greetings
+  goodMorning: "Доброе утро",
+  goodAfternoon: "Добрый день",
+  goodEvening: "Добрый вечер",
+  yourFitnessProfile: "Ваш фитнес-профиль",
+  
+  // Goals
+  todaysGoal: "Цель на сегодня",
+  
+  // Subscriptions
+  subscriptions: "Подписки",
+  
+  // Loading
+  loading: "Загрузка...",
+  
+  // Nutrition
+  calorieCalculator: "Калькулятор калорий",
+  trackYourCalories: "Отслеживайте потребление калорий",
+  addMeal: "Добавить прием пищи",
+  mealName: "Название блюда",
+  calorieAmount: "Калории",
+  calorieHistory: "История калорий",
+  day: "День",
+  total: "Всего",
+  
+  // Days of the week
+  monday: "Понедельник",
+  tuesday: "Вторник",
+  wednesday: "Среда",
+  thursday: "Четверг",
+  friday: "Пятница",
+  saturday: "Суббота",
+  sunday: "Воскресенье",
+  
+  // Months
+  january: "Январь",
+  february: "Февраль",
+  march: "Март",
+  april: "Апрель",
+  may: "Май",
+  june: "Июнь",
+  july: "Июль",
+  august: "Август",
+  september: "Сентябрь",
+  october: "Октябрь",
+  november: "Ноябрь",
+  december: "Декабрь",
+  
+  // Form validations
+  error: "Ошибка",
+  success: "Успешно",
+  enterMealName: "Пожалуйста, введите название блюда",
+  enterValidCalories: "Пожалуйста, введите корректное количество калорий",
+  mealAdded: "Прием пищи успешно добавлен",
+  
+  // Stats
+  caloriesBurned: "Сожжено калорий",
+  caloriesConsumed: "Потреблено калорий"
 };

@@ -1,6 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { saveAs } from 'file-saver';
 
+export interface MealEntry {
+  id: string;
+  name: string;
+  calories: number;
+  date: string;
+}
+
 export interface UserData {
   id: string;
   name: string;
@@ -14,6 +21,7 @@ export interface UserData {
   createdAt: string;
   bodyProblems?: string[];
   dietRestrictions?: string[];
+  meals?: MealEntry[];
   stats: {
     calories: number[];
     steps: number[];
@@ -41,7 +49,6 @@ export const defaultStats = {
   streakDays: 0
 };
 
-// File path for storing user data JSON
 const USER_DATA_FILE = 'ar-fit-users-data.json';
 
 /**
@@ -49,7 +56,6 @@ const USER_DATA_FILE = 'ar-fit-users-data.json';
  */
 export const getUsers = (): UserData[] => {
   try {
-    // First try to get from localStorage
     const usersJson = localStorage.getItem('ar-fit-users');
     if (usersJson) {
       return JSON.parse(usersJson);
@@ -64,10 +70,8 @@ export const getUsers = (): UserData[] => {
  * Сохранение списка пользователей в localStorage и файл
  */
 export const saveUsers = (users: UserData[]): void => {
-  // Save to localStorage
   localStorage.setItem('ar-fit-users', JSON.stringify(users));
   
-  // Also save to file
   const blob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
   saveAs(blob, USER_DATA_FILE);
 };
@@ -93,7 +97,6 @@ export const getCurrentUser = (): UserData | null => {
 export const saveCurrentUser = (user: UserData): void => {
   localStorage.setItem('ar-fit-user', JSON.stringify(user));
   
-  // Также обновляем этого пользователя в массиве пользователей
   const users = getUsers();
   const updatedUsers = users.map(u => u.id === user.id ? user : u);
   saveUsers(updatedUsers);
@@ -105,12 +108,10 @@ export const saveCurrentUser = (user: UserData): void => {
 export const addUser = (user: UserData): void => {
   const users = getUsers();
   
-  // Если id не указан, создаем новый с помощью uuid
   if (!user.id) {
     user.id = uuidv4();
   }
   
-  // Проверяем, не существует ли пользователь с таким email
   const existingUser = users.find(u => u.email === user.email);
   if (existingUser) {
     throw new Error('Пользователь с таким email уже существует');
@@ -128,7 +129,6 @@ export const authenticateUser = (email: string, password: string): UserData | nu
   const user = users.find(u => u.email === email && u.password === password);
   
   if (user) {
-    // Помечаем пользователя как вошедшего в систему
     const loggedInUser = { ...user, loggedIn: true };
     saveCurrentUser(loggedInUser);
     return loggedInUser;
@@ -145,12 +145,10 @@ export const logoutUser = (): void => {
   if (currentUser) {
     const loggedOutUser = { ...currentUser, loggedIn: false };
     
-    // Обновляем в массиве пользователей
     const users = getUsers();
     const updatedUsers = users.map(u => u.id === currentUser.id ? loggedOutUser : u);
     saveUsers(updatedUsers);
     
-    // Очищаем данные текущего пользователя
     localStorage.removeItem('ar-fit-user');
   }
 };
@@ -169,7 +167,6 @@ export const updateUserData = (userId: string, updatedFields: Partial<UserData>)
   
   saveUsers(users);
   
-  // Если это текущий пользователь, обновляем и его
   const currentUser = getCurrentUser();
   if (currentUser && currentUser.id === userId) {
     saveCurrentUser(updatedUser);
@@ -213,13 +210,11 @@ export const hasActiveSubscription = (user: UserData | null, type: 'workout' | '
   
   const { workout, nutrition } = user.subscriptions;
   
-  // Проверка подписки комбо, которая действует для обоих типов
   if (workout?.type === 'combo') {
     const endDate = new Date(workout.endDate);
     if (endDate > new Date()) return true;
   }
   
-  // Проверка конкретной подписки
   const subscription = type === 'workout' ? workout : nutrition;
   if (!subscription) return false;
   
