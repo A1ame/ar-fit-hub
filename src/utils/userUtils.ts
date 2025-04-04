@@ -19,7 +19,7 @@ export interface UserData {
   id: string;
   name: string;
   email: string;
-  password: string; // Не будем хранить в Firestore
+  password: string;
   gender: "male" | "female";
   age: number;
   weight: number;
@@ -59,6 +59,7 @@ export const defaultStats = {
 let currentUserSession: UserData | null = null;
 
 export const getCurrentUser = (): UserData | null => {
+  console.log('Getting current user:', currentUserSession);
   return currentUserSession;
 };
 
@@ -66,38 +67,65 @@ export const saveCurrentUser = async (user: UserData): Promise<void> => {
   console.log(`Saving current user: ${user.name} (${user.id})`);
   currentUserSession = user;
   const userRef = doc(db, 'users', user.id);
-  await setDoc(userRef, { ...user, password: undefined }, { merge: true }); // Не сохраняем пароль
+  console.log('User ref:', userRef.path);
+
+  // Удаляем поле password перед сохранением
+  const { password, ...userDataWithoutPassword } = user;
+
+  try {
+    await setDoc(userRef, userDataWithoutPassword, { merge: true });
+    console.log('User saved successfully in Firestore');
+  } catch (error) {
+    console.error('Error saving user to Firestore:', error);
+    throw error;
+  }
 };
 
 export const addUser = async (user: Partial<UserData>): Promise<UserData> => {
+  console.log('Adding new user to Firestore:', user);
   const { email, password, name, gender, age, weight, height } = user;
-  if (!email || !password) throw new Error('Email and password are required');
+  if (!email || !password) {
+    console.error('Email or password missing');
+    throw new Error('Email and password are required');
+  }
 
-  const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
-  const uid = userCredential.user.uid;
+  try {
+    // Сначала создаём пользователя в Firebase Authentication
+    const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+    console.log('Created user in Firebase Auth with UID:', uid);
 
-  const newUser: UserData = {
-    id: uid,
-    name: name || '',
-    email,
-    password: '', // Не храним в Firestore
-    gender: gender || 'male',
-    age: age || 0,
-    weight: weight || 0,
-    height: height || 0,
-    loggedIn: true,
-    createdAt: new Date().toISOString(),
-    stats: defaultStats,
-  };
+    // Затем создаём объект пользователя для Firestore
+    const newUser: UserData = {
+      id: uid,
+      name: name || '',
+      email,
+      password: '', // Не сохраняем пароль в Firestore
+      gender: gender || 'male',
+      age: age || 0,
+      weight: weight || 0,
+      height: height || 0,
+      loggedIn: true,
+      createdAt: new Date().toISOString(),
+      stats: defaultStats,
+    };
 
-  await saveCurrentUser(newUser);
-  return newUser;
+    // Сохраняем пользователя в Firestore
+    await saveCurrentUser(newUser);
+    console.log('New user added successfully:', newUser);
+    return newUser;
+  } catch (error) {
+    console.error('Error adding user:', error);
+    throw error;
+  }
 };
 
 export const authenticateUser = async (email: string, password: string): Promise<UserData | null> => {
+  console.log(`Authenticating user: ${email}`);
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const uid = userCredential.user.uid;
+    console.log('Authenticated user with UID:', uid);
     const userRef = doc(db, 'users', uid);
     const userDoc = await getDoc(userRef);
 
@@ -105,8 +133,10 @@ export const authenticateUser = async (email: string, password: string): Promise
       const userData = userDoc.data() as UserData;
       const loggedInUser = { ...userData, loggedIn: true };
       await saveCurrentUser(loggedInUser);
+      console.log('User logged in successfully:', loggedInUser);
       return loggedInUser;
     }
+    console.log('User document not found in Firestore');
     return null;
   } catch (error) {
     console.error('Authentication failed:', error);
@@ -121,6 +151,7 @@ export const logoutUser = async (): Promise<void> => {
     await saveCurrentUser(updatedUser);
     await signOut(auth);
     currentUserSession = null;
+    console.log('User logged out');
   }
 };
 
@@ -128,10 +159,14 @@ export const updateUserData = async (userId: string, updatedFields: Partial<User
   const userRef = doc(db, 'users', userId);
   const userDoc = await getDoc(userRef);
 
-  if (!userDoc.exists()) return null;
+  if (!userDoc.exists()) {
+    console.log('User not found in Firestore');
+    return null;
+  }
 
   const updatedUser = { ...userDoc.data(), ...updatedFields } as UserData;
   await updateDoc(userRef, updatedFields);
+  console.log('User updated in Firestore');
 
   if (currentUserSession?.id === userId) {
     currentUserSession = updatedUser;
@@ -163,7 +198,10 @@ export const activateSubscription = async (
   price: number
 ): Promise<UserData | null> => {
   const user = getCurrentUser();
-  if (!user || user.id !== userId) return null;
+  if (!user || user.id !== userId) {
+    console.log('User not found or not logged in');
+    return null;
+  }
 
   const startDate = new Date();
   const endDate = new Date();
@@ -187,5 +225,6 @@ export const activateSubscription = async (
   };
 
   await saveCurrentUser(updatedUser);
+  console.log('Subscription activated:', updatedUser);
   return updatedUser;
 };
