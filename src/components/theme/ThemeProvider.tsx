@@ -5,6 +5,18 @@ import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { type ThemeProviderProps } from "next-themes/dist/types"
 
+interface ThemeContextType {
+  language: "en" | "ru";
+  setLanguage: (language: "en" | "ru") => void;
+}
+
+const ThemeContext = React.createContext<ThemeContextType>({
+  language: "en",
+  setLanguage: () => {},
+});
+
+export const useTheme = () => React.useContext(ThemeContext);
+
 export interface CustomThemeProviderProps extends ThemeProviderProps {
   defaultLanguage?: string;
 }
@@ -15,21 +27,35 @@ export function ThemeProvider({
   defaultLanguage = "en",
   ...props 
 }: CustomThemeProviderProps) {
+  const [language, setLanguage] = React.useState<"en" | "ru">(
+    defaultLanguage === "ru" ? "ru" : "en"
+  );
+
   // Store the language preference in localStorage
   React.useEffect(() => {
-    if (defaultLanguage) {
-      localStorage.setItem("language", defaultLanguage);
+    if (language) {
+      localStorage.setItem("language", language);
     }
-  }, [defaultLanguage]);
+  }, [language]);
+
+  // Read language from localStorage on mount
+  React.useEffect(() => {
+    const storedLanguage = localStorage.getItem("language");
+    if (storedLanguage === "en" || storedLanguage === "ru") {
+      setLanguage(storedLanguage);
+    }
+  }, []);
 
   return (
-    <NextThemesProvider
-      {...props}
-      defaultTheme={defaultTheme}
-      enableSystem
-      attribute="class"
-    >
-      {children}
-    </NextThemesProvider>
+    <ThemeContext.Provider value={{ language, setLanguage }}>
+      <NextThemesProvider
+        {...props}
+        defaultTheme={defaultTheme}
+        enableSystem
+        attribute="class"
+      >
+        {children}
+      </NextThemesProvider>
+    </ThemeContext.Provider>
   )
 }

@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 import { 
   initDatabase, 
@@ -7,6 +8,7 @@ import {
   getAllData, 
   getByIndex, 
   queryByIndex,
+  deleteData,
   STORES 
 } from './browserDB';
 
