@@ -49,28 +49,18 @@ export function ThemeProvider({
     if (storedLanguage === "en" || storedLanguage === "ru") {
       setLanguage(storedLanguage);
     }
+    
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      setTheme(storedTheme);
+    }
   }, []);
 
-  // Update theme in localStorage
+  // Update theme in the NextThemesProvider and localStorage
   const handleThemeChange = React.useCallback((newTheme: string) => {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
-    
-    // Apply theme to document
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
   }, []);
-
-  // Initialize theme from localStorage on mount
-  React.useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      handleThemeChange(storedTheme);
-    }
-  }, [handleThemeChange]);
 
   return (
     <ThemeContext.Provider value={{ 
