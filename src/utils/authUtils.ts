@@ -15,7 +15,7 @@ export const requireAuth = (navigate: (path: string) => void, language: "en" | "
 };
 
 export const logout = async (navigate: (path: string) => void, language: "en" | "ru" = "ru"): Promise<void> => {
-  await logoutUser(); // Теперь асинхронная из-за Firebase
+  await logoutUser();
   toast.success(t("loggedOut", language));
   navigate("/");
 };
