@@ -1,6 +1,14 @@
-
 import { v4 as uuidv4 } from 'uuid';
-import { executeQuery } from './dbConnection';
+import { 
+  initDatabase, 
+  addData, 
+  getDataById, 
+  updateData, 
+  getAllData, 
+  getByIndex, 
+  queryByIndex,
+  STORES 
+} from './browserDB';
 
 export interface MealEntry {
   id: string;
@@ -55,9 +63,9 @@ let currentUserSession: UserData | null = null;
 
 // Initialize database if needed
 export const initializeUserSystem = async () => {
-  // Import and initializeDatabase method from dbConnection is called at app startup
-  const { initializeDatabase } = await import('./dbConnection');
-  await initializeDatabase();
+  // Initialize the IndexedDB database
+  await initDatabase();
+  console.log('User system initialized');
 };
 
 // Get all users from database
@@ -65,33 +73,26 @@ export const getUsers = async (): Promise<UserData[]> => {
   try {
     console.log('Getting all users from database');
     
-    // Get basic user data
-    const usersQuery = 'SELECT * FROM users';
-    const usersData = await executeQuery(usersQuery);
+    // Get all users from the database
+    const usersData = await getAllData(STORES.USERS);
     
     const users: UserData[] = [];
     
     for (const userData of usersData) {
-      // Get stats for each user
-      const statsQuery = 'SELECT * FROM user_stats WHERE user_id = ?';
-      const statsData = await executeQuery(statsQuery, [userData.id]);
+      // Get stats for this user
+      const statsData = await getDataById(STORES.USER_STATS, userData.id);
       
-      // Get subscriptions for each user
-      const subscriptionsQuery = 'SELECT * FROM subscriptions WHERE user_id = ?';
-      const subscriptionsData = await executeQuery(subscriptionsQuery, [userData.id]);
+      // Get subscriptions for this user
+      const subscriptionsData = await queryByIndex(STORES.SUBSCRIPTIONS, 'user_id', userData.id);
       
-      // Parse JSON fields
-      const bodyProblems = userData.body_problems ? JSON.parse(userData.body_problems) : [];
-      const dietRestrictions = userData.diet_restrictions ? JSON.parse(userData.diet_restrictions) : [];
-      
-      // Parse stats
+      // Create stats object
       let stats = defaultStats;
-      if (statsData && statsData.length > 0) {
+      if (statsData) {
         stats = {
-          calories: JSON.parse(statsData[0].calories),
-          steps: JSON.parse(statsData[0].steps),
-          workoutsCompleted: statsData[0].workouts_completed,
-          streakDays: statsData[0].streak_days
+          calories: statsData.calories,
+          steps: statsData.steps,
+          workoutsCompleted: statsData.workouts_completed,
+          streakDays: statsData.streak_days
         };
       }
       
@@ -106,8 +107,8 @@ export const getUsers = async (): Promise<UserData[]> => {
         const subscriptionData = {
           type: sub.type,
           duration: sub.duration,
-          startDate: sub.start_date.toISOString(),
-          endDate: sub.end_date.toISOString(),
+          startDate: sub.start_date,
+          endDate: sub.end_date,
           price: sub.price
         };
         
@@ -126,14 +127,14 @@ export const getUsers = async (): Promise<UserData[]> => {
         name: userData.name,
         email: userData.email,
         password: userData.password,
-        gender: userData.gender as "male" | "female",
+        gender: userData.gender,
         age: userData.age,
         weight: userData.weight,
         height: userData.height,
-        loggedIn: Boolean(userData.logged_in),
-        createdAt: userData.created_at.toISOString(),
-        bodyProblems,
-        dietRestrictions,
+        loggedIn: userData.logged_in,
+        createdAt: userData.created_at,
+        bodyProblems: userData.body_problems,
+        dietRestrictions: userData.diet_restrictions,
         stats,
         subscriptions
       });
@@ -159,75 +160,29 @@ export const saveCurrentUser = async (user: UserData): Promise<void> => {
   
   try {
     // Update user in database
-    const updateUserQuery = `
-      UPDATE users 
-      SET name = ?, 
-          email = ?, 
-          password = ?, 
-          gender = ?, 
-          age = ?, 
-          weight = ?, 
-          height = ?, 
-          logged_in = ?,
-          body_problems = ?,
-          diet_restrictions = ?
-      WHERE id = ?
-    `;
+    await updateData(STORES.USERS, {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      gender: user.gender,
+      age: user.age,
+      weight: user.weight,
+      height: user.height,
+      logged_in: user.loggedIn,
+      created_at: user.createdAt,
+      body_problems: user.bodyProblems || [],
+      diet_restrictions: user.dietRestrictions || []
+    });
     
-    const bodyProblemsJson = JSON.stringify(user.bodyProblems || []);
-    const dietRestrictionsJson = JSON.stringify(user.dietRestrictions || []);
-    
-    await executeQuery(updateUserQuery, [
-      user.name,
-      user.email,
-      user.password,
-      user.gender,
-      user.age,
-      user.weight,
-      user.height,
-      user.loggedIn ? 1 : 0,
-      bodyProblemsJson,
-      dietRestrictionsJson,
-      user.id
-    ]);
-    
-    // Update or insert stats
-    const statsExistsQuery = 'SELECT 1 FROM user_stats WHERE user_id = ?';
-    const statsExists = await executeQuery(statsExistsQuery, [user.id]);
-    
-    if (statsExists && statsExists.length > 0) {
-      // Update existing stats
-      const updateStatsQuery = `
-        UPDATE user_stats 
-        SET calories = ?,
-            steps = ?,
-            workouts_completed = ?,
-            streak_days = ?
-        WHERE user_id = ?
-      `;
-      
-      await executeQuery(updateStatsQuery, [
-        JSON.stringify(user.stats.calories),
-        JSON.stringify(user.stats.steps),
-        user.stats.workoutsCompleted,
-        user.stats.streakDays,
-        user.id
-      ]);
-    } else {
-      // Insert new stats
-      const insertStatsQuery = `
-        INSERT INTO user_stats (user_id, calories, steps, workouts_completed, streak_days)
-        VALUES (?, ?, ?, ?, ?)
-      `;
-      
-      await executeQuery(insertStatsQuery, [
-        user.id,
-        JSON.stringify(user.stats.calories),
-        JSON.stringify(user.stats.steps),
-        user.stats.workoutsCompleted,
-        user.stats.streakDays
-      ]);
-    }
+    // Update stats
+    await updateData(STORES.USER_STATS, {
+      user_id: user.id,
+      calories: user.stats.calories,
+      steps: user.stats.steps,
+      workouts_completed: user.stats.workoutsCompleted,
+      streak_days: user.stats.streakDays
+    });
     
     console.log('User data successfully saved to database');
   } catch (error) {
@@ -241,10 +196,9 @@ export const addUser = async (user: UserData): Promise<void> => {
   
   try {
     // Check if user exists
-    const checkUserQuery = 'SELECT 1 FROM users WHERE email = ?';
-    const existingUser = await executeQuery(checkUserQuery, [user.email]);
+    const existingUser = await getByIndex(STORES.USERS, 'email', user.email);
     
-    if (existingUser && existingUser.length > 0) {
+    if (existingUser) {
       console.error(`User with email ${user.email} already exists`);
       throw new Error('Пользователь с таким email уже существует');
     }
@@ -256,46 +210,29 @@ export const addUser = async (user: UserData): Promise<void> => {
     }
     
     // Insert user
-    const insertUserQuery = `
-      INSERT INTO users (
-        id, name, email, password, gender, age, weight, height, 
-        logged_in, created_at, body_problems, diet_restrictions
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    
-    const bodyProblemsJson = JSON.stringify(user.bodyProblems || []);
-    const dietRestrictionsJson = JSON.stringify(user.dietRestrictions || []);
-    const created_at = new Date(user.createdAt);
-    
-    await executeQuery(insertUserQuery, [
-      user.id,
-      user.name,
-      user.email,
-      user.password,
-      user.gender,
-      user.age,
-      user.weight,
-      user.height,
-      user.loggedIn ? 1 : 0,
-      created_at,
-      bodyProblemsJson,
-      dietRestrictionsJson
-    ]);
+    await addData(STORES.USERS, {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      gender: user.gender,
+      age: user.age,
+      weight: user.weight,
+      height: user.height,
+      logged_in: user.loggedIn,
+      created_at: user.createdAt,
+      body_problems: user.bodyProblems || [],
+      diet_restrictions: user.dietRestrictions || []
+    });
     
     // Insert stats
-    const insertStatsQuery = `
-      INSERT INTO user_stats (user_id, calories, steps, workouts_completed, streak_days)
-      VALUES (?, ?, ?, ?, ?)
-    `;
-    
-    await executeQuery(insertStatsQuery, [
-      user.id,
-      JSON.stringify(user.stats.calories),
-      JSON.stringify(user.stats.steps),
-      user.stats.workoutsCompleted,
-      user.stats.streakDays
-    ]);
+    await addData(STORES.USER_STATS, {
+      user_id: user.id,
+      calories: user.stats.calories,
+      steps: user.stats.steps,
+      workouts_completed: user.stats.workoutsCompleted,
+      streak_days: user.stats.streakDays
+    });
     
     currentUserSession = user;
     console.log(`Added user: ${user.name} (${user.id})`);
@@ -310,32 +247,24 @@ export const authenticateUser = async (email: string, password: string): Promise
   console.log(`Authenticating user: ${email}`);
   
   try {
-    const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
-    const users = await executeQuery(query, [email, password]);
+    // Find user by email
+    const user = await getByIndex(STORES.USERS, 'email', email);
     
-    if (users && users.length > 0) {
-      const user = users[0];
-      
+    if (user && user.password === password) {
       // Get stats for user
-      const statsQuery = 'SELECT * FROM user_stats WHERE user_id = ?';
-      const statsData = await executeQuery(statsQuery, [user.id]);
+      const statsData = await getDataById(STORES.USER_STATS, user.id);
       
       // Get subscriptions for user
-      const subscriptionsQuery = 'SELECT * FROM subscriptions WHERE user_id = ?';
-      const subscriptionsData = await executeQuery(subscriptionsQuery, [user.id]);
-      
-      // Parse JSON fields
-      const bodyProblems = user.body_problems ? JSON.parse(user.body_problems) : [];
-      const dietRestrictions = user.diet_restrictions ? JSON.parse(user.diet_restrictions) : [];
+      const subscriptionsData = await queryByIndex(STORES.SUBSCRIPTIONS, 'user_id', user.id);
       
       // Parse stats
       let stats = defaultStats;
-      if (statsData && statsData.length > 0) {
+      if (statsData) {
         stats = {
-          calories: JSON.parse(statsData[0].calories),
-          steps: JSON.parse(statsData[0].steps),
-          workoutsCompleted: statsData[0].workouts_completed,
-          streakDays: statsData[0].streak_days
+          calories: statsData.calories,
+          steps: statsData.steps,
+          workoutsCompleted: statsData.workouts_completed,
+          streakDays: statsData.streak_days
         };
       }
       
@@ -350,8 +279,8 @@ export const authenticateUser = async (email: string, password: string): Promise
         const subscriptionData = {
           type: sub.type,
           duration: sub.duration,
-          startDate: sub.start_date.toISOString(),
-          endDate: sub.end_date.toISOString(),
+          startDate: sub.start_date,
+          endDate: sub.end_date,
           price: sub.price
         };
         
@@ -364,27 +293,27 @@ export const authenticateUser = async (email: string, password: string): Promise
         }
       }
       
+      // Update logged_in status
+      user.logged_in = true;
+      await updateData(STORES.USERS, user);
+      
       // Create user object
       const userData: UserData = {
         id: user.id,
         name: user.name,
         email: user.email,
         password: user.password,
-        gender: user.gender as "male" | "female",
+        gender: user.gender,
         age: user.age,
         weight: user.weight,
         height: user.height,
         loggedIn: true,
-        createdAt: user.created_at.toISOString(),
-        bodyProblems,
-        dietRestrictions,
+        createdAt: user.created_at,
+        bodyProblems: user.body_problems || [],
+        dietRestrictions: user.diet_restrictions || [],
         stats,
         subscriptions
       };
-      
-      // Update logged_in status
-      const updateLoggedInQuery = 'UPDATE users SET logged_in = ? WHERE id = ?';
-      await executeQuery(updateLoggedInQuery, [1, user.id]);
       
       console.log(`User authenticated successfully: ${userData.name} (${userData.id})`);
       currentUserSession = userData;
@@ -404,9 +333,13 @@ export const logoutUser = async (): Promise<void> => {
   const currentUser = getCurrentUser();
   if (currentUser) {
     try {
-      // Update logged_in status in database
-      const updateLoggedInQuery = 'UPDATE users SET logged_in = ? WHERE id = ?';
-      await executeQuery(updateLoggedInQuery, [0, currentUser.id]);
+      // Get user from database
+      const user = await getDataById(STORES.USERS, currentUser.id);
+      if (user) {
+        // Update logged_in status
+        user.logged_in = false;
+        await updateData(STORES.USERS, user);
+      }
       
       console.log(`User logged out: ${currentUser.name} (${currentUser.id})`);
       currentUserSession = null;
@@ -420,87 +353,38 @@ export const logoutUser = async (): Promise<void> => {
 export const updateUserData = async (userId: string, updatedFields: Partial<UserData>): Promise<UserData | null> => {
   try {
     // Get current user data
-    const userQuery = 'SELECT * FROM users WHERE id = ?';
-    const usersData = await executeQuery(userQuery, [userId]);
+    const user = await getDataById(STORES.USERS, userId);
     
-    if (!usersData || usersData.length === 0) {
+    if (!user) {
       console.error(`User not found: ${userId}`);
       return null;
     }
     
-    const user = usersData[0];
+    // Update user fields
+    if (updatedFields.name !== undefined) user.name = updatedFields.name;
+    if (updatedFields.email !== undefined) user.email = updatedFields.email;
+    if (updatedFields.gender !== undefined) user.gender = updatedFields.gender;
+    if (updatedFields.age !== undefined) user.age = updatedFields.age;
+    if (updatedFields.weight !== undefined) user.weight = updatedFields.weight;
+    if (updatedFields.height !== undefined) user.height = updatedFields.height;
+    if (updatedFields.bodyProblems !== undefined) user.body_problems = updatedFields.bodyProblems;
+    if (updatedFields.dietRestrictions !== undefined) user.diet_restrictions = updatedFields.dietRestrictions;
     
-    // Build update query fields
-    const updateFields: string[] = [];
-    const updateValues: any[] = [];
-    
-    if (updatedFields.name !== undefined) {
-      updateFields.push('name = ?');
-      updateValues.push(updatedFields.name);
-    }
-    
-    if (updatedFields.email !== undefined) {
-      updateFields.push('email = ?');
-      updateValues.push(updatedFields.email);
-    }
-    
-    if (updatedFields.gender !== undefined) {
-      updateFields.push('gender = ?');
-      updateValues.push(updatedFields.gender);
-    }
-    
-    if (updatedFields.age !== undefined) {
-      updateFields.push('age = ?');
-      updateValues.push(updatedFields.age);
-    }
-    
-    if (updatedFields.weight !== undefined) {
-      updateFields.push('weight = ?');
-      updateValues.push(updatedFields.weight);
-    }
-    
-    if (updatedFields.height !== undefined) {
-      updateFields.push('height = ?');
-      updateValues.push(updatedFields.height);
-    }
-    
-    if (updatedFields.bodyProblems !== undefined) {
-      updateFields.push('body_problems = ?');
-      updateValues.push(JSON.stringify(updatedFields.bodyProblems));
-    }
-    
-    if (updatedFields.dietRestrictions !== undefined) {
-      updateFields.push('diet_restrictions = ?');
-      updateValues.push(JSON.stringify(updatedFields.dietRestrictions));
-    }
-    
-    // Add userId to values
-    updateValues.push(userId);
-    
-    // Execute update if there are fields to update
-    if (updateFields.length > 0) {
-      const updateQuery = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
-      await executeQuery(updateQuery, updateValues);
-    }
+    // Save updated user
+    await updateData(STORES.USERS, user);
     
     // Update stats if needed
     if (updatedFields.stats) {
-      const updateStatsQuery = `
-        UPDATE user_stats 
-        SET calories = ?,
-            steps = ?,
-            workouts_completed = ?,
-            streak_days = ?
-        WHERE user_id = ?
-      `;
+      const statsData = await getDataById(STORES.USER_STATS, userId);
       
-      await executeQuery(updateStatsQuery, [
-        JSON.stringify(updatedFields.stats.calories),
-        JSON.stringify(updatedFields.stats.steps),
-        updatedFields.stats.workoutsCompleted,
-        updatedFields.stats.streakDays,
-        userId
-      ]);
+      if (statsData) {
+        statsData.calories = updatedFields.stats.calories;
+        statsData.steps = updatedFields.stats.steps;
+        statsData.workouts_completed = updatedFields.stats.workoutsCompleted;
+        statsData.streak_days = updatedFields.stats.streakDays;
+        
+        await updateData(STORES.USER_STATS, statsData);
+      }
     }
     
     // Get updated user
@@ -548,19 +432,14 @@ export const activateSubscription = async (
     endDate.setMonth(endDate.getMonth() + duration);
     
     // Insert subscription to database
-    const insertSubscriptionQuery = `
-      INSERT INTO subscriptions (user_id, type, duration, start_date, end_date, price)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `;
-    
-    await executeQuery(insertSubscriptionQuery, [
-      userId,
+    await addData(STORES.SUBSCRIPTIONS, {
+      user_id: userId,
       type,
       duration,
-      startDate,
-      endDate,
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
       price
-    ]);
+    });
     
     // Update current user with new subscription
     const subscriptionData: SubscriptionData = {
@@ -591,9 +470,11 @@ export const activateSubscription = async (
 // Get tasks for user
 export const getUserTasks = async (userId: string, date: string): Promise<any[]> => {
   try {
-    const query = 'SELECT * FROM tasks WHERE user_id = ? AND date = ?';
-    const tasks = await executeQuery(query, [userId, date]);
-    return tasks || [];
+    // Find all tasks for the specified user and date
+    const tasks = await queryByIndex(STORES.TASKS, 'user_id', userId);
+    
+    // Filter by date
+    return tasks.filter(task => task.date === date) || [];
   } catch (error) {
     console.error('Error getting user tasks:', error);
     return [];
@@ -603,26 +484,26 @@ export const getUserTasks = async (userId: string, date: string): Promise<any[]>
 // Save tasks for user
 export const saveUserTasks = async (userId: string, date: string, tasks: any[]): Promise<boolean> => {
   try {
+    // Get all existing tasks for this user and date
+    const existingTasks = await queryByIndex(STORES.TASKS, 'user_id', userId);
+    const tasksForDate = existingTasks.filter(task => task.date === date);
+    
     // Delete existing tasks for this date
-    const deleteQuery = 'DELETE FROM tasks WHERE user_id = ? AND date = ?';
-    await executeQuery(deleteQuery, [userId, date]);
+    for (const task of tasksForDate) {
+      await deleteData(STORES.TASKS, task.id);
+    }
     
     // Insert new tasks
     for (const task of tasks) {
-      const insertQuery = `
-        INSERT INTO tasks (id, user_id, title, description, category, completed, date)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `;
-      
-      await executeQuery(insertQuery, [
-        task.id,
-        userId,
-        task.title,
-        task.description,
-        task.category,
-        task.completed ? 1 : 0,
+      await addData(STORES.TASKS, {
+        id: task.id,
+        user_id: userId,
+        title: task.title,
+        description: task.description,
+        category: task.category,
+        completed: task.completed,
         date
-      ]);
+      });
     }
     
     return true;

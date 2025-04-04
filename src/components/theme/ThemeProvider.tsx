@@ -1,82 +1,35 @@
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { getLanguage, setDefaultLanguage as setStoredLanguage, Language } from "@/utils/languageUtils";
+"use client"
 
-type Theme = "light" | "dark" | "system";
+import * as React from "react"
+import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { type ThemeProviderProps } from "next-themes/dist/types"
 
-interface ThemeProviderProps {
-  children: React.ReactNode;
-  defaultTheme?: Theme;
-  storageKey?: string;
+export interface CustomThemeProviderProps extends ThemeProviderProps {
+  defaultLanguage?: string;
 }
 
-interface ThemeProviderState {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  language: Language;
-  setLanguage: (language: Language) => void;
-}
-
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-  language: "ru",
-  setLanguage: () => null,
-};
-
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
-
-export function ThemeProvider({
-  children,
-  defaultTheme = "system",
-  storageKey = "ar-fit-theme",
-  ...props
-}: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
-  
-  const [language, setLanguage] = useState<Language>(getLanguage());
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      root.classList.add(systemTheme);
-      return;
+export function ThemeProvider({ 
+  children, 
+  defaultTheme = "system", 
+  defaultLanguage = "en",
+  ...props 
+}: CustomThemeProviderProps) {
+  // Store the language preference in localStorage
+  React.useEffect(() => {
+    if (defaultLanguage) {
+      localStorage.setItem("language", defaultLanguage);
     }
-
-    root.classList.add(theme);
-  }, [theme]);
-  
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
-    },
-    language,
-    setLanguage: (newLanguage: Language) => {
-      setStoredLanguage(newLanguage);
-      setLanguage(newLanguage);
-    }
-  };
+  }, [defaultLanguage]);
 
   return (
-    <ThemeProviderContext.Provider value={value} {...props}>
+    <NextThemesProvider
+      {...props}
+      defaultTheme={defaultTheme}
+      enableSystem
+      attribute="class"
+    >
       {children}
-    </ThemeProviderContext.Provider>
-  );
+    </NextThemesProvider>
+  )
 }
-
-export const useTheme = () => {
-  const context = useContext(ThemeProviderContext);
-  if (context === undefined)
-    throw new Error("useTheme must be used within a ThemeProvider");
-  return context;
-};
