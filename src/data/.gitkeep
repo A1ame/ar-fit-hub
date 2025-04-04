@@ -1,3 +1,2 @@
 
-# This directory contains the users database file (users-db.json)
-# The file is managed by the fsMiddleware utility
+# This directory is used to store the users database file

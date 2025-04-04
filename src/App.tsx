@@ -37,7 +37,7 @@ const ScrollToTop = () => {
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="system">
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
           <Sonner />
