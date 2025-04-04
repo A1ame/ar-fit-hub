@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+import { saveAs } from 'file-saver';
 
 export interface UserData {
   id: string;
@@ -10,12 +12,26 @@ export interface UserData {
   height: number;
   loggedIn: boolean;
   createdAt: string;
+  bodyProblems?: string[];
+  dietRestrictions?: string[];
   stats: {
     calories: number[];
     steps: number[];
     workoutsCompleted: number;
     streakDays: number;
   };
+  subscriptions?: {
+    workout: SubscriptionData | null;
+    nutrition: SubscriptionData | null;
+  };
+}
+
+export interface SubscriptionData {
+  type: 'workout' | 'nutrition' | 'combo';
+  duration: 1 | 6 | 12; // months
+  startDate: string;
+  endDate: string;
+  price: number;
 }
 
 export const defaultStats = {
@@ -25,11 +41,15 @@ export const defaultStats = {
   streakDays: 0
 };
 
+// File path for storing user data JSON
+const USER_DATA_FILE = 'ar-fit-users-data.json';
+
 /**
- * Получение списка всех пользователей из localStorage
+ * Получение списка всех пользователей из localStorage и файла
  */
 export const getUsers = (): UserData[] => {
   try {
+    // First try to get from localStorage
     const usersJson = localStorage.getItem('ar-fit-users');
     if (usersJson) {
       return JSON.parse(usersJson);
@@ -41,10 +61,15 @@ export const getUsers = (): UserData[] => {
 };
 
 /**
- * Сохранение списка пользователей в localStorage
+ * Сохранение списка пользователей в localStorage и файл
  */
 export const saveUsers = (users: UserData[]): void => {
+  // Save to localStorage
   localStorage.setItem('ar-fit-users', JSON.stringify(users));
+  
+  // Also save to file
+  const blob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
+  saveAs(blob, USER_DATA_FILE);
 };
 
 /**
@@ -63,7 +88,7 @@ export const getCurrentUser = (): UserData | null => {
 };
 
 /**
- * Сохранение текущего пользователя в localStorage
+ * Сохранение текущего пользователя в localStorage и обновление в файле
  */
 export const saveCurrentUser = (user: UserData): void => {
   localStorage.setItem('ar-fit-user', JSON.stringify(user));
@@ -79,6 +104,11 @@ export const saveCurrentUser = (user: UserData): void => {
  */
 export const addUser = (user: UserData): void => {
   const users = getUsers();
+  
+  // Если id не указан, создаем новый с помощью uuid
+  if (!user.id) {
+    user.id = uuidv4();
+  }
   
   // Проверяем, не существует ли пользователь с таким email
   const existingUser = users.find(u => u.email === user.email);
@@ -123,4 +153,113 @@ export const logoutUser = (): void => {
     // Очищаем данные текущего пользователя
     localStorage.removeItem('ar-fit-user');
   }
+};
+
+/**
+ * Обновление данных пользователя
+ */
+export const updateUserData = (userId: string, updatedFields: Partial<UserData>): UserData | null => {
+  const users = getUsers();
+  const userIndex = users.findIndex(u => u.id === userId);
+  
+  if (userIndex === -1) return null;
+  
+  const updatedUser = { ...users[userIndex], ...updatedFields };
+  users[userIndex] = updatedUser;
+  
+  saveUsers(users);
+  
+  // Если это текущий пользователь, обновляем и его
+  const currentUser = getCurrentUser();
+  if (currentUser && currentUser.id === userId) {
+    saveCurrentUser(updatedUser);
+  }
+  
+  return updatedUser;
+};
+
+/**
+ * Экспорт данных всех пользователей в JSON файл
+ */
+export const exportUsersToJSON = (): void => {
+  const users = getUsers();
+  const blob = new Blob([JSON.stringify(users, null, 2)], { type: 'application/json' });
+  saveAs(blob, USER_DATA_FILE);
+};
+
+/**
+ * Импорт данных пользователей из JSON файла
+ */
+export const importUsersFromJSON = (jsonData: string): boolean => {
+  try {
+    const users = JSON.parse(jsonData);
+    if (!Array.isArray(users)) {
+      throw new Error('Некорректный формат данных');
+    }
+    
+    saveUsers(users);
+    return true;
+  } catch (error) {
+    console.error('Ошибка при импорте данных пользователей:', error);
+    return false;
+  }
+};
+
+/**
+ * Проверка, имеет ли пользователь активную подписку определенного типа
+ */
+export const hasActiveSubscription = (user: UserData | null, type: 'workout' | 'nutrition'): boolean => {
+  if (!user || !user.subscriptions) return false;
+  
+  const { workout, nutrition } = user.subscriptions;
+  
+  // Проверка подписки комбо, которая действует для обоих типов
+  if (workout?.type === 'combo') {
+    const endDate = new Date(workout.endDate);
+    if (endDate > new Date()) return true;
+  }
+  
+  // Проверка конкретной подписки
+  const subscription = type === 'workout' ? workout : nutrition;
+  if (!subscription) return false;
+  
+  const endDate = new Date(subscription.endDate);
+  return endDate > new Date();
+};
+
+/**
+ * Активация подписки для пользователя
+ */
+export const activateSubscription = (
+  userId: string, 
+  type: 'workout' | 'nutrition' | 'combo', 
+  duration: 1 | 6 | 12,
+  price: number
+): UserData | null => {
+  const user = getCurrentUser();
+  if (!user || user.id !== userId) return null;
+  
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setMonth(endDate.getMonth() + duration);
+  
+  const subscriptionData: SubscriptionData = {
+    type,
+    duration,
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
+    price
+  };
+  
+  const updatedUser = {
+    ...user,
+    subscriptions: {
+      ...user.subscriptions || {},
+      workout: type === 'workout' || type === 'combo' ? subscriptionData : user.subscriptions?.workout || null,
+      nutrition: type === 'nutrition' || type === 'combo' ? subscriptionData : user.subscriptions?.nutrition || null
+    }
+  };
+  
+  saveCurrentUser(updatedUser);
+  return updatedUser;
 };

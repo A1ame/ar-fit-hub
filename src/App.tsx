@@ -13,6 +13,13 @@ import NutritionPage from "./pages/NutritionPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import { getLanguage } from "./utils/languageUtils";
+import "./App.css";
+
+// Add Google Fonts Jost
+const fontLink = document.createElement('link');
+fontLink.href = 'https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap';
+fontLink.rel = 'stylesheet';
+document.head.appendChild(fontLink);
 
 const queryClient = new QueryClient();
 

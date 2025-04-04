@@ -12,17 +12,18 @@ interface BodyProblemsSurveyProps {
   onComplete: (problems: string[]) => void;
 }
 
+// Define body parts with their respective details
 const bodyPartsList = [
-  { id: "back", nameKey: "back", x: 50, y: 30, width: 30, height: 25 },
-  { id: "neck", nameKey: "neck", x: 50, y: 15, width: 15, height: 10 },
-  { id: "shoulders", nameKey: "shoulders", x: 50, y: 20, width: 40, height: 10 },
-  { id: "arms", nameKey: "arms", x: 75, y: 35, width: 15, height: 20 },
-  { id: "legs", nameKey: "legs", x: 50, y: 70, width: 30, height: 25 },
-  { id: "knees", nameKey: "knees", x: 50, y: 60, width: 20, height: 10 },
-  { id: "feet", nameKey: "feet", x: 50, y: 90, width: 20, height: 10 },
-  { id: "chest", nameKey: "chest", x: 50, y: 25, width: 30, height: 15 },
-  { id: "abdomen", nameKey: "abdomen", x: 50, y: 45, width: 25, height: 15 },
-  { id: "none", nameKey: "noProblems", x: 0, y: 0, width: 0, height: 0 },
+  { id: "back", nameKey: "backPain", icon: "M" },
+  { id: "neck", nameKey: "neck", icon: "M" },
+  { id: "shoulders", nameKey: "shoulders", icon: "M" },
+  { id: "arms", nameKey: "arms", icon: "M" },
+  { id: "legs", nameKey: "legs", icon: "M" },
+  { id: "knees", nameKey: "knees", icon: "M" },
+  { id: "feet", nameKey: "feet", icon: "M" },
+  { id: "chest", nameKey: "chest", icon: "M" },
+  { id: "abdomen", nameKey: "abdomen", icon: "M" },
+  { id: "none", nameKey: "noProblems", icon: "✓" },
 ];
 
 const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) => {
@@ -31,12 +32,12 @@ const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) =
 
   const toggleProblem = (id: string) => {
     setSelectedProblems(prev => {
-      // Если выбирается "none", снимаем все остальные выборы
+      // If "none" is selected, clear all other selections
       if (id === "none") {
         return prev.includes("none") ? [] : ["none"];
       }
       
-      // Если выбирается какая-то часть тела, снимаем выбор с "none"
+      // If any part is selected, remove "none" from selection
       const withoutNone = prev.filter(p => p !== "none");
       
       if (prev.includes(id)) {
@@ -52,9 +53,9 @@ const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) =
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
+    <Card className="w-full max-w-md mx-auto glass-card border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center text-arfit-purple">
+        <CardTitle className="text-2xl font-bold text-center text-arfit-purple text-3d">
           {t("bodyProblemsSurvey", language)}
         </CardTitle>
         <CardDescription className="text-center">
@@ -62,48 +63,26 @@ const BodyProblemsSurvey: React.FC<BodyProblemsSurveyProps> = ({ onComplete }) =
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="relative w-full h-[300px]">
-          {/* Силуэт человека */}
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <path 
-              d="M50,10 Q60,15 60,20 Q65,25 65,35 Q65,45 60,50 Q65,55 65,65 Q60,80 55,90 Q55,95 50,95 Q45,95 45,90 Q40,80 35,65 Q35,55 40,50 Q35,45 35,35 Q35,25 40,20 Q40,15 50,10"
-              fill="#f0e6ff"
-              stroke="#d8c8ff"
-              strokeWidth="1"
-            />
-            
-            {/* Обводка выбранных частей тела */}
-            {bodyPartsList.filter(part => part.id !== "none" && selectedProblems.includes(part.id)).map(part => (
-              <rect 
-                key={part.id}
-                x={part.x - part.width/2}
-                y={part.y - part.height/2}
-                width={part.width} 
-                height={part.height}
-                fill="rgba(255, 0, 0, 0.3)"
-                stroke="rgba(255, 0, 0, 0.7)"
-                strokeWidth="1"
-                rx="2"
-              />
-            ))}
-          </svg>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {bodyPartsList.map((part) => (
-            <div key={part.id} className="flex items-start space-x-2">
-              <Checkbox
-                id={part.id}
-                checked={selectedProblems.includes(part.id)}
-                onCheckedChange={() => toggleProblem(part.id)}
-                className="mt-1 data-[state=checked]:bg-arfit-purple data-[state=checked]:border-arfit-purple"
-              />
-              <Label 
-                htmlFor={part.id} 
-                className="font-medium cursor-pointer"
-              >
-                {t(part.nameKey, language)}
-              </Label>
+            <div 
+              key={part.id}
+              onClick={() => toggleProblem(part.id)}
+              className={`
+                cursor-pointer rounded-lg p-3 flex flex-col items-center justify-center
+                transition-all duration-200 border-2
+                ${selectedProblems.includes(part.id) 
+                  ? 'border-arfit-purple bg-arfit-purple/20' 
+                  : 'border-arfit-purple/20 hover:border-arfit-purple/40 bg-white/40'}
+              `}
+            >
+              <div className={`
+                w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-2
+                ${selectedProblems.includes(part.id) ? 'bg-arfit-purple text-white' : 'bg-arfit-purple/10 text-arfit-purple'}
+              `}>
+                {part.id === "none" ? "✓" : part.id.charAt(0).toUpperCase()}
+              </div>
+              <span className="text-sm font-medium text-center">{t(part.nameKey, language)}</span>
             </div>
           ))}
         </div>
