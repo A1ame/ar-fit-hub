@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,14 +8,15 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GenderSelection from "./GenderSelection";
 import ProfileSetup from "./ProfileSetup";
+import BodyProblemsSurvey from "./BodyProblemsSurvey";
+import DietRestrictionsSurvey from "./DietRestrictionsSurvey";
 import { authenticateUser } from "@/utils/userUtils";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import { toast } from "sonner";
-import { ChevronLeft, Globe, Dumbbell } from "lucide-react";
-import { v4 as uuidv4 } from 'uuid';
+import { ChevronLeft, Globe } from "lucide-react";
 
-type AuthStep = "auth" | "gender" | "profile";
+type AuthStep = "auth" | "gender" | "bodyProblems" | "dietRestrictions" | "profile";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -23,26 +24,15 @@ const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [step, setStep] = useState<AuthStep>("auth");
   const [gender, setGender] = useState<"male" | "female" | null>(null);
+  const [bodyProblems, setBodyProblems] = useState<string[]>([]);
+  const [dietRestrictions, setDietRestrictions] = useState<string[]>([]);
   const navigate = useNavigate();
   const { language, setLanguage } = useTheme();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    
-    return () => {
-      window.removeEventListener('resize', checkIfMobile);
-    };
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isLogin) {
+      // Попытка входа в систему
       const user = authenticateUser(email, password);
       if (user) {
         navigate("/dashboard");
@@ -50,23 +40,35 @@ const AuthForm = () => {
         toast.error(t("invalidCredentials", language));
       }
     } else {
+      // Если регистрация, перейти к выбору пола
       setStep("gender");
     }
   };
 
   const handleGenderSelect = (selectedGender: "male" | "female") => {
     setGender(selectedGender);
+    setStep("bodyProblems");
+  };
+
+  const handleBodyProblemsComplete = (problems: string[]) => {
+    setBodyProblems(problems);
+    setStep("dietRestrictions");
+  };
+
+  const handleDietRestrictionsComplete = (restrictions: string[]) => {
+    setDietRestrictions(restrictions);
     setStep("profile");
   };
 
   const handleProfileComplete = (profileData: any) => {
+    // Сохранить данные пользователя
     const userData = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       email,
       password,
       gender,
-      bodyProblems: [],
-      dietRestrictions: [],
+      bodyProblems,
+      dietRestrictions,
       ...profileData,
       loggedIn: true,
       createdAt: new Date().toISOString(),
@@ -75,30 +77,26 @@ const AuthForm = () => {
         steps: [0, 0, 0, 0, 0, 0, 0],
         workoutsCompleted: 0,
         streakDays: 0
-      },
-      subscriptions: {
-        workout: null,
-        nutrition: null
       }
     };
     
+    // Добавить нового пользователя
     import("@/utils/userUtils").then(({ addUser, saveCurrentUser }) => {
-      try {
-        addUser(userData);
-        saveCurrentUser(userData);
-        navigate("/dashboard");
-      } catch (error) {
-        console.error("Registration error:", error);
-        toast.error(String(error));
-      }
+      addUser(userData);
+      saveCurrentUser(userData);
+      navigate("/dashboard");
     });
   };
 
   const goBack = () => {
     if (step === "gender") {
       setStep("auth");
-    } else if (step === "profile") {
+    } else if (step === "bodyProblems") {
       setStep("gender");
+    } else if (step === "dietRestrictions") {
+      setStep("bodyProblems");
+    } else if (step === "profile") {
+      setStep("dietRestrictions");
     }
   };
 
@@ -111,9 +109,41 @@ const AuthForm = () => {
           className="absolute top-4 left-4 flex items-center p-2"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("goBack", language)}
+          {t("back", language)}
         </Button>
         <GenderSelection onSelect={handleGenderSelect} />
+      </>
+    );
+  }
+
+  if (step === "bodyProblems") {
+    return (
+      <>
+        <Button 
+          onClick={goBack} 
+          variant="ghost" 
+          className="absolute top-4 left-4 flex items-center p-2"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          {t("back", language)}
+        </Button>
+        <BodyProblemsSurvey onComplete={handleBodyProblemsComplete} />
+      </>
+    );
+  }
+
+  if (step === "dietRestrictions") {
+    return (
+      <>
+        <Button 
+          onClick={goBack} 
+          variant="ghost" 
+          className="absolute top-4 left-4 flex items-center p-2"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          {t("back", language)}
+        </Button>
+        <DietRestrictionsSurvey onComplete={handleDietRestrictionsComplete} />
       </>
     );
   }
@@ -127,20 +157,18 @@ const AuthForm = () => {
           className="absolute top-4 left-4 flex items-center p-2"
         >
           <ChevronLeft className="w-5 h-5 mr-1" />
-          {t("goBack", language)}
+          {t("back", language)}
         </Button>
         <ProfileSetup onComplete={handleProfileComplete} gender={gender || "male"} />
       </>
     );
   }
 
-  const welcomeText = t("welcome", language);
-
   return (
-    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
+    <Card className="w-full max-w-md mx-auto glass-card animate-scale-in border-4 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
       <CardHeader className="pb-2">
-        <CardTitle className="text-3xl font-bold text-center text-arfit-purple text-3d">
-          {welcomeText}
+        <CardTitle className="text-3xl font-bold text-center text-arfit-purple">
+          AR-FIT
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -186,10 +214,7 @@ const AuthForm = () => {
                 className="glass-input border-arfit-purple/30 focus:border-arfit-purple"
               />
             </div>
-            <Button 
-              type="submit" 
-              className={`w-full glass-button ${isMobile ? 'py-3 text-base' : ''}`}
-            >
+            <Button type="submit" className="w-full glass-button">
               {isLogin ? t("login", language) : t("continue", language)}
             </Button>
           </form>

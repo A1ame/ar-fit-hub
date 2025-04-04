@@ -6,7 +6,6 @@ import { isLoggedIn } from "@/utils/authUtils";
 import { motion } from "framer-motion";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
-import { Dumbbell } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -32,13 +31,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-arfit-purple/10 via-white to-arfit-purple/5">
-      <div className="fixed top-0 left-0 right-0 p-4 flex items-center justify-center shadow-sm bg-white/50 backdrop-blur-sm z-10">
-        <div className="flex items-center">
-          <Dumbbell className="h-6 w-6 text-arfit-purple mr-2" />
-          <h1 className="text-xl font-bold text-arfit-purple">AR-FIT</h1>
-        </div>
-      </div>
-      
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

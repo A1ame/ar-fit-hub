@@ -10,7 +10,9 @@ import { motion } from "framer-motion";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import { getCurrentUser, saveCurrentUser, UserData } from "@/utils/userUtils";
+import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const CALORIES_PER_TASK = {
   strength: 150,
@@ -197,7 +199,16 @@ const Dashboard = () => {
   const bmiPosition = getPositionPercentage(bmi);
 
   return (
-    <div className="w-full animate-fade-in space-y-6">      
+    <div className="w-full animate-fade-in space-y-6">
+      <Button 
+        onClick={() => navigate(-1)} 
+        variant="ghost" 
+        className="flex items-center mb-2"
+      >
+        <ChevronLeft className="w-5 h-5 mr-1" />
+        {t("back", language)}
+      </Button>
+      
       <div className="flex flex-col md:flex-row gap-6">
         {/* User stats card */}
         <motion.div 
@@ -226,18 +237,17 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              <div className="w-full h-16 relative">
+              <div className="w-full h-12 relative">
                 <div className="w-full h-3 mt-2 rounded-full bg-gradient-to-r from-blue-500 via-green-500 via-orange-500 to-red-500"></div>
                 <div 
-                  className="absolute top-0 -mt-1 transform -translate-x-1/2" 
+                  className="absolute top-0 left-0 transform -translate-x-1/2" 
                   style={{ left: `${bmiPosition}%` }}
                 >
-                  <svg width="24" height="20" viewBox="0 0 24 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 0L23.2583 19.5H0.741669L12 0Z" fill="black"/>
-                  </svg>
+                  <div className="w-0.5 h-6 bg-black"></div>
+                  <div className="w-4 h-4 rounded-full bg-black -mt-5 -ml-1.5"></div>
                 </div>
                 
-                <div className="flex justify-between text-xs mt-3 px-1">
+                <div className="flex justify-between text-xs mt-1 px-1">
                   <span className="text-blue-500">{t("underweight", language)}</span>
                   <span className="text-green-500">{t("normal", language)}</span>
                   <span className="text-orange-500">{t("overweight", language)}</span>

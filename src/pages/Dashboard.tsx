@@ -6,26 +6,19 @@ import Navigation from "@/components/layout/Navigation";
 import { requireAuth } from "@/utils/authUtils";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
-import { Dumbbell } from "lucide-react";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const { language } = useTheme();
   
   useEffect(() => {
-    requireAuth(navigate, language);
-  }, [navigate, language]);
+    requireAuth(navigate);
+  }, [navigate]);
   
   return (
-    <div className="min-h-screen pt-20 pb-20">
-      <div className="fixed top-0 left-0 right-0 p-4 flex items-center justify-center shadow-sm bg-white/50 backdrop-blur-sm z-10">
-        <div className="flex items-center">
-          <Dumbbell className="h-6 w-6 text-arfit-purple mr-2" />
-          <h1 className="text-xl font-bold text-arfit-purple">AR-FIT</h1>
-        </div>
-      </div>
-      
-      <div className="container mx-auto px-4 mt-4">
+    <div className="min-h-screen pt-6 pb-20">
+      <div className="container mx-auto px-4">
+        <h1 className="text-3xl font-bold mb-6 text-arfit-purple text-center">{t("appName", language)}</h1>
         <Dashboard />
       </div>
       <Navigation />

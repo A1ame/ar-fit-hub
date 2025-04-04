@@ -1,5 +1,5 @@
 
-import { getCurrentUser, logoutUser, getUsers } from "./userUtils";
+import { getCurrentUser, logoutUser } from "./userUtils";
 import { toast } from "sonner";
 import { t } from "./languageUtils";
 
