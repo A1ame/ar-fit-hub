@@ -1,82 +1,83 @@
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { getLanguage, setDefaultLanguage as setStoredLanguage, Language } from "@/utils/languageUtils";
+"use client"
 
-type Theme = "light" | "dark" | "system";
+import * as React from "react"
+import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { type ThemeProviderProps } from "next-themes/dist/types"
 
-interface ThemeProviderProps {
-  children: React.ReactNode;
-  defaultTheme?: Theme;
-  storageKey?: string;
+interface ThemeContextType {
+  language: "en" | "ru";
+  setLanguage: (language: "en" | "ru") => void;
+  theme: string;
+  setTheme: (theme: string) => void;
 }
 
-interface ThemeProviderState {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  language: Language;
-  setLanguage: (language: Language) => void;
-}
-
-const initialState: ThemeProviderState = {
+const ThemeContext = React.createContext<ThemeContextType>({
+  language: "en",
+  setLanguage: () => {},
   theme: "system",
-  setTheme: () => null,
-  language: "ru",
-  setLanguage: () => null,
-};
+  setTheme: () => {}
+});
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+export const useTheme = () => React.useContext(ThemeContext);
 
-export function ThemeProvider({
-  children,
-  defaultTheme = "system",
-  storageKey = "ar-fit-theme",
-  ...props
-}: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+export interface CustomThemeProviderProps extends ThemeProviderProps {
+  defaultLanguage?: string;
+}
+
+export function ThemeProvider({ 
+  children, 
+  defaultTheme = "system", 
+  defaultLanguage = "en",
+  ...props 
+}: CustomThemeProviderProps) {
+  const [language, setLanguage] = React.useState<"en" | "ru">(
+    defaultLanguage === "ru" ? "ru" : "en"
   );
-  
-  const [language, setLanguage] = useState<Language>(getLanguage());
+  const [theme, setTheme] = React.useState(defaultTheme);
 
-  useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      root.classList.add(systemTheme);
-      return;
+  // Store the language preference in localStorage
+  React.useEffect(() => {
+    if (language) {
+      localStorage.setItem("language", language);
     }
+  }, [language]);
 
-    root.classList.add(theme);
-  }, [theme]);
-  
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
-    },
-    language,
-    setLanguage: (newLanguage: Language) => {
-      setStoredLanguage(newLanguage);
-      setLanguage(newLanguage);
+  // Read language and theme from localStorage on mount
+  React.useEffect(() => {
+    const storedLanguage = localStorage.getItem("language");
+    if (storedLanguage === "en" || storedLanguage === "ru") {
+      setLanguage(storedLanguage);
     }
-  };
+    
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme) {
+      setTheme(storedTheme);
+    }
+  }, []);
+
+  // Handle theme changes 
+  const handleThemeChange = React.useCallback((newTheme: string) => {
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  }, []);
 
   return (
-    <ThemeProviderContext.Provider value={value} {...props}>
-      {children}
-    </ThemeProviderContext.Provider>
-  );
+    <ThemeContext.Provider value={{ 
+      language, 
+      setLanguage, 
+      theme, 
+      setTheme: handleThemeChange 
+    }}>
+      <NextThemesProvider
+        {...props}
+        defaultTheme={theme}
+        forcedTheme={theme === "system" ? undefined : theme}
+        enableSystem
+        attribute="class"
+      >
+        {children}
+      </NextThemesProvider>
+    </ThemeContext.Provider>
+  )
 }
-
-export const useTheme = () => {
-  const context = useContext(ThemeProviderContext);
-  if (context === undefined)
-    throw new Error("useTheme must be used within a ThemeProvider");
-  return context;
-};
