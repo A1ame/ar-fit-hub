@@ -4,11 +4,11 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import DailyTasks from "./DailyTasks";
-import { generateRandomTasks } from "@/utils/fitnessData";
+import { generateRandomTasks, getTasksForDate } from "@/utils/fitnessData";
 import { motion } from "framer-motion";
 import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
-import { getCurrentUser, saveCurrentUser, UserData, getUserTasks, saveUserTasks } from "@/utils/userUtils";
+import { getCurrentUser, saveCurrentUser, UserData } from "@/utils/userUtils";
 import { useNavigate } from "react-router-dom";
 
 const CALORIES_PER_TASK = {
@@ -51,7 +51,7 @@ const Dashboard = () => {
     }, 0);
   };
   
-  const updateActivityData = async (caloriesBurned: number) => {
+  const updateActivityData = (caloriesBurned: number) => {
     const today = new Date().getDay();
     const dayIndex = today === 0 ? 6 : today - 1;
     
@@ -75,82 +75,61 @@ const Dashboard = () => {
         }
       };
       
-      await saveCurrentUser(updatedUser);
+      saveCurrentUser(updatedUser);
       setUserData(updatedUser);
     }
   };
   
   useEffect(() => {
-    const loadUserData = async () => {
-      const currentUser = getCurrentUser();
-      if (currentUser) {
-        setUserData(currentUser);
-        
-        if (currentUser.stats && currentUser.stats.calories) {
-          const days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
-          const newActivityData = currentUser.stats.calories.map((cal: number, index: number) => ({
-            day: days[index],
-            calories: cal
-          }));
-          setActivityData(newActivityData);
-        }
-        
-        const today = new Date().toISOString().split('T')[0];
-        
-        try {
-          const userTasks = await getUserTasks(currentUser.id, today);
-          
-          if (userTasks && userTasks.length > 0) {
-            const formattedTasks = userTasks.map((task: any) => ({
-              id: task.id,
-              title: task.title,
-              description: task.description,
-              category: task.category,
-              completed: Boolean(task.completed)
-            }));
-            
-            setTasks(formattedTasks);
-            
-            const completedPercentage = formattedTasks.filter((t: any) => t.completed).length / formattedTasks.length * 100;
-            setProgress(completedPercentage || 0);
-            
-            const calories = calculateCaloriesBurned(formattedTasks);
-            await updateActivityData(calories);
-          } else {
-            const newTasks = generateRandomTasks(language);
-            await saveUserTasks(currentUser.id, today, newTasks);
-            setTasks(newTasks);
-            setProgress(0);
-          }
-        } catch (error) {
-          console.error('Error loading tasks:', error);
-          const newTasks = generateRandomTasks(language);
-          setTasks(newTasks);
-          setProgress(0);
-        }
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      setUserData(currentUser);
+      
+      if (currentUser.stats && currentUser.stats.calories) {
+        const days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+        const newActivityData = currentUser.stats.calories.map((cal: number, index: number) => ({
+          day: days[index],
+          calories: cal
+        }));
+        setActivityData(newActivityData);
       }
-    };
-    
-    loadUserData();
+      
+      const today = new Date().toISOString().split('T')[0];
+      const taskKey = `ar-fit-tasks-${currentUser.id}-${today}`;
+      const storedTasks = localStorage.getItem(taskKey);
+      
+      if (storedTasks) {
+        const parsedTasks = JSON.parse(storedTasks);
+        setTasks(parsedTasks);
+        
+        const completedPercentage = parsedTasks.filter((t: any) => t.completed).length / parsedTasks.length * 100;
+        setProgress(completedPercentage || 0);
+        
+        const calories = calculateCaloriesBurned(parsedTasks);
+        updateActivityData(calories);
+      } else {
+        const newTasks = generateRandomTasks(language);
+        localStorage.setItem(taskKey, JSON.stringify(newTasks));
+        setTasks(newTasks);
+        setProgress(0);
+      }
+    }
   }, []);
   
-  const updateTasks = async (updatedTasks: any[]) => {
+  const updateTasks = (updatedTasks: any[]) => {
     if (!userData) return;
     
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      await saveUserTasks(userData.id, today, updatedTasks);
-      
-      const completedPercentage = updatedTasks.filter(t => t.completed).length / updatedTasks.length * 100;
-      setProgress(completedPercentage || 0);
-      
-      const calories = calculateCaloriesBurned(updatedTasks);
-      await updateActivityData(calories);
-      
-      setTasks(updatedTasks);
-    } catch (error) {
-      console.error('Error updating tasks:', error);
-    }
+    const today = new Date().toISOString().split('T')[0];
+    const taskKey = `ar-fit-tasks-${userData.id}-${today}`;
+    localStorage.setItem(taskKey, JSON.stringify(updatedTasks));
+    
+    const completedPercentage = updatedTasks.filter(t => t.completed).length / updatedTasks.length * 100;
+    setProgress(completedPercentage || 0);
+    
+    const calories = calculateCaloriesBurned(updatedTasks);
+    updateActivityData(calories);
+    
+    setTasks(updatedTasks);
   };
   
   const calculateBMI = () => {
