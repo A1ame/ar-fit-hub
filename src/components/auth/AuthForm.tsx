@@ -47,7 +47,7 @@ const AuthForm = () => {
       if (user) {
         navigate("/dashboard");
       } else {
-        toast.error(t("invalidCredentials", language));
+        toast.error(t("invalidCredentials"));
       }
     } else {
       setStep("gender");

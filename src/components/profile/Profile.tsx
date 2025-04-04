@@ -13,13 +13,6 @@ import { useTheme } from "../theme/ThemeProvider";
 import { t } from "@/utils/languageUtils";
 import SubscriptionOptions from "./SubscriptionOptions";
 import Statistics from "./Statistics";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { updateUserData, getCurrentUser } from "@/utils/userUtils";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -32,8 +25,9 @@ const Profile = () => {
   const [weight, setWeight] = useState<number>(0);
   
   useEffect(() => {
-    const userData = getCurrentUser();
-    if (userData) {
+    const storedUser = localStorage.getItem("ar-fit-user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
       setUser(userData);
       setName(userData.name || "");
       setEmail(userData.email || "");
@@ -43,25 +37,25 @@ const Profile = () => {
   }, []);
   
   const handleLogout = () => {
-    import("@/utils/authUtils").then(({ logout }) => {
-      logout(navigate, language);
-    });
+    localStorage.removeItem("ar-fit-user");
+    toast.success(t("loggedOut"));
+    navigate("/");
   };
   
   const handleSaveProfile = () => {
     if (user) {
-      const updatedUser = updateUserData(user.id, { name, email, height, weight });
-      if (updatedUser) {
-        setUser(updatedUser);
-        toast.success(t("profileUpdated", language));
-      }
+      const updatedUser = { ...user, name, email, height, weight };
+      localStorage.setItem("ar-fit-user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      toast.success(t("profileUpdated"));
     }
   };
 
   const handleSubscriptionChange = () => {
-    const userData = getCurrentUser();
-    if (userData) {
-      setUser(userData);
+    // Refresh user data after subscription change
+    const storedUser = localStorage.getItem("ar-fit-user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
   };
   
@@ -71,39 +65,20 @@ const Profile = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end mb-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              {language === 'ru' ? 'Русский' : 'English'}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setLanguage('ru')}>
-              {language === 'ru' ? '✓ Русский' : 'Русский'}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLanguage('en')}>
-              {language === 'en' ? '✓ English' : 'English'}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      
       <Card className="border-6 border-arfit-purple/60 shadow-[0_10px_15px_-3px_rgba(74,42,130,0.3)]">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center text-arfit-purple">{t("profileSettings", language)}</CardTitle>
-          <CardDescription>{t("manageAccount", language)}</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center text-arfit-purple">{t("profileSettings")}</CardTitle>
+          <CardDescription>{t("manageAccount")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <UserCircle className="mr-2 h-5 w-5" />
-              {t("personalInfo", language)}
+              {t("personalInfo")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">{t("name", language)}</Label>
+                <Label htmlFor="name">{t("name")}</Label>
                 <Input
                   id="name"
                   value={name}
@@ -111,7 +86,7 @@ const Profile = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">{t("email", language)}</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -122,7 +97,7 @@ const Profile = () => {
               <div className="space-y-2">
                 <Label htmlFor="height" className="flex items-center">
                   <Ruler className="mr-2 h-4 w-4" />
-                  {t("height", language)}
+                  {t("height")}
                 </Label>
                 <div className="flex">
                   <Input
@@ -131,13 +106,13 @@ const Profile = () => {
                     value={height}
                     onChange={(e) => setHeight(Number(e.target.value))}
                   />
-                  <span className="ml-2 flex items-center">{t("cm", language)}</span>
+                  <span className="ml-2 flex items-center">{t("cm")}</span>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="weight" className="flex items-center">
                   <Weight className="mr-2 h-4 w-4" />
-                  {t("weight", language)}
+                  {t("weight")}
                 </Label>
                 <div className="flex">
                   <Input
@@ -146,7 +121,7 @@ const Profile = () => {
                     value={weight}
                     onChange={(e) => setWeight(Number(e.target.value))}
                   />
-                  <span className="ml-2 flex items-center">{t("kg", language)}</span>
+                  <span className="ml-2 flex items-center">{t("kg")}</span>
                 </div>
               </div>
             </div>
@@ -155,12 +130,13 @@ const Profile = () => {
               className="w-full mt-4"
             >
               <Save className="mr-2 h-4 w-4" />
-              {t("saveChanges", language)}
+              {t("saveChanges")}
             </Button>
           </div>
           
           <Separator />
           
+          {/* Statistics Section */}
           <Statistics />
           
           <Separator />
@@ -168,7 +144,7 @@ const Profile = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <CreditCard className="mr-2 h-5 w-5" />
-              {t("subscriptions", language)}
+              {t("subscriptions")}
             </h3>
             
             <SubscriptionOptions onSubscriptionChange={handleSubscriptionChange} />
@@ -179,7 +155,7 @@ const Profile = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <Settings className="mr-2 h-5 w-5" />
-              {t("preferences", language)}
+              {t("preferences")}
             </h3>
             
             <div className="space-y-4">
@@ -187,10 +163,10 @@ const Profile = () => {
                 <div className="space-y-0.5">
                   <Label htmlFor="notifications" className="flex items-center">
                     <Bell className="mr-2 h-4 w-4" />
-                    {t("notifications", language)}
+                    {t("notifications")}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    {t("notificationsDesc", language)}
+                    {t("notificationsDesc")}
                   </p>
                 </div>
                 <Switch
@@ -204,10 +180,10 @@ const Profile = () => {
                 <div className="space-y-0.5">
                   <Label htmlFor="darkMode" className="flex items-center">
                     <Moon className="mr-2 h-4 w-4" />
-                    {t("darkMode", language)}
+                    {t("darkMode")}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    {t("darkModeDesc", language)}
+                    {t("darkModeDesc")}
                   </p>
                 </div>
                 <Switch
@@ -221,10 +197,10 @@ const Profile = () => {
                 <div className="space-y-0.5">
                   <Label htmlFor="language" className="flex items-center">
                     <Globe className="mr-2 h-4 w-4" />
-                    {t("language", language)}
+                    {t("language")}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    {t("languageDesc", language)}
+                    {t("languageDesc")}
                   </p>
                 </div>
                 <Switch
@@ -241,7 +217,7 @@ const Profile = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
               <Lock className="mr-2 h-5 w-5" />
-              {t("account", language)}
+              {t("account")}
             </h3>
             <Button 
               variant="destructive" 
@@ -249,7 +225,7 @@ const Profile = () => {
               className="w-full bg-red-500 hover:bg-red-600"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              {t("logOut", language)}
+              {t("logOut")}
             </Button>
           </div>
         </CardContent>

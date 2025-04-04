@@ -1,6 +1,4 @@
-
 import { v4 as uuidv4 } from 'uuid';
-import { fs, path } from './fsMiddleware';
 
 export interface MealEntry {
   id: string;
@@ -50,127 +48,97 @@ export const defaultStats = {
   streakDays: 0
 };
 
-// Path to the JSON database file
-const DB_FILE_PATH = path.join('src', 'data', 'users-db.json');
+const USER_DATA_FILE = 'ar-fit-users-data.json';
 
-// Ensure data directory exists
-const ensureDataDir = () => {
-  console.log('Ensuring data directory exists...');
-  const dir = path.dirname(DB_FILE_PATH);
-  if (!fs.existsSync(dir)) {
-    console.log(`Creating directory: ${dir}`);
-    fs.mkdirSync(dir, { recursive: true });
-  }
-};
-
-// Initialize db file if it doesn't exist
-const initDbFile = () => {
-  ensureDataDir();
-  console.log(`Checking if database file exists: ${DB_FILE_PATH}`);
-  if (!fs.existsSync(DB_FILE_PATH)) {
-    console.log('Creating empty users database file');
-    fs.writeFileSync(DB_FILE_PATH, JSON.stringify([], null, 2));
-    console.log('Users database file created successfully');
-  } else {
-    console.log('Users database file already exists');
-  }
-};
-
-// Get all users from JSON file
+/**
+ * Получение списка всех пользователей из localStorage
+ */
 export const getUsers = (): UserData[] => {
   try {
-    console.log('Getting all users from database');
-    initDbFile();
-    const data = fs.readFileSync(DB_FILE_PATH, 'utf8');
-    console.log(`Read ${data.length} bytes from users database`);
-    const users = JSON.parse(data);
-    console.log(`Found ${users.length} users in database`);
-    return users;
+    const usersJson = localStorage.getItem('ar-fit-users');
+    if (usersJson) {
+      return JSON.parse(usersJson);
+    }
   } catch (error) {
-    console.error('Error reading user database:', error);
-    return [];
+    console.error('Ошибка при получении данных пользователей:', error);
   }
+  return [];
 };
 
-// Save users to JSON file
+/**
+ * Сохранение списка пользователей в localStorage
+ */
 export const saveUsers = (users: UserData[]): void => {
-  try {
-    console.log(`Saving ${users.length} users to database`);
-    ensureDataDir();
-    const data = JSON.stringify(users, null, 2);
-    fs.writeFileSync(DB_FILE_PATH, data);
-    console.log('User data successfully saved to database file');
-  } catch (error) {
-    console.error('Error saving user database:', error);
-  }
+  localStorage.setItem('ar-fit-users', JSON.stringify(users));
+  
+  // Больше не скачиваем файл при каждом сохранении
+  // Данные хранятся только в localStorage
 };
 
-// Current user session variable (in-memory only)
-let currentUserSession: UserData | null = null;
-
-// Get current logged in user
+/**
+ * Получение текущего пользователя из localStorage
+ */
 export const getCurrentUser = (): UserData | null => {
-  return currentUserSession;
+  try {
+    const userJson = localStorage.getItem('ar-fit-user');
+    if (userJson) {
+      return JSON.parse(userJson);
+    }
+  } catch (error) {
+    console.error('Ошибка при получении данных текущего пользователя:', error);
+  }
+  return null;
 };
 
-// Save current user and update in database
+/**
+ * Сохранение текущего пользователя в localStorage и обновление в файле
+ */
 export const saveCurrentUser = (user: UserData): void => {
-  console.log(`Saving current user: ${user.name} (${user.id})`);
-  currentUserSession = user;
+  localStorage.setItem('ar-fit-user', JSON.stringify(user));
   
   const users = getUsers();
-  const userIndex = users.findIndex(u => u.id === user.id);
-  
-  if (userIndex !== -1) {
-    console.log(`Updating existing user at index ${userIndex}`);
-    users[userIndex] = user;
-  } else {
-    console.log('Adding new user to database');
-    users.push(user);
-  }
-  
-  saveUsers(users);
+  const updatedUsers = users.map(u => u.id === user.id ? user : u);
+  saveUsers(updatedUsers);
 };
 
-// Add new user to database
+/**
+ * Добавление нового пользователя
+ */
 export const addUser = (user: UserData): void => {
-  console.log('Adding new user to database');
   const users = getUsers();
   
   if (!user.id) {
     user.id = uuidv4();
-    console.log(`Generated new user ID: ${user.id}`);
   }
   
   const existingUser = users.find(u => u.email === user.email);
   if (existingUser) {
-    console.error(`User with email ${user.email} already exists`);
     throw new Error('Пользователь с таким email уже существует');
   }
   
   users.push(user);
-  console.log(`Added user: ${user.name} (${user.id})`);
   saveUsers(users);
 };
 
-// Authenticate user
+/**
+ * Аутентификация пользователя по email и паролю
+ */
 export const authenticateUser = (email: string, password: string): UserData | null => {
-  console.log(`Authenticating user: ${email}`);
   const users = getUsers();
   const user = users.find(u => u.email === email && u.password === password);
   
   if (user) {
-    console.log(`User authenticated successfully: ${user.name} (${user.id})`);
     const loggedInUser = { ...user, loggedIn: true };
     saveCurrentUser(loggedInUser);
     return loggedInUser;
   }
   
-  console.log('Authentication failed: invalid credentials');
   return null;
 };
 
-// Logout user
+/**
+ * Выход пользователя из системы
+ */
 export const logoutUser = (): void => {
   const currentUser = getCurrentUser();
   if (currentUser) {
@@ -180,11 +148,13 @@ export const logoutUser = (): void => {
     const updatedUsers = users.map(u => u.id === currentUser.id ? loggedOutUser : u);
     saveUsers(updatedUsers);
     
-    currentUserSession = null;
+    localStorage.removeItem('ar-fit-user');
   }
 };
 
-// Update user data
+/**
+ * Обновление данных пользователя
+ */
 export const updateUserData = (userId: string, updatedFields: Partial<UserData>): UserData | null => {
   const users = getUsers();
   const userIndex = users.findIndex(u => u.id === userId);
@@ -198,13 +168,41 @@ export const updateUserData = (userId: string, updatedFields: Partial<UserData>)
   
   const currentUser = getCurrentUser();
   if (currentUser && currentUser.id === userId) {
-    currentUserSession = updatedUser;
+    saveCurrentUser(updatedUser);
   }
   
   return updatedUser;
 };
 
-// Check if user has active subscription
+/**
+ * Экспорт данных всех пользователей в JSON файл - функция сохранена для совместимости
+ * но не используется автоматически при каждом изменении
+ */
+export const exportUsersToJSON = (): void => {
+  console.log("Экспорт данных пользователей можно сделать вручную");
+};
+
+/**
+ * Импорт данных пользователей из JSON файла
+ */
+export const importUsersFromJSON = (jsonData: string): boolean => {
+  try {
+    const users = JSON.parse(jsonData);
+    if (!Array.isArray(users)) {
+      throw new Error('Некорректный формат данных');
+    }
+    
+    saveUsers(users);
+    return true;
+  } catch (error) {
+    console.error('Ошибка при импорте данных пользователей:', error);
+    return false;
+  }
+};
+
+/**
+ * Проверка, имеет ли пользователь активную подписку определенного типа
+ */
 export const hasActiveSubscription = (user: UserData | null, type: 'workout' | 'nutrition'): boolean => {
   if (!user || !user.subscriptions) return false;
   
@@ -222,7 +220,9 @@ export const hasActiveSubscription = (user: UserData | null, type: 'workout' | '
   return endDate > new Date();
 };
 
-// Activate subscription for user
+/**
+ * Активация подписки для пользователя
+ */
 export const activateSubscription = (
   userId: string, 
   type: 'workout' | 'nutrition' | 'combo', 

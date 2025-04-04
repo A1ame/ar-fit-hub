@@ -1,10 +1,10 @@
 
-import { getCurrentUser, logoutUser } from "./userUtils";
+import { getCurrentUser, logoutUser, getUsers } from "./userUtils";
 import { toast } from "sonner";
 import { t } from "./languageUtils";
 
 /**
- * Проверка, вошел ли пользователь в систему
+ * Проверка, вошел ли пользователь в систему на основе localStorage
  */
 export const isLoggedIn = (): boolean => {
   const user = getCurrentUser();
