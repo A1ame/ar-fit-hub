@@ -43,7 +43,7 @@ export function ThemeProvider({
     }
   }, [language]);
 
-  // Read language from localStorage on mount
+  // Read language and theme from localStorage on mount
   React.useEffect(() => {
     const storedLanguage = localStorage.getItem("language");
     if (storedLanguage === "en" || storedLanguage === "ru") {
@@ -56,7 +56,7 @@ export function ThemeProvider({
     }
   }, []);
 
-  // Update theme in the NextThemesProvider and localStorage
+  // Handle theme changes 
   const handleThemeChange = React.useCallback((newTheme: string) => {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
@@ -71,7 +71,8 @@ export function ThemeProvider({
     }}>
       <NextThemesProvider
         {...props}
-        defaultTheme={defaultTheme}
+        defaultTheme={theme}
+        forcedTheme={theme === "system" ? undefined : theme}
         enableSystem
         attribute="class"
       >

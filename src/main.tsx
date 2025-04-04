@@ -12,7 +12,7 @@ const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme="system" defaultLanguage="ru">
+    <ThemeProvider defaultTheme="system">
       <QueryClientProvider client={queryClient}>
         <DatabaseInitializer />
         <App />
